@@ -1,0 +1,22 @@
+@import url(error.css);
+
+:root {
+	--font-family: Arial, sans-serif;
+	--font-size: 1rem;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	margin: initial;
+	overflow: hidden;
+	font-family: var(--font-family);
+}
+
+canvas {
+	display: block;
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+}
