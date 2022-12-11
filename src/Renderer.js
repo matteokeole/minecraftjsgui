@@ -1,6 +1,12 @@
 import {NoWebGL2Error} from "NoWebGL2Error";
 
-let canvas, gl;
+const interval = 1000 / 60;
+let canvas,
+	gl,
+	request,
+	diff,
+	now,
+	then;
 
 function build() {
 	canvas = document.createElement("canvas");
@@ -9,6 +15,34 @@ function build() {
 	if (!gl) throw new NoWebGL2Error();
 
 	document.body.appendChild(canvas);
+
+	init();
 }
 
-export default {build};
+function init() {
+	//
+}
+
+function startLoop() {
+	then = performance.now();
+
+	loop();
+}
+
+const stopLoop = () => cancelAnimationFrame(request);
+
+function loop() {
+	request = requestAnimationFrame(loop);
+
+	diff = (now = performance.now()) - then;
+
+	if (diff > interval) {
+		then = now - diff % interval;
+
+		render();
+	}
+}
+
+function render() {}
+
+export default {build, startLoop, stopLoop, render};
