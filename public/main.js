@@ -1,3 +1,7 @@
-import {DATA} from "test";
+import Renderer from "Renderer";
 
-console.log(DATA);
+try {
+	Renderer.build();
+} catch (error) {
+	console.error(error);
+}

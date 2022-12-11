@@ -1,0 +1,3 @@
+- Customize `NoWebGL2Error` properties
+- `NoWebGLError` must automatically display its error template
+- Define cases where default imports should be used over named imports
