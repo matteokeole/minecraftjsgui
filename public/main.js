@@ -1,7 +1,7 @@
-import Renderer from "Renderer";
+import SceneRenderer from "scene-renderer";
 import GUI from "GUI";
 
-Renderer.build();
+SceneRenderer.build();
 
 const layer = new GUI.Layer({
 	//
@@ -11,4 +11,4 @@ const image = new GUI.Component.Image({
 	//
 });
 
-// Renderer.startLoop();
+// SceneRenderer.startLoop();
