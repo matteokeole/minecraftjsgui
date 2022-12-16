@@ -1,48 +1,55 @@
-import {NoWebGL2Error} from "NoWebGL2Error";
+import Renderer from "./Renderer.js";
 
-const interval = 1000 / 60;
-let canvas,
-	gl,
-	request,
-	diff,
-	now,
-	then;
+export default new function SceneRenderer() {
+	Renderer.call(this, {
+		offscreen: false,
+	});
 
-function build() {
-	canvas = document.createElement("canvas");
-	gl = canvas.getContext("webgl2");
+	this.init = async function() {
+		const {gl} = this;
 
-	if (!gl) throw new NoWebGL2Error();
+		// Context configuration
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-	document.body.appendChild(canvas);
+		const [program, vertexShader, fragmentShader] = await this.createProgram([
+			"gui.vert",
+			"gui.frag",
+		]);
 
-	init();
-}
+		this.linkProgram(program, vertexShader, fragmentShader);
 
-function init() {
-	//
-}
+		this.attribute.position = 0;
+		this.uniform.resolution = null;
+		this.buffer.position = gl.createBuffer();
+		this.texture.gui = gl.createTexture();
+		this.vao.main = gl.createVertexArray();
 
-function startLoop() {
-	then = performance.now();
+		gl.bindVertexArray(this.vao.main);
 
-	loop();
-}
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer.position);
 
-const stopLoop = () => cancelAnimationFrame(request);
+		gl.bindTexture(gl.TEXTURE_2D, this.texture.gui);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps for the GUI texture
 
-function loop() {
-	request = requestAnimationFrame(loop);
+		gl.bindVertexArray(null);
+	};
 
-	diff = (now = performance.now()) - then;
+	this.render = function(scene, camera) {
+		const {gl} = this;
 
-	if (diff > interval) {
-		then = now - diff % interval;
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		render();
-	}
-}
+		gl.bindVertexArray(this.vao.main);
 
-function render() {}
+		// Draw GUI texture
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+			1,  1,
+		   -1,  1,
+		   -1, -1,
+			1, -1,
+		]), gl.STATIC_DRAW);
 
-export default {build, startLoop, stopLoop, render};
+		gl.bindTexture(gl.TEXTURE_2D, this.texture.gui);
+		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+	};
+};

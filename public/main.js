@@ -2,6 +2,7 @@ import SceneRenderer from "scene-renderer";
 import GUI from "GUI";
 
 SceneRenderer.build();
+await SceneRenderer.init();
 
 const layer = new GUI.Layer({
 	//
