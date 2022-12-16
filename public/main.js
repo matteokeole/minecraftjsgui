@@ -1,16 +1,17 @@
+import GUI from "gui";
+import GUIRenderer from "gui-renderer";
 import SceneRenderer from "scene-renderer";
-import GUI from "GUI";
 
 SceneRenderer.build();
 await SceneRenderer.init();
 
-const layer = new GUI.Layer({
-	//
+const image = new GUI.Component.Image({
+	position: [0, 0],
+	size: [40, 40],
 });
 
-const image = new GUI.Component.Image({
-	//
-});
+GUIRenderer.addMesh(image);
+GUIRenderer.render();
 
 // SceneRenderer.startLoop();
 

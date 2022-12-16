@@ -1,5 +1,8 @@
 import Renderer from "./Renderer.js";
 
+/**
+ * Scene 2D/3D renderer.
+ */
 export default new function SceneRenderer() {
 	Renderer.call(this, {
 		offscreen: false,
@@ -11,6 +14,7 @@ export default new function SceneRenderer() {
 		// Context configuration
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
+		// Load GUI program
 		const [program, vertexShader, fragmentShader] = await this.createProgram([
 			"gui.vert",
 			"gui.frag",
@@ -34,6 +38,10 @@ export default new function SceneRenderer() {
 		gl.bindVertexArray(null);
 	};
 
+	/**
+	 * @param {Scene} scene
+	 * @param {Camera} camera
+	 */
 	this.render = function(scene, camera) {
 		const {gl} = this;
 

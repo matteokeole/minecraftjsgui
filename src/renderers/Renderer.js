@@ -37,7 +37,7 @@ export default function({offscreen}) {
 	 * 
 	 * @throws {NoWebGL2Error}
 	 */
-	 this.build = function() {
+	this.build = function() {
 		this.canvas = offscreen ?
 			new OffscreenCanvas(1, 1) :
 			document.createElement("canvas");
@@ -159,9 +159,6 @@ export default function({offscreen}) {
 	/**
 	 * Renders a frame.
 	 * NOTE: Must be overridden in an instance.
-	 * 
-	 * @param {Scene} scene
-	 * @param {Camera} camera
 	 */
 	this.render = null;
 }
