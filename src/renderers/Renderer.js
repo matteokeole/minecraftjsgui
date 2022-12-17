@@ -1,4 +1,4 @@
-import {NoWebGL2Error} from "errors";
+import {NoWebGL2Error, ShaderCompilationError} from "errors";
 
 /**
  * @todo Customize shader compilation error
@@ -46,7 +46,7 @@ export default function({offscreen}) {
 
 		if (this.gl === null) throw new NoWebGL2Error();
 
-		document.body.appendChild(this.canvas);
+		if (!offscreen) document.body.appendChild(this.canvas);
 	};
 
 	/**
@@ -97,7 +97,7 @@ export default function({offscreen}) {
 	 * @param {WebGLProgram} program
 	 * @param {WebGLShader} vertexShader
 	 * @param {WebGLShader} fragmentShader
-	 * @throws {Error}
+	 * @throws {ShaderCompilationError}
 	 */
 	this.linkProgram = function(program, vertexShader, fragmentShader) {
 		const {gl} = this;
@@ -109,11 +109,11 @@ export default function({offscreen}) {
 		let log;
 
 		if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
-			throw Error(`VERTEX SHADER ${log}`);
+			throw ShaderCompilationError(log, gl.VERTEX_SHADER);
 		}
 
 		if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
-			throw Error(`FRAGMENT SHADER ${log}`);
+			throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
 		}
 	};
 
@@ -161,4 +161,19 @@ export default function({offscreen}) {
 	 * NOTE: Must be overridden in an instance.
 	 */
 	this.render = null;
+
+	/**
+	 * Destroys the renderer.
+	 */
+	this.dispose = function() {
+		this.stopLoop();
+
+		this.gl = null;
+
+		if (!offscreen) {
+			this.canvas.remove();
+		}
+
+		this.canvas = null;
+	};
 }

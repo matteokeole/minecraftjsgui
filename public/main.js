@@ -2,8 +2,19 @@ import GUI from "gui";
 import GUIRenderer from "gui-renderer";
 import SceneRenderer from "scene-renderer";
 
-SceneRenderer.build();
-await SceneRenderer.init();
+try {
+	GUIRenderer.build();
+	await GUIRenderer.init();
+
+	SceneRenderer.build();
+	await SceneRenderer.init();
+} catch (error) {
+	GUIRenderer.dispose();
+	SceneRenderer.dispose();
+
+	console.error(error);
+	error?.display();
+}
 
 const image = new GUI.Component.Image({
 	position: [0, 0],
