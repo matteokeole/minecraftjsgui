@@ -14,14 +14,10 @@ export default function Renderer({offscreen, generateMipmaps}) {
 		now,
 		diff;
 
-	/**
-	 * @type {HTMLCanvasElement|OffscreenCanvas}
-	 */
+	/** @type {HTMLCanvasElement|OffscreenCanvas} */
 	this.canvas = null;
 
-	/**
-	 * @type {WebGL2RenderingContext}
-	 */
+	/** @type {WebGL2RenderingContext} */
 	this.gl = null;
 
 	/**

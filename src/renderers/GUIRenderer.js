@@ -46,7 +46,7 @@ export default new function GUIRenderer() {
 	};
 
 	/**
-	 * Adds components to the component draw list.
+	 * Adds the provided components to the component draw list.
 	 * 
 	 * @param {...Component} components
 	 */
@@ -59,7 +59,7 @@ export default new function GUIRenderer() {
 	};
 
 	/**
-	 * Removes components from the component draw list.
+	 * Removes the provided components from the component draw list.
 	 * 
 	 * @param {...Component} components
 	 */
@@ -83,13 +83,8 @@ export default new function GUIRenderer() {
 			{length} = components;
 
 		for (let i = 0; i < length; i++) {
-			components[i].register(gl);
+			components[i].render(gl);
 		}
-
-		// gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-
-		gl.clearColor(1, .2, 0, 1);
-		gl.clear(gl.COLOR_BUFFER_BIT);
 
 		SceneRenderer.updateGUITexture(canvas);
 	};
