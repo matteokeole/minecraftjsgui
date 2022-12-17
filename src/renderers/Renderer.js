@@ -3,11 +3,11 @@ import {NoWebGL2Error, ShaderCompilationError} from "errors";
 /**
  * @todo Customize shader compilation error
  * 
- * @param {bool} offscreen
+ * @param {object} options
+ * @param {bool} options.offscreen
+ * @param {bool} [options.generateMipmaps=true]
  */
-export default function Renderer({offscreen}) {
-	offscreen = !!offscreen;
-
+export default function Renderer({offscreen, generateMipmaps}) {
 	let request,
 		interval = 1000 / 10,
 		then,
@@ -51,6 +51,40 @@ export default function Renderer({offscreen}) {
 	};
 
 	/**
+	 * @todo Remove hard-coded base path
+	 * 
+	 * Asynchronous texture loader which uses the instance context.
+	 * The mipmap generation is enabled by default.
+	 * NOTE: Textures are loaded with the RGB format.
+	 * 
+	 * @async
+	 * @param {...string} paths File paths (relative to *assets/textures/*)
+	 */
+	this.loadTextures = async function(...paths) {
+		const {gl} = this;
+		const {length} = paths;
+		let path, image, texture;
+
+		for (let i = 0; i < length; i++) {
+			path = paths[i];
+			(image = new Image()).src = `assets/textures/${path}`;
+
+			try {
+				await image.decode();
+			} catch (error) {
+				continue;
+			}
+
+			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // Pixelated effect
+			gl.generateMipmap(gl.TEXTURE_2D);
+
+			gl.texture[path] = texture;
+		}
+	};
+
+	/**
 	 * Creates and returns a WebGLProgram from the provided sources.
 	 * 
 	 * @async
@@ -73,11 +107,13 @@ export default function Renderer({offscreen}) {
 	};
 
 	/**
+	 * @todo Remove hard-coded base path
+	 * 
 	 * Creates, compiles and returns a WebGLShader.
 	 * 
 	 * @async
-	 * @param {string} path
-	 * @param {number} type
+	 * @param {string} path File path (relative to *assets/shaders*)
+	 * @param {number} type Shader type
 	 * @returns {WebGLShader}
 	 */
 	this.createShader = async function(path, type) {

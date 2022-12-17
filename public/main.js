@@ -7,19 +7,23 @@ try {
 	await SceneRenderer.init();
 
 	GUIRenderer.build();
+	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
+	await GUIRenderer.loadTextures(guiTextures);
 	await GUIRenderer.init();
 
-	/* const image = new GUI.Component.Image({
+	const image = new GUI.Component.Image({
 		position: [0, 0],
 		size: [40, 40],
+		// image: GUIRenderer.gl.texture[],
 	});
 
-	GUIRenderer.addMesh(image); */
+	GUIRenderer.addMesh(image);
+
 	GUIRenderer.render();
 	SceneRenderer.render();
 } catch (error) {
-	// GUIRenderer.dispose();
-	// SceneRenderer.dispose();
+	GUIRenderer.dispose();
+	SceneRenderer.dispose();
 
 	console.error(error);
 	error.display?.();

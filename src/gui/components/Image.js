@@ -1,5 +1,8 @@
 import Component from "./Component.js";
 
+/**
+ * @todo Add image source (WebGLTexture)
+ */
 export function Image() {
 	Component.call(this, ...arguments);
 
