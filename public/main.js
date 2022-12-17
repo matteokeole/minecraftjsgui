@@ -18,7 +18,7 @@ try {
 		// image: GUIRenderer.gl.texture[],
 	});
 
-	GUIRenderer.addMesh(image);
+	GUIRenderer.add(image);
 
 	GUIRenderer.render();
 	SceneRenderer.render();

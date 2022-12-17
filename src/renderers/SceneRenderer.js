@@ -1,9 +1,7 @@
 import Renderer from "./Renderer.js";
 
 export default new function SceneRenderer() {
-	Renderer.call(this, {
-		offscreen: false,
-	});
+	Renderer.call(this, {offscreen: false});
 
 	this.init = async function() {
 		const {gl} = this;

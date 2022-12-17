@@ -2,11 +2,12 @@ import Renderer from "./Renderer.js";
 import SceneRenderer from "scene-renderer";
 
 export default new function GUIRenderer() {
-	Renderer.call(this, {
-		offscreen: true,
-	});
+	Renderer.call(this, {offscreen: true});
 
-	this.meshes = new Set();
+	/**
+	 * @type {Set<Component>}
+	 */
+	this.components = new Set();
 
 	this.init = async function() {
 		/**
@@ -44,8 +45,30 @@ export default new function GUIRenderer() {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
 	};
 
-	this.addMesh = function(mesh) {
-		this.meshes.add(mesh);
+	/**
+	 * Adds components to the component draw list.
+	 * 
+	 * @param {...Component} components
+	 */
+	this.add = function(...components) {
+		const {length} = components;
+
+		for (let i = 0; i < length; i++) {
+			this.components.add(components[i]);
+		}
+	};
+
+	/**
+	 * Removes components from the component draw list.
+	 * 
+	 * @param {...Component} components
+	 */
+	this.remove = function(...components) {
+		const {length} = components;
+
+		for (let i = 0; i < length; i++) {
+			this.components.delete(components[i]);
+		}
 	};
 
 	/**
@@ -56,11 +79,11 @@ export default new function GUIRenderer() {
 	this.render = function() {
 		const
 			{canvas, gl} = this,
-			meshes = [...this.meshes],
-			{length} = meshes;
+			components = [...this.components],
+			{length} = components;
 
 		for (let i = 0; i < length; i++) {
-			meshes[i].register(gl);
+			components[i].register(gl);
 		}
 
 		// gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
