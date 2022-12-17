@@ -13,5 +13,5 @@ void main() {
 	gl_Position = vec4(u_matrix * position, 1);
 
 	// v_uv = (u_textureMatrix * position).xy;
-	v_uv = vec2(0, 0);
+	v_uv = vec2(0);
 }

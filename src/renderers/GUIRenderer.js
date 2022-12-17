@@ -5,7 +5,7 @@ import SceneRenderer from "scene-renderer";
 export default new function GUIRenderer() {
 	Renderer.call(this, {
 		offscreen: true,
-		generateMipmaps: false,
+		generateMipmaps: true,
 	});
 
 	/** @type {Set<Component>} */
@@ -15,8 +15,8 @@ export default new function GUIRenderer() {
 		const {canvas, gl} = this;
 
 		// Context configuration
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.viewport(0, 0, canvas.width, canvas.height);
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
 		// Load component program
 		const [program, vertexShader, fragmentShader] = await this.createProgram([
@@ -39,7 +39,7 @@ export default new function GUIRenderer() {
 		 */
 		gl.projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
-			// .scale(new Vector2(2, 2));
+			.scale(new Vector2(2, 2));
 
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
@@ -89,20 +89,9 @@ export default new function GUIRenderer() {
 			components = [...this.components],
 			{length} = components;
 
-		gl.clearColor(0, 0, 0, 1);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
 		for (let i = 0; i < length; i++) {
 			components[i].render(gl);
 		}
-
-		const matrix = gl.projectionMatrix
-			.translate(new Vector2(20, 20))
-			.scale(new Vector2(20, 20));
-
-		gl.uniformMatrix3fv(gl.uniform.matrix, false, new Float32Array(matrix));
-
-		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
 		SceneRenderer.updateGUITexture(canvas);
 	};

@@ -13,12 +13,12 @@ try {
 	await GUIRenderer.loadTextures(guiTextures);
 	await GUIRenderer.init();
 
-	/* const image = new Component.Image({
+	const image = new Component.Image({
 		position: new Vector2(20, 20),
 		size: new Vector2(20, 20),
 	});
 
-	GUIRenderer.add(image); */
+	GUIRenderer.add(image);
 
 	GUIRenderer.render();
 	SceneRenderer.render();
