@@ -31,7 +31,10 @@ export default function Renderer({offscreen}) {
 	 */
 	this.build = function() {
 		this.canvas = offscreen ?
-			new OffscreenCanvas(1, 1) :
+			/**
+			 * @todo Test code, replace with the ResizeObserver of SceneRenderer
+			 */
+			new OffscreenCanvas(innerWidth, innerHeight) :
 			document.createElement("canvas");
 
 		this.gl = this.canvas.getContext("webgl2");

@@ -1,4 +1,5 @@
 import Renderer from "./Renderer.js";
+import SceneRenderer from "scene-renderer";
 
 export default new function GUIRenderer() {
 	Renderer.call(this, {
@@ -16,7 +17,7 @@ export default new function GUIRenderer() {
 
 			canvas.width = innerWidth;
 			canvas.height = innerHeight;
-	
+
 			gl.viewport(0, 0, canvas.width, canvas.height);
 		}
 
@@ -54,7 +55,7 @@ export default new function GUIRenderer() {
 	 */
 	this.render = function() {
 		const
-			{gl} = this,
+			{canvas, gl} = this,
 			meshes = [...this.meshes],
 			{length} = meshes;
 
@@ -66,5 +67,7 @@ export default new function GUIRenderer() {
 
 		gl.clearColor(1, .2, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT);
+
+		SceneRenderer.updateGUITexture(canvas);
 	};
 }

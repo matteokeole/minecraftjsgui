@@ -3,22 +3,20 @@ import GUIRenderer from "gui-renderer";
 import SceneRenderer from "scene-renderer";
 
 try {
-	GUIRenderer.build();
-	await GUIRenderer.init();
-
 	SceneRenderer.build();
 	await SceneRenderer.init();
 
-	const image = new GUI.Component.Image({
+	GUIRenderer.build();
+	await GUIRenderer.init();
+
+	/* const image = new GUI.Component.Image({
 		position: [0, 0],
 		size: [40, 40],
 	});
 
-	GUIRenderer.addMesh(image);
+	GUIRenderer.addMesh(image); */
 	GUIRenderer.render();
-
-	SceneRenderer.updateGUITexture(GUIRenderer.canvas);
-	SceneRenderer.startLoop();
+	SceneRenderer.render();
 } catch (error) {
 	// GUIRenderer.dispose();
 	// SceneRenderer.dispose();

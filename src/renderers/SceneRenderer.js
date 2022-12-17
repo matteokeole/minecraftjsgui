@@ -6,18 +6,6 @@ export default new function SceneRenderer() {
 	});
 
 	this.init = async function() {
-		/**
-		 * @todo Test code, replace with ResizeObserver
-		 */
-		{
-			const {canvas, gl} = this;
-
-			canvas.width = innerWidth;
-			canvas.height = innerHeight;
-	
-			gl.viewport(0, 0, canvas.width, canvas.height);
-		}
-
 		const {gl} = this;
 
 		// Context configuration
@@ -50,19 +38,6 @@ export default new function SceneRenderer() {
 		// GUI texture configuration
 		gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
-	};
-
-	/**
-	 * @param {Scene} scene
-	 * @param {Camera} camera
-	 */
-	this.render = function(scene, camera) {
-		const {gl} = this;
-
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-		gl.useProgram(gl.program.gui);
-		gl.bindVertexArray(gl.vao.gui);
 
 		// GUI texture vertices
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -73,6 +48,22 @@ export default new function SceneRenderer() {
 		]), gl.STATIC_DRAW);
 
 		gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
+		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+	};
+
+	/**
+	 * @param {Scene} scene
+	 * @param {Camera} camera
+	 */
+	this.render = function(scene, camera) {
+		const {gl} = this;
+
+		// gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		// gl.useProgram(gl.program.gui);
+		// gl.bindVertexArray(gl.vao.gui);
+
+		// gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
 		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 	};
 
