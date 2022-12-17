@@ -1,4 +1,0 @@
-- Import map `src` compatibility
-- `<link rel="preload">` / `<link rel="modulepreload">` for faster loads?
-- CSS imports
-- Unit testing?
