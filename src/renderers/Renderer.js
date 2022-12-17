@@ -3,15 +3,13 @@ import {NoWebGL2Error, ShaderCompilationError} from "errors";
 /**
  * @todo Customize shader compilation error
  * 
- * WebGL2 renderer constructor.
- * 
  * @param {bool} offscreen
  */
-export default function({offscreen}) {
+export default function Renderer({offscreen}) {
 	offscreen = !!offscreen;
 
 	let request,
-		interval,
+		interval = 1000 / 10,
 		then,
 		now,
 		diff;
@@ -26,12 +24,6 @@ export default function({offscreen}) {
 	 */
 	this.gl = null;
 
-	this.attribute = {};
-	this.uniform = {};
-	this.buffer = {};
-	this.texture = {};
-	this.vao = {};
-
 	/**
 	 * Creates the canvas element for this renderer.
 	 * 
@@ -43,6 +35,12 @@ export default function({offscreen}) {
 			document.createElement("canvas");
 
 		this.gl = this.canvas.getContext("webgl2");
+		this.gl.program = {};
+		this.gl.attribute = {};
+		this.gl.uniform = {};
+		this.gl.buffer = {};
+		this.gl.texture = {};
+		this.gl.vao = {};
 
 		if (this.gl === null) throw new NoWebGL2Error();
 
@@ -121,6 +119,7 @@ export default function({offscreen}) {
 	 * Initializes the renderer.
 	 * NOTE: Must be overridden in an instance.
 	 * 
+	 * @method
 	 * @async
 	 */
 	this.init = null;
@@ -133,8 +132,23 @@ export default function({offscreen}) {
 	this.startLoop = function() {
 		then = performance.now();
 
-		loop();
+		this.loop();
 	};
+
+	/**
+	 * Caller for updates and renders within a render loop.
+	 */
+	this.loop = function() {
+		request = requestAnimationFrame(this.loop);
+
+		diff = (now = performance.now()) - then;
+
+		if (diff > interval) {
+			then = now - diff % interval;
+
+			this.render();
+		}
+	}.bind(this);
 
 	/**
 	 * Stops the render loop.
@@ -142,23 +156,10 @@ export default function({offscreen}) {
 	this.stopLoop = () => cancelAnimationFrame(request);
 
 	/**
-	 * Caller for updates and renders within a render loop.
-	 */
-	this.loop = function() {
-		request = requestAnimationFrame(loop);
-
-		diff = (now = performance.now()) - then;
-
-		if (diff > interval) {
-			then = now - diff % interval;
-
-			render();
-		}
-	};
-
-	/**
 	 * Renders a frame.
 	 * NOTE: Must be overridden in an instance.
+	 * 
+	 * @method
 	 */
 	this.render = null;
 

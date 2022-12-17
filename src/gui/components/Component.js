@@ -1,9 +1,14 @@
-export default function() {
+export default function Component() {
 	/**
-	 * This function is called by the renderer at draw time.
-	 * All components must override it to add their drawing method.
+	 * @type {{x: number, y: number}[]}
+	 */
+	this.position = null;
+
+	/**
+	 * This function is called by the GUI renderer at draw time.
+	 * NOTE: Must be overridden in an instance.
 	 * 
 	 * @param {WebGL2RenderingContext} gl
 	 */
-	this.render = function(gl) {};
+	this.register = null;
 }

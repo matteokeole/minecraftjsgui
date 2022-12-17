@@ -8,23 +8,24 @@ try {
 
 	SceneRenderer.build();
 	await SceneRenderer.init();
+
+	const image = new GUI.Component.Image({
+		position: [0, 0],
+		size: [40, 40],
+	});
+
+	GUIRenderer.addMesh(image);
+	GUIRenderer.render();
+
+	SceneRenderer.updateGUITexture(GUIRenderer.canvas);
+	SceneRenderer.startLoop();
 } catch (error) {
-	GUIRenderer.dispose();
-	SceneRenderer.dispose();
+	// GUIRenderer.dispose();
+	// SceneRenderer.dispose();
 
 	console.error(error);
-	error?.display();
+	error.display?.();
 }
-
-const image = new GUI.Component.Image({
-	position: [0, 0],
-	size: [40, 40],
-});
-
-GUIRenderer.addMesh(image);
-GUIRenderer.render();
-
-// SceneRenderer.startLoop();
 
 
 
