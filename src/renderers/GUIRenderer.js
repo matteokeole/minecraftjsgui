@@ -1,31 +1,22 @@
 import Renderer from "./Renderer.js";
+import {Matrix3, Vector2} from "math";
 import SceneRenderer from "scene-renderer";
 
 export default new function GUIRenderer() {
-	Renderer.call(this, {offscreen: true});
+	Renderer.call(this, {
+		offscreen: true,
+		generateMipmaps: false,
+	});
 
-	/**
-	 * @type {Set<Component>}
-	 */
+	/** @type {Set<Component>} */
 	this.components = new Set();
 
 	this.init = async function() {
-		/**
-		 * @todo Test code, replace with the ResizeObserver of SceneRenderer
-		 */
-		 {
-			const {canvas, gl} = this;
-
-			canvas.width = innerWidth;
-			canvas.height = innerHeight;
-
-			gl.viewport(0, 0, canvas.width, canvas.height);
-		}
-
-		const {gl} = this;
+		const {canvas, gl} = this;
 
 		// Context configuration
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+		gl.viewport(0, 0, canvas.width, canvas.height);
 
 		// Load component program
 		const [program, vertexShader, fragmentShader] = await this.createProgram([
@@ -38,11 +29,27 @@ export default new function GUIRenderer() {
 		gl.useProgram(program);
 
 		gl.attribute.position = 0;
-		gl.uniform.color = gl.getUniformLocation(program, "u_color");
-		gl.uniform.resolution = gl.getUniformLocation(program, "u_resolution");
+		gl.uniform.matrix = gl.getUniformLocation(program, "u_matrix");
 		gl.buffer.position = gl.createBuffer();
 
+		gl.bindVertexArray(gl.vao.main);
+
+		/**
+		 * @todo Test code, replace window size with the ResizeObserver of SceneRenderer
+		 */
+		gl.projectionMatrix = Matrix3
+			.projection(new Vector2(canvas.width, canvas.height))
+			// .scale(new Vector2(2, 2));
+
+		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
+		gl.vertexAttribPointer(gl.attribute.position, 2, gl.FLOAT, false, 0, 0);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+			0, 0,
+			1, 0,
+			1, 1,
+			0, 1,
+		]), gl.STATIC_DRAW);
 	};
 
 	/**
@@ -82,9 +89,20 @@ export default new function GUIRenderer() {
 			components = [...this.components],
 			{length} = components;
 
+		gl.clearColor(0, 0, 0, 1);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
 		for (let i = 0; i < length; i++) {
 			components[i].render(gl);
 		}
+
+		const matrix = gl.projectionMatrix
+			.translate(new Vector2(20, 20))
+			.scale(new Vector2(20, 20));
+
+		gl.uniformMatrix3fv(gl.uniform.matrix, false, new Float32Array(matrix));
+
+		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
 		SceneRenderer.updateGUITexture(canvas);
 	};

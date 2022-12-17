@@ -1,5 +1,5 @@
 import {NoWebGL2Error} from "errors";
-import GUI from "gui";
+import Component from "gui";
 import GUIRenderer from "gui-renderer";
 import {Vector2} from "math";
 import SceneRenderer from "scene-renderer";
@@ -13,13 +13,12 @@ try {
 	await GUIRenderer.loadTextures(guiTextures);
 	await GUIRenderer.init();
 
-	const image = new GUI.Component.Image({
-		position: new Vector2(10, 30),
-		size: new Vector2(100, 70),
-		// image: GUIRenderer.gl.texture[],
+	/* const image = new Component.Image({
+		position: new Vector2(20, 20),
+		size: new Vector2(20, 20),
 	});
 
-	GUIRenderer.add(image);
+	GUIRenderer.add(image); */
 
 	GUIRenderer.render();
 	SceneRenderer.render();

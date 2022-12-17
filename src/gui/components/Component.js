@@ -1,6 +1,8 @@
 /**
  * @todo Summary
  * 
+ * @constructor
+ * @abstract
  * @param {object} options
  * @param {Vector2} options.position
  */
@@ -9,7 +11,7 @@ export default function Component({position}) {
 	this.position = position;
 
 	/**
-	 * This function is called by the GUI renderer at draw time.
+	 * This method is called by the GUI renderer at draw time.
 	 * NOTE: Must be overridden in an instance.
 	 * 
 	 * @method

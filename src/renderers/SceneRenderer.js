@@ -1,15 +1,26 @@
 import Renderer from "./Renderer.js";
 
 export default new function SceneRenderer() {
-	Renderer.call(this, {offscreen: false});
+	Renderer.call(this, {
+		offscreen: false,
+		generateMipmaps: true,
+	});
 
 	this.init = async function() {
+		/**
+		 * @todo Test code, replace with the ResizeObserver of SceneRenderer
+		 */
+		/* {
+			const {canvas} = this;
+			this.gl.viewport(0, 0, canvas.width = innerWidth, canvas.height = innerHeight);
+		} */
+
 		const {gl} = this;
 
 		// Context configuration
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); // For GUI transparency
+		// gl.enable(gl.BLEND);
+		// gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); // For GUI transparency
 
 		// Load GUI program
 		const [program, vertexShader, fragmentShader] = await this.createProgram([
@@ -21,21 +32,15 @@ export default new function SceneRenderer() {
 
 		gl.useProgram(program);
 
-		gl.program.gui = program;
 		gl.attribute.position = 0;
 		gl.buffer.position = gl.createBuffer();
 		gl.texture.gui = gl.createTexture();
-		gl.vao.main = gl.createVertexArray();
 
 		gl.bindVertexArray(gl.vao.main);
 
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
 		gl.vertexAttribPointer(gl.attribute.position, 2, gl.FLOAT, false, 0, 0);
-
-		// GUI texture configuration
-		gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
 
 		// GUI texture vertices
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -45,30 +50,25 @@ export default new function SceneRenderer() {
 			1, -1,
 		]), gl.STATIC_DRAW);
 
+		// GUI texture configuration
 		gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
-		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
 	};
 
-	/**
-	 * @param {Scene} scene
-	 * @param {Camera} camera
-	 */
-	this.render = function(scene, camera) {
+	this.render = function() {
 		const {gl} = this;
 
-		// gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		gl.clearColor(0, 0, 0, 1);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		// gl.useProgram(gl.program.gui);
-		// gl.bindVertexArray(gl.vao.gui);
-
-		// gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
+		gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
 		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 	};
 
 	/**
 	 * Updates the GUI texture with the contents of the provided canvas.
 	 * 
-	 * @param {OffScreenCanvas} canvas
+	 * @param {OffscreenCanvas} canvas
 	 */
 	this.updateGUITexture = function(canvas) {
 		const {gl} = this;

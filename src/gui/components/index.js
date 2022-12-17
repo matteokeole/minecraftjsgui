@@ -1,3 +1,1 @@
-import {Image} from "./Image.js";
-
-export default {Image};
+export {Image} from "./Image.js";

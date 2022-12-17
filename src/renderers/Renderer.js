@@ -1,11 +1,13 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
 
 /**
- * @todo Customize shader compilation error
+ * @todo Summary
  * 
+ * @constructor
+ * @abstract
  * @param {object} options
- * @param {bool} options.offscreen
- * @param {bool} [options.generateMipmaps=true]
+ * @param {boolean} options.offscreen
+ * @param {boolean} options.generateMipmaps
  */
 export default function Renderer({offscreen, generateMipmaps}) {
 	let request,
@@ -26,31 +28,35 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		this.canvas = offscreen ?
+		const canvas = offscreen ?
 			/**
 			 * @todo Test code, replace with the ResizeObserver of SceneRenderer
 			 */
 			new OffscreenCanvas(innerWidth, innerHeight) :
 			document.createElement("canvas");
 
-		this.gl = this.canvas.getContext("webgl2");
-		this.gl.program = {};
-		this.gl.attribute = {};
-		this.gl.uniform = {};
-		this.gl.buffer = {};
-		this.gl.texture = {};
-		this.gl.vao = {};
+		const gl = canvas.getContext("webgl2");
 
-		if (this.gl === null) throw new NoWebGL2Error();
+		if (gl === null) throw new NoWebGL2Error();
 
-		if (!offscreen) document.body.appendChild(this.canvas);
+		gl.attribute = {};
+		gl.uniform = {};
+		gl.buffer = {};
+		gl.texture = {};
+		gl.vao = {
+			main: gl.createVertexArray(),
+		};
+
+		if (!offscreen) document.body.appendChild(canvas);
+
+		this.canvas = canvas;
+		this.gl = gl;
 	};
 
 	/**
 	 * @todo Remove hard-coded base path
 	 * 
 	 * Asynchronous texture loader which uses the instance context.
-	 * The mipmap generation is enabled by default.
 	 * NOTE: Textures are loaded with the RGB format.
 	 * 
 	 * @async
@@ -74,7 +80,9 @@ export default function Renderer({offscreen, generateMipmaps}) {
 			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // Pixelated effect
-			gl.generateMipmap(gl.TEXTURE_2D);
+			generateMipmaps ?
+				gl.generateMipmap(gl.TEXTURE_2D) :
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
 			gl.texture[path] = texture;
 		}

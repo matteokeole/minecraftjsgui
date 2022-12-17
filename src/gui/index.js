@@ -1,4 +1,3 @@
-import Component from "./components/index.js";
-import {Layer} from "./Layer.js";
+import * as Component from "./components/index.js";
 
-export default {Component, Layer};
+export default Component;
