@@ -1,3 +1,4 @@
+import {NoWebGL2Error} from "errors";
 import GUI from "gui";
 import GUIRenderer from "gui-renderer";
 import SceneRenderer from "scene-renderer";
@@ -22,16 +23,18 @@ try {
 	GUIRenderer.render();
 	SceneRenderer.render();
 } catch (error) {
-	GUIRenderer.dispose();
-	SceneRenderer.dispose();
+	if (!(error instanceof NoWebGL2Error)) {
+		GUIRenderer.dispose();
+		SceneRenderer.dispose();
+	}
 
-	console.error(error);
+	console.error("An error occurred:", error);
 	error.display?.();
 }
 
 
 
-/* Pipeline example:
+/* Pipeline example
 
 import GUI from "gui";
 
@@ -57,31 +60,5 @@ rootLayer.add(optionButton);
 
 GUI.setLayers([rootLayer, optionLayer]);
 GUI.render();
-
-*/
-
-
-
-/* Pipeline example #2:
-
-import GUI from "gui";
-import {OptionLayer} from "./OptionLayer.js";
-
-export class RootLayer extends GUI.Layer {
-	constructor() {
-		super();
-	}
-
-	build(context) {
-		const text = "Options...";
-
-		return new TextButton({
-			align: ["center", "top"],
-			margin: [0, 8],
-			text,
-			onClick: () => context.push(OptionLayer),
-		});
-	}
-}
 
 */
