@@ -29,7 +29,8 @@ export default new function GUIRenderer() {
 		gl.useProgram(program);
 
 		gl.attribute.position = 0;
-		gl.uniform.matrix = gl.getUniformLocation(program, "u_matrix");
+		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projectionMatrix");
+		gl.uniform.worldMatrix = gl.getUniformLocation(program, "u_worldMatrix");
 		gl.buffer.position = gl.createBuffer();
 
 		gl.bindVertexArray(gl.vao.main);
@@ -37,9 +38,11 @@ export default new function GUIRenderer() {
 		/**
 		 * @todo Test code, replace window size with the ResizeObserver of SceneRenderer
 		 */
-		gl.projectionMatrix = Matrix3
+		const projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
 			.scale(new Vector2(2, 2));
+
+		gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
@@ -85,14 +88,13 @@ export default new function GUIRenderer() {
 	 */
 	this.render = function() {
 		const
-			{canvas, gl} = this,
 			components = [...this.components],
 			{length} = components;
 
 		for (let i = 0; i < length; i++) {
-			components[i].render(gl);
+			components[i].render(this.gl);
 		}
 
-		SceneRenderer.updateGUITexture(canvas);
+		SceneRenderer.updateGUITexture(this.canvas);
 	};
 }
