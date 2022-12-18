@@ -10,7 +10,7 @@ import {Matrix3} from "math";
  * @param {object} options
  * @param {Vector2} options.size
  */
-export function Image({size}) {
+export default function Image({size}) {
 	Component.call(this, ...arguments);
 
 	this.size = size;
