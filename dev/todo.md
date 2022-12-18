@@ -8,3 +8,4 @@
 - See `<link rel="preload">` / `<link rel="modulepreload">` for faster loads?
 - CSS import for `assets/css/main.css`
 - Unit testing?
+- Fix blurry GUI on first load

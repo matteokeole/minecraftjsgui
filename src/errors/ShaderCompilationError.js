@@ -1,3 +1,12 @@
+/**
+ * Error subclass throwed when the linking of a WebGLProgram on a
+ * WebGL2RenderingContext fails due to a WebGLShader compilation error.
+ * 
+ * @constructor
+ * @extends Error
+ * @param {string} message Shader info log
+ * @param {number} type Shader type (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
+ */
 export function ShaderCompilationError(message, type) {
 	if (!(this instanceof ShaderCompilationError)) return new ShaderCompilationError(message, type);
 

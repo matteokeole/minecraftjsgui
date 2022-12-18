@@ -1,3 +1,10 @@
+/**
+ * Error subclass throwed when WebGL2 is not detected on the user's
+ * browser (`getContext("webgl2")` returns `null`).
+ * 
+ * @constructor
+ * @extends Error
+ */
 export function NoWebGL2Error() {
 	if (!(this instanceof NoWebGL2Error)) return new NoWebGL2Error();
 
