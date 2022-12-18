@@ -1,4 +1,5 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
+import Instance from "instance";
 
 /**
  * @todo Summary
@@ -23,34 +24,39 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.gl = null;
 
 	/**
-	 * Creates the canvas element for this renderer.
+	 * Initializes the canvas element and its WebGL context.
 	 * 
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		const canvas = offscreen ?
-			/**
-			 * @todo Test code, replace with the ResizeObserver bound to SceneRenderer
-			 */
-			new OffscreenCanvas(1, 1) :
-			document.createElement("canvas");
+		const viewportWidth = Instance.getViewportWidth();
+		const viewportHeight = Instance.getViewportHeight();
+		let canvas, gl;
 
-		const gl = canvas.getContext("webgl2");
+		// Create canvas
+		if (!offscreen) {
+			canvas = document.createElement("canvas");
+			canvas.width = viewportWidth;
+			canvas.height = viewportHeight;
+		} else canvas = new OffscreenCanvas(viewportWidth, viewportHeight);
 
-		if (gl === null) throw new NoWebGL2Error();
+		// Get WebGL context
+		if ((gl = canvas.getContext("webgl2")) === null) throw new NoWebGL2Error();
 
-		gl.attribute = {};
-		gl.uniform = {};
-		gl.buffer = {};
-		gl.texture = {};
-		gl.vao = {
-			main: gl.createVertexArray(),
-		};
-
-		if (!offscreen) document.body.appendChild(canvas);
+		Object.assign(gl, {
+			attribute: {},
+			buffer: {},
+			texture: {},
+			uniform: {},
+			vao: {
+				main: gl.createVertexArray(),
+			},
+		});
 
 		this.canvas = canvas;
 		this.gl = gl;
+
+		if (!offscreen) document.body.appendChild(canvas);
 	};
 
 	/**
@@ -205,17 +211,13 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.render = null;
 
 	/**
-	 * Resizes the renderer canvas.
-	 * 
-	 * @param {number} width
-	 * @param {number} height
-	 * @param {number} dpr
+	 * Resizes the renderer canvas and the context viewport.
 	 */
-	this.resize = function(width, height, dpr) {
+	this.resize = function() {
 		const {canvas, gl} = this;
 
-		canvas.width = width * dpr | 0;
-		canvas.height = height * dpr | 0;
+		canvas.width = Instance.getViewportWidth();
+		canvas.height = Instance.getViewportHeight();
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};

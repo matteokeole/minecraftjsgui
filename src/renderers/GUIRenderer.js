@@ -1,4 +1,5 @@
 import Renderer from "./Renderer.js";
+import Instance from "instance";
 import {Matrix3, Vector2} from "math";
 import SceneRenderer from "scene-renderer";
 
@@ -15,9 +16,6 @@ export default new function GUIRenderer() {
 		const {canvas, gl} = this;
 
 		// Context configuration
-		canvas.width = innerWidth;
-		canvas.height = innerHeight;
-		gl.viewport(0, 0, canvas.width, canvas.height);
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
 		// Load component program
@@ -97,11 +95,11 @@ export default new function GUIRenderer() {
 		SceneRenderer.updateGUITexture(this.canvas);
 	};
 
-	this.resize = function(width, height, dpr) {
+	this.resize = function() {
 		const {canvas, gl} = this;
 
-		canvas.width = width * dpr | 0;
-		canvas.height = height * dpr | 0;
+		canvas.width = Instance.getViewportWidth();
+		canvas.height = Instance.getViewportHeight();
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 

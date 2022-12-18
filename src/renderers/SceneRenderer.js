@@ -1,5 +1,6 @@
 import Renderer from "./Renderer.js";
 import GUIRenderer from "gui-renderer";
+import Instance from "instance";
 
 function _SceneRenderer() {
 	Renderer.call(this, {
@@ -103,8 +104,13 @@ const resizeObserver = new ResizeObserver(function([entry]) {
 		} else ({width, height} = entry.contentRect);
 	}
 
-	GUIRenderer.resize(width, height, dpr);
-	SceneRenderer.resize(width, height, dpr);
+	// Update the viewport size on the instance
+	Instance.setDevicePixelRatio(dpr);
+	Instance.setViewportWidth(width);
+	Instance.setViewportHeight(height);
+
+	GUIRenderer.resize();
+	SceneRenderer.resize();
 });
 
 let _firstResize = true;

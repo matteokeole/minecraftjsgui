@@ -1,6 +1,6 @@
 /**
  * Error subclass throwed when the linking of a WebGLProgram on a
- * WebGL2RenderingContext fails due to a WebGLShader compilation error.
+ * WebGLRenderingContext fails due to a WebGLShader compilation error.
  * 
  * @constructor
  * @extends Error
