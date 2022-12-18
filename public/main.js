@@ -16,7 +16,7 @@ try {
 	await GUIRenderer.loadTextures(guiTextures);
 
 	const image = new Image({
-		position: new Vector2(20, 20),
+		position: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: GUIRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 106),

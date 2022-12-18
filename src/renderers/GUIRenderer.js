@@ -5,7 +5,7 @@ import SceneRenderer from "scene-renderer";
 
 export default new function GUIRenderer() {
 	Renderer.call(this, {
-		offscreen: true,
+		offscreen: false,
 		generateMipmaps: true,
 	});
 
