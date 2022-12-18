@@ -12,12 +12,14 @@ try {
 	await GUIRenderer.init();
 
 	// Load GUI textures
-	// const guiTextures = await (await fetch("assets/textures/textures.json")).json();
-	// await GUIRenderer.loadTextures(guiTextures);
+	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
+	await GUIRenderer.loadTextures(guiTextures);
 
 	const image = new Image({
 		position: new Vector2(20, 20),
 		size: new Vector2(20, 20),
+		image: GUIRenderer.textures["gui/widgets.png"],
+		uv: new Vector2(0, 106),
 	});
 
 	GUIRenderer.add(image);

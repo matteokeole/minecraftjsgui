@@ -31,6 +31,7 @@ export default new function GUIRenderer() {
 		gl.attribute.position = 0;
 		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projectionMatrix");
 		gl.uniform.worldMatrix = gl.getUniformLocation(program, "u_worldMatrix");
+		gl.uniform.textureMatrix = gl.getUniformLocation(program, "u_textureMatrix");
 		gl.buffer.position = gl.createBuffer();
 
 		gl.bindVertexArray(gl.vao.main);

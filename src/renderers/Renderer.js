@@ -1,5 +1,6 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
 import Instance from "instance";
+import Texture from "texture";
 
 /**
  * @todo Summary
@@ -22,6 +23,9 @@ export default function Renderer({offscreen, generateMipmaps}) {
 
 	/** @type {WebGL2RenderingContext} */
 	this.gl = null;
+
+	/** @type {object<string, Texture>} */
+	this.textures = {};
 
 	/**
 	 * Initializes the canvas element and its WebGL context.
@@ -71,7 +75,7 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.loadTextures = async function(...paths) {
 		const {gl} = this;
 		const {length} = paths;
-		let path, image, texture;
+		let path, image, source;
 
 		for (let i = 0; i < length; i++) {
 			path = paths[i];
@@ -83,14 +87,14 @@ export default function Renderer({offscreen, generateMipmaps}) {
 				continue;
 			}
 
-			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
+			gl.bindTexture(gl.TEXTURE_2D, source = gl.createTexture());
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // Pixelated effect
 			generateMipmaps ?
 				gl.generateMipmap(gl.TEXTURE_2D) :
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-			gl.texture[path] = texture;
+			this.textures[path] = new Texture(image, source);
 		}
 	};
 
