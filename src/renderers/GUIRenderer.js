@@ -15,9 +15,6 @@ export default new function GUIRenderer() {
 	this.init = async function() {
 		const {canvas, gl} = this;
 
-		// Context configuration
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
 		// Load component program
 		const [program, vertexShader, fragmentShader] = await this.createProgram([
 			"component.vert",

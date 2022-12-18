@@ -27,7 +27,7 @@ try {
 	GUIRenderer.render();
 	SceneRenderer.startLoop();
 } catch (error) {
-	// Make sure the renderers have been built before disposing them
+	// Make sure the renderers have been built before dispose
 	if (!(error instanceof NoWebGL2Error)) {
 		GUIRenderer.dispose();
 		SceneRenderer.dispose();

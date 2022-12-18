@@ -13,6 +13,5 @@ void main() {
 
 	gl_Position = vec4(u_projectionMatrix * u_worldMatrix * position, 1);
 
-	// Flip the texture here
-	v_uv = (u_textureMatrix * position).xy * vec2(1, -1);
+	v_uv = (u_textureMatrix * position).xy;
 }
