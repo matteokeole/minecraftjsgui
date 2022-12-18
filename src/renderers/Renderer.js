@@ -30,9 +30,9 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.build = function() {
 		const canvas = offscreen ?
 			/**
-			 * @todo Test code, replace with the ResizeObserver of SceneRenderer
+			 * @todo Test code, replace with the ResizeObserver bound to SceneRenderer
 			 */
-			new OffscreenCanvas(innerWidth, innerHeight) :
+			new OffscreenCanvas(1, 1) :
 			document.createElement("canvas");
 
 		const gl = canvas.getContext("webgl2");
@@ -169,8 +169,6 @@ export default function Renderer({offscreen, generateMipmaps}) {
 
 	/**
 	 * Starts the render loop.
-	 * 
-	 * @callback {loop}
 	 */
 	this.startLoop = function() {
 		then = performance.now();
@@ -205,6 +203,22 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	 * @method
 	 */
 	this.render = null;
+
+	/**
+	 * Resizes the renderer canvas.
+	 * 
+	 * @param {number} width
+	 * @param {number} height
+	 * @param {number} dpr
+	 */
+	this.resize = function(width, height, dpr) {
+		const {canvas, gl} = this;
+
+		canvas.width = width * dpr | 0;
+		canvas.height = height * dpr | 0;
+
+		gl.viewport(0, 0, canvas.width, canvas.height);
+	};
 
 	/**
 	 * Destroys the renderer.

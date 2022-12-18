@@ -1,6 +1,7 @@
 import Renderer from "./Renderer.js";
+import GUIRenderer from "gui-renderer";
 
-export default new function SceneRenderer() {
+function _SceneRenderer() {
 	Renderer.call(this, {
 		offscreen: false,
 		generateMipmaps: true,
@@ -9,16 +10,7 @@ export default new function SceneRenderer() {
 	this.init = async function() {
 		const {canvas, gl} = this;
 
-		/**
-		 * @todo Test code, replace with the ResizeObserver of SceneRenderer
-		 */
-		{
-			canvas.width = innerWidth;
-			canvas.height = innerHeight;
-		}
-
 		// Context configuration
-		gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); // For GUI transparency
@@ -54,6 +46,18 @@ export default new function SceneRenderer() {
 		// GUI texture configuration
 		gl.bindTexture(gl.TEXTURE_2D, gl.texture.gui);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
+
+		// Bind the ResizeObserver to the SceneRenderer canvas
+		try {
+			resizeObserver.observe(canvas, {
+				box: "device-pixel-content-box",
+			});
+		} catch (error) {
+			// "device-pixel-content-box" isn't defined, try with "content-box"
+			resizeObserver.observe(canvas, {
+				box: "content-box",
+			});
+		}
 	};
 
 	this.render = function() {
@@ -66,7 +70,7 @@ export default new function SceneRenderer() {
 	};
 
 	/**
-	 * Updates the GUI texture with the contents of the provided canvas.
+	 * Updates the GUI texture with the provided canvas.
 	 * 
 	 * @param {OffscreenCanvas} canvas
 	 */
@@ -77,3 +81,30 @@ export default new function SceneRenderer() {
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 	};
 }
+
+const SceneRenderer = new _SceneRenderer();
+
+export default SceneRenderer;
+
+const resizeObserver = new ResizeObserver(function([entry]) {
+	if (_firstResize) return _firstResize = false;
+
+	let width, height, dpr = 1;
+
+	if (entry.devicePixelContentBoxSize) {
+		({inlineSize: width, blockSize: height} = entry.devicePixelContentBoxSize[0]);
+	} else {
+		dpr = devicePixelRatio;
+
+		if (entry.contentBoxSize) {
+			entry.contentBoxSize[0] ?
+				({inlineSize: width, blockSize: height} = entry.contentBoxSize[0]) :
+				({inlineSize: width, blockSize: height} = entry.contentBoxSize);
+		} else ({width, height} = entry.contentRect);
+	}
+
+	GUIRenderer.resize(width, height, dpr);
+	SceneRenderer.resize(width, height, dpr);
+});
+
+let _firstResize = true;

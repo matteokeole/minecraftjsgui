@@ -15,6 +15,8 @@ export default new function GUIRenderer() {
 		const {canvas, gl} = this;
 
 		// Context configuration
+		canvas.width = innerWidth;
+		canvas.height = innerHeight;
 		gl.viewport(0, 0, canvas.width, canvas.height);
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
@@ -35,14 +37,11 @@ export default new function GUIRenderer() {
 
 		gl.bindVertexArray(gl.vao.main);
 
-		/**
-		 * @todo Test code, replace window size with the ResizeObserver of SceneRenderer
-		 */
 		const projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
 			.scale(new Vector2(2, 2));
 
-		gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
+	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
@@ -96,5 +95,22 @@ export default new function GUIRenderer() {
 		}
 
 		SceneRenderer.updateGUITexture(this.canvas);
+	};
+
+	this.resize = function(width, height, dpr) {
+		const {canvas, gl} = this;
+
+		canvas.width = width * dpr | 0;
+		canvas.height = height * dpr | 0;
+
+		gl.viewport(0, 0, canvas.width, canvas.height);
+
+		const projectionMatrix = Matrix3
+			.projection(new Vector2(canvas.width, canvas.height))
+			.scale(new Vector2(2, 2));
+
+	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
+
+		this.render();
 	};
 }
