@@ -1,9 +1,8 @@
 - `Layer` class
-- Render `Image` component
 - Define cases where default imports should be used over named imports
 - `CustomError` for adding new errors?
 - Better error handling in `public/main.js`
 - See import map `src` compatibility
 - See `<link rel="preload">` / `<link rel="modulepreload">` for faster loads?
 - CSS import for `assets/css/main.css`
-- Functions for unit testing?
+- Unit testing?
