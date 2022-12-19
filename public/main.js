@@ -5,8 +5,8 @@ import Instance from "instance";
 import {Vector2} from "math";
 import SceneRenderer from "scene-renderer";
 
-Instance.setShaderPath("assets/shaders/");
-Instance.setTexturePath("assets/textures/");
+Instance.shaderPath = "assets/shaders/";
+Instance.texturePath = "assets/textures/";
 
 try {
 	SceneRenderer.build();

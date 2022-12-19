@@ -13,7 +13,7 @@ import {Matrix3, Vector2} from "math";
  * @param {Vector2} options.uv
  */
 export default function Image({size, image, uv}) {
-	Component.call(this, ...arguments);
+	Component.apply(this, arguments);
 
 	/** @type {Vector2} */
 	this.size = size;

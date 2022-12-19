@@ -1,78 +1,112 @@
-export default new function Instance() {
-	/** @type {string} */
-	let shaderPath;
+import {clampDown, clampUp} from "math";
 
-	/** @type {string} */
-	let texturePath;
+/**
+ * Game instance singleton.
+ * This holds information about asset base paths, viewport dimensions and GUI scale.
+ * 
+ * @constructor
+ */
+function Instance() {
+	if (Instance._instance) return Instance._instance;
 
-	/** @type {number} */
-	let devicePixelRatio = 1;
+	Instance._instance = this;
 
-	/** @type {number} */
-	let viewportWidth = innerWidth;
-
-	/** @type {number} */
-	let viewportHeight = innerHeight;
-
-	/**
-	 * Returns the shader path.
-	 */
-	this.getShaderPath = () => shaderPath;
+	const DEFAULT_WIDTH = 320;
+	const DEFAULT_HEIGHT = 240;
 
 	/**
-	 * Updates the shader path with the provided value.
+	 * Shader folder path, relative to the root folder.
 	 * 
-	 * @param {string} path
+	 * @type {?string}
 	 */
-	this.setShaderPath = path => shaderPath = path;
+	this.shaderPath = null;
 
 	/**
-	 * Returns the texture path.
-	 */
-	this.getTexturePath = () => texturePath;
-
-	/**
-	 * Updates the texture path with the provided value.
+	 * Texture folder path, relative to the root folder.
 	 * 
-	 * @param {string} path
+	 * @type {?string}
 	 */
-	this.setTexturePath = path => texturePath = path;
+	this.texturePath = null;
 
 	/**
-	 * Returns the viewport width.
-	 */
-	this.getDevicePixelRatio = () => devicePixelRatio;
-
-	/**
-	 * Returns the viewport width.
-	 */
-	this.getViewportWidth = () => viewportWidth;
-
-	/**
-	 * Returns the viewport height.
-	 */
-	this.getViewportHeight = () => viewportHeight;
-
-	/**
-	 * Updates the device pixel ratio with the provided value.
+	 * Cached value of device pixel ratio.
 	 * 
-	 * @param {number} dpr
+	 * @type {?number}
 	 */
-	this.setDevicePixelRatio = dpr => devicePixelRatio = dpr;
+	this.devicePixelRatio = null;
 
 	/**
-	 * Updates the viewport width with the provided value.
-	 * The width is multiplied by the device pixel ratio and rounded down.
+	 * Cached value of window inner width.
+	 * 
+	 * @type {?number}
+	 */
+	this.viewportWidth = innerWidth;
+
+	/**
+	 * Cached value of window inner height.
+	 * 
+	 * @type {?number}
+	 */
+	this.viewportHeight = innerHeight;
+
+	/**
+	 * @todo Since this is controlled by the user, move it to a public class?
+	 * 
+	 * GUI scale multiplier chosen by the user.
+	 * 
+	 * @type {?number}
+	 */
+	this.desiredScale = null;
+
+	/**
+	 * Current GUI scale multiplier.
+	 * Determines the scale of the crosshair and most of the GUI components.
+	 * 
+	 * @type {?number}
+	 */
+	this.currentScale = null;
+
+	/**
+	 * Maximum GUI scale multiplier appliable to the current viewport.
+	 * This caps the desired scale multiplier.
+	 * 
+	 * @type {?number}
+	 */
+	this.maxScale = null;
+
+	/**
+	 * Resize function.
+	 * - When called, recalculates the max possible GUI scale for the current viewport dimensions
+	 * - Clamps up the desired scale to the max scale to get the current scale
 	 * 
 	 * @param {number} width
-	 */
-	this.setViewportWidth = width => viewportWidth = width * devicePixelRatio | 0;
-
-	/**
-	 * Updates the viewport height with the provided value.
-	 * The height is multiplied by the device pixel ratio and rounded down.
-	 * 
 	 * @param {number} height
+	 * @param {number} dpr
 	 */
-	this.setViewportHeight = height => viewportHeight = height * devicePixelRatio | 0;
+	this.resize = function(width, height, dpr) {
+		/** @todo Set viewport size as multiples of 2? */
+		this.viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0;
+		this.viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0;
+		this.devicePixelRatio = dpr;
+
+		// Calculate scale multiplier
+		let i = 1;
+		while (
+			this.viewportWidth > DEFAULT_WIDTH * i &&
+			this.viewportHeight > DEFAULT_HEIGHT * i
+		) i++;
+
+		const currentScale = clampUp(
+			this.desiredScale,
+			this.maxScale = clampDown(i - 1, 1),
+		);
+
+		if (currentScale === this.currentScale) return;
+
+		this.currentScale = currentScale;
+
+		/** @todo Redraw the GUI with the new scale here? */
+	};
 }
+
+export default new Instance();

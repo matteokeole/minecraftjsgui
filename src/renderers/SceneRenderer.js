@@ -118,11 +118,7 @@ const resizeObserver = new ResizeObserver(function([entry]) {
 		} else ({width, height} = entry.contentRect);
 	}
 
-	// Update the viewport size on the instance
-	Instance.setDevicePixelRatio(dpr);
-	Instance.setViewportWidth(width);
-	Instance.setViewportHeight(height);
-
+	Instance.resize(width, height, dpr);
 	GUIRenderer.resize();
 	sceneRenderer.resize();
 });

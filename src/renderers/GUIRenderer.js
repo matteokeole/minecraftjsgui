@@ -106,8 +106,8 @@ function GUIRenderer() {
 	this.resize = function() {
 		const {canvas, gl} = this;
 
-		canvas.width = Instance.getViewportWidth();
-		canvas.height = Instance.getViewportHeight();
+		canvas.width = Instance.viewportWidth;
+		canvas.height = Instance.viewportHeight;
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 
