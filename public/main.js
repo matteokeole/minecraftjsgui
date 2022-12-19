@@ -1,8 +1,12 @@
 import {NoWebGL2Error} from "errors";
 import {Image} from "gui";
 import GUIRenderer from "gui-renderer";
+import Instance from "instance";
 import {Vector2} from "math";
 import SceneRenderer from "scene-renderer";
+
+Instance.setShaderPath("assets/shaders/");
+Instance.setTexturePath("assets/textures/");
 
 try {
 	SceneRenderer.build();
@@ -42,29 +46,29 @@ try {
 
 /* Pipeline example
 
-import GUI from "gui";
+import {Layer, TextButton} from "gui";
 
 // Each layer has an onEscape listener that decrements the current layer priority and displays the correct one.
 // The only exception is the root layer, which has a priority of 0 and can't be escaped.
-const rootLayer = new GUI.Layer({
+const rootLayer = new Layer({
 	priority: 0,
 });
-const optionLayer = new GUI.Layer({
+const optionLayer = new Layer({
 	priority: 1,
 	background: TEXTURES["gui/option_background.png"],
 });
 
-const optionButton = new GUI.TextButton({
+const optionButton = new TextButton({
 	align: ["center", "center"],
 	margin: [0, 0],
 	text: "Options...",
 	disabled: false,
-	onClick: () => GUI.push(optionLayer),
+	onClick: () => GUIRenderer.push(optionLayer),
 });
 
 rootLayer.add(optionButton);
 
-GUI.setLayers([rootLayer, optionLayer]);
-GUI.render();
+GUIRenderer.setLayers([rootLayer, optionLayer]);
+GUIRenderer.render();
 
 */

@@ -1,7 +1,42 @@
 export default new function Instance() {
-	let devicePixelRatio = 1,
-		viewportWidth = innerWidth,
-		viewportHeight = innerHeight;
+	/** @type {string} */
+	let shaderPath;
+
+	/** @type {string} */
+	let texturePath;
+
+	/** @type {number} */
+	let devicePixelRatio = 1;
+
+	/** @type {number} */
+	let viewportWidth = innerWidth;
+
+	/** @type {number} */
+	let viewportHeight = innerHeight;
+
+	/**
+	 * Returns the shader path.
+	 */
+	this.getShaderPath = () => shaderPath;
+
+	/**
+	 * Updates the shader path with the provided value.
+	 * 
+	 * @param {string} path
+	 */
+	this.setShaderPath = path => shaderPath = path;
+
+	/**
+	 * Returns the texture path.
+	 */
+	this.getTexturePath = () => texturePath;
+
+	/**
+	 * Updates the texture path with the provided value.
+	 * 
+	 * @param {string} path
+	 */
+	this.setTexturePath = path => texturePath = path;
 
 	/**
 	 * Returns the viewport width.
@@ -13,9 +48,9 @@ export default new function Instance() {
 	 */
 	this.getViewportWidth = () => viewportWidth;
 
-	 /**
-	  * Returns the viewport height.
-	  */
+	/**
+	 * Returns the viewport height.
+	 */
 	this.getViewportHeight = () => viewportHeight;
 
 	/**
