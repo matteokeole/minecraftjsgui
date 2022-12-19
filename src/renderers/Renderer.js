@@ -6,7 +6,6 @@ import Texture from "texture";
  * @todo Summary
  * 
  * @constructor
- * @abstract
  * @param {object} options
  * @param {boolean} options.offscreen
  * @param {boolean} options.generateMipmaps

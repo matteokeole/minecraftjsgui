@@ -8,4 +8,4 @@
 - See `<link rel="preload">` / `<link rel="modulepreload">` for faster loads?
 - CSS import for `assets/css/main.css`
 - Unit testing?
-- Better class/singleton structure
+- Update the class structure everywhere (singleton function)

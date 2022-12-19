@@ -3,11 +3,21 @@ import Instance from "instance";
 import {Matrix3, Vector2} from "math";
 import SceneRenderer from "scene-renderer";
 
-export default new function GUIRenderer() {
+/**
+ * 2D GUI renderer singleton.
+ * 
+ * @constructor
+ * @extends Renderer
+ */
+function GUIRenderer() {
+	if (GUIRenderer._instance) return GUIRenderer._instance;
+
 	Renderer.call(this, {
 		offscreen: false,
 		generateMipmaps: true,
 	});
+
+	GUIRenderer._instance = this;
 
 	/** @type {Set<Component>} */
 	this.components = new Set();
@@ -110,3 +120,11 @@ export default new function GUIRenderer() {
 		this.render();
 	};
 }
+
+GUIRenderer.prototype = Object.create(Renderer.prototype, {
+	constructor: {
+		value: GUIRenderer,
+	},
+});
+
+export default new GUIRenderer();

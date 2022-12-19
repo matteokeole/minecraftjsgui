@@ -2,7 +2,6 @@
  * @todo Summary
  * 
  * @constructor
- * @abstract
  * @param {object} options
  * @param {Vector2} options.position
  */

@@ -2,11 +2,21 @@ import Renderer from "./Renderer.js";
 import GUIRenderer from "gui-renderer";
 import Instance from "instance";
 
-function _SceneRenderer() {
+/**
+ * Scene renderer singleton.
+ * 
+ * @constructor
+ * @extends Renderer
+ */
+function SceneRenderer() {
+	if (SceneRenderer._instance) return SceneRenderer._instance;
+
 	Renderer.call(this, {
 		offscreen: false,
 		generateMipmaps: true,
 	});
+
+	SceneRenderer._instance = this;
 
 	this.init = async function() {
 		const {canvas, gl} = this;
@@ -83,9 +93,13 @@ function _SceneRenderer() {
 	};
 }
 
-const SceneRenderer = new _SceneRenderer();
+SceneRenderer.prototype = Object.create(Renderer.prototype, {
+	constructor: {
+		value: SceneRenderer,
+	},
+});
 
-export default SceneRenderer;
+const sceneRenderer = new SceneRenderer();
 
 const resizeObserver = new ResizeObserver(function([entry]) {
 	if (_firstResize) return _firstResize = false;
@@ -110,7 +124,9 @@ const resizeObserver = new ResizeObserver(function([entry]) {
 	Instance.setViewportHeight(height);
 
 	GUIRenderer.resize();
-	SceneRenderer.resize();
+	sceneRenderer.resize();
 });
 
 let _firstResize = true;
+
+export default sceneRenderer;
