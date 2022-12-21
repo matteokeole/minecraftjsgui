@@ -8,15 +8,11 @@ import {Matrix3, Vector2} from "math";
  * @constructor
  * @extends Component
  * @param {object} options
- * @param {Vector2} options.size
  * @param {Texture} options.image
  * @param {Vector2} options.uv
  */
-export default function Image({size, image, uv}) {
-	Component.call(this, ...arguments);
-
-	/** @type {Vector2} */
-	this.size = size;
+export default function Image({image, uv}) {
+	Component.apply(this, arguments);
 
 	/** @type {Texture} */
 	this.image = image;
@@ -25,6 +21,8 @@ export default function Image({size, image, uv}) {
 	this.uv = uv;
 
 	this.render = function(gl) {
+		this.computePosition();
+
 		const imageSize = this.image.getSizeVector();
 
 		const worldMatrix = Matrix3

@@ -3,11 +3,21 @@ import Instance from "instance";
 import {Matrix3, Vector2} from "math";
 import SceneRenderer from "scene-renderer";
 
-export default new function GUIRenderer() {
+/**
+ * 2D GUI renderer singleton.
+ * 
+ * @constructor
+ * @extends Renderer
+ */
+function GUIRenderer() {
+	if (GUIRenderer._instance) return GUIRenderer._instance;
+
 	Renderer.call(this, {
-		offscreen: false,
+		offscreen: true,
 		generateMipmaps: true,
 	});
+
+	GUIRenderer._instance = this;
 
 	/** @type {Set<Component>} */
 	this.components = new Set();
@@ -94,19 +104,29 @@ export default new function GUIRenderer() {
 	};
 
 	this.resize = function() {
-		const {canvas, gl} = this;
+		const
+			{canvas, gl} = this,
+			{viewportWidth, viewportHeight, currentScale} = Instance;
 
-		canvas.width = Instance.getViewportWidth();
-		canvas.height = Instance.getViewportHeight();
+		canvas.width = viewportWidth;
+		canvas.height = viewportHeight;
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 
 		const projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
-			.scale(new Vector2(2, 2));
+			.scale(new Vector2(currentScale, currentScale));
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
 		this.render();
 	};
 }
+
+GUIRenderer.prototype = Object.create(Renderer.prototype, {
+	constructor: {
+		value: GUIRenderer,
+	},
+});
+
+export default new GUIRenderer();

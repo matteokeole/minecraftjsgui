@@ -16,7 +16,8 @@ try {
 	await GUIRenderer.loadTextures(guiTextures);
 
 	const image = new Image({
-		position: new Vector2(10, 10),
+		align: ["left", "top"],
+		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: GUIRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 106),
@@ -25,6 +26,8 @@ try {
 	GUIRenderer.add(image);
 
 	GUIRenderer.render();
+
+	/** @todo Loop-related methods must be in the instance */
 	SceneRenderer.startLoop();
 } catch (error) {
 	// Make sure the renderers have been built before dispose
@@ -42,29 +45,29 @@ try {
 
 /* Pipeline example
 
-import GUI from "gui";
+import {Layer, TextButton} from "gui";
 
 // Each layer has an onEscape listener that decrements the current layer priority and displays the correct one.
 // The only exception is the root layer, which has a priority of 0 and can't be escaped.
-const rootLayer = new GUI.Layer({
+const rootLayer = new Layer({
 	priority: 0,
 });
-const optionLayer = new GUI.Layer({
+const optionLayer = new Layer({
 	priority: 1,
 	background: TEXTURES["gui/option_background.png"],
 });
 
-const optionButton = new GUI.TextButton({
+const optionButton = new TextButton({
 	align: ["center", "center"],
 	margin: [0, 0],
 	text: "Options...",
 	disabled: false,
-	onClick: () => GUI.push(optionLayer),
+	onClick: () => GUIRenderer.push(optionLayer),
 });
 
 rootLayer.add(optionButton);
 
-GUI.setLayers([rootLayer, optionLayer]);
-GUI.render();
+GUIRenderer.setLayers([rootLayer, optionLayer]);
+GUIRenderer.render();
 
 */

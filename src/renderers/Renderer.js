@@ -6,7 +6,6 @@ import Texture from "texture";
  * @todo Summary
  * 
  * @constructor
- * @abstract
  * @param {object} options
  * @param {boolean} options.offscreen
  * @param {boolean} options.generateMipmaps
@@ -27,14 +26,16 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	/** @type {object<string, Texture>} */
 	this.textures = {};
 
+	/** @type {boolean} */
+	this.isInLoop = false;
+
 	/**
 	 * Initializes the canvas element and its WebGL context.
 	 * 
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		const viewportWidth = Instance.getViewportWidth();
-		const viewportHeight = Instance.getViewportHeight();
+		const {viewportWidth, viewportHeight} = Instance;
 		let canvas, gl;
 
 		// Create canvas
@@ -64,8 +65,6 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	};
 
 	/**
-	 * @todo Remove hard-coded base path
-	 * 
 	 * Asynchronous texture loader which uses the instance context.
 	 * NOTE: Textures are loaded with the RGB format.
 	 * 
@@ -73,13 +72,15 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	 * @param {...string} paths File paths (relative to *assets/textures/*)
 	 */
 	this.loadTextures = async function(...paths) {
-		const {gl} = this;
-		const {length} = paths;
+		const
+			{gl} = this,
+			{length} = paths,
+			base = Instance.texturePath;
 		let path, image, source;
 
 		for (let i = 0; i < length; i++) {
 			path = paths[i];
-			(image = new Image()).src = `assets/textures/${path}`;
+			(image = new Image()).src = `${base}${path}`;
 
 			try {
 				await image.decode();
@@ -121,8 +122,6 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	};
 
 	/**
-	 * @todo Remove hard-coded base path
-	 * 
 	 * Creates, compiles and returns a WebGLShader.
 	 * 
 	 * @async
@@ -133,8 +132,9 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.createShader = async function(path, type) {
 		const
 			{gl} = this,
+			base = Instance.shaderPath,
 			shader = gl.createShader(type),
-			source = await (await fetch(`assets/shaders/${path}`)).text();
+			source = await (await fetch(`${base}${path}`)).text();
 
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
@@ -182,6 +182,7 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	 */
 	this.startLoop = function() {
 		then = performance.now();
+		this.isInLoop = true;
 
 		this.loop();
 	};
@@ -204,7 +205,11 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	/**
 	 * Stops the render loop.
 	 */
-	this.stopLoop = () => cancelAnimationFrame(request);
+	this.stopLoop = function() {
+		cancelAnimationFrame(request);
+
+		this.isInLoop = false;
+	}
 
 	/**
 	 * Renders a frame.
@@ -220,8 +225,8 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.resize = function() {
 		const {canvas, gl} = this;
 
-		canvas.width = Instance.getViewportWidth();
-		canvas.height = Instance.getViewportHeight();
+		canvas.width = Instance.viewportWidth;
+		canvas.height = Instance.viewportHeight;
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
@@ -230,13 +235,16 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	 * Destroys the renderer.
 	 */
 	this.dispose = function() {
-		this.stopLoop();
+		if (this.isInLoop) this.stopLoop();
 
+		/**
+		 * @todo Unbind and delete all linked objects (buffers, textures, etc) before this
+		 * @see {@link https://registry.khronos.org/webgl/extensions/WEBGL_lose_context}
+		 */
+		this.gl.getExtension("WEBGL_lose_context").loseContext();
 		this.gl = null;
 
-		if (!offscreen) {
-			this.canvas.remove();
-		}
+		if (!offscreen) this.canvas.remove();
 
 		this.canvas = null;
 	};
