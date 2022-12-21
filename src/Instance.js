@@ -1,6 +1,8 @@
 import {clampDown, clampUp} from "math";
 
 /**
+ * @todo Apply settings
+ * 
  * Game instance singleton.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
  * 
@@ -56,7 +58,7 @@ function Instance() {
 	 * 
 	 * @type {?number}
 	 */
-	this.desiredScale = null;
+	this.desiredScale = 2;
 
 	/**
 	 * Current GUI scale multiplier.
@@ -64,7 +66,7 @@ function Instance() {
 	 * 
 	 * @type {?number}
 	 */
-	this.currentScale = null;
+	this.currentScale = 2;
 
 	/**
 	 * Maximum GUI scale multiplier appliable to the current viewport.
@@ -72,7 +74,7 @@ function Instance() {
 	 * 
 	 * @type {?number}
 	 */
-	this.maxScale = null;
+	this.maxScale = 4;
 
 	/**
 	 * Resize function.

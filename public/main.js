@@ -20,7 +20,8 @@ try {
 	await GUIRenderer.loadTextures(guiTextures);
 
 	const image = new Image({
-		position: new Vector2(10, 10),
+		align: ["left", "top"],
+		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: GUIRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 106),
@@ -29,6 +30,8 @@ try {
 	GUIRenderer.add(image);
 
 	GUIRenderer.render();
+
+	/** @todo Loop-related methods must be in the instance */
 	SceneRenderer.startLoop();
 } catch (error) {
 	// Make sure the renderers have been built before dispose

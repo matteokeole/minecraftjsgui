@@ -101,6 +101,7 @@ SceneRenderer.prototype = Object.create(Renderer.prototype, {
 
 const sceneRenderer = new SceneRenderer();
 
+/** @todo Append to the instance instead of the scene renderer */
 const resizeObserver = new ResizeObserver(function([entry]) {
 	if (_firstResize) return _firstResize = false;
 

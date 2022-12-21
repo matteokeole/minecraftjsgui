@@ -13,7 +13,7 @@ function GUIRenderer() {
 	if (GUIRenderer._instance) return GUIRenderer._instance;
 
 	Renderer.call(this, {
-		offscreen: false,
+		offscreen: true,
 		generateMipmaps: true,
 	});
 
@@ -104,16 +104,18 @@ function GUIRenderer() {
 	};
 
 	this.resize = function() {
-		const {canvas, gl} = this;
+		const
+			{canvas, gl} = this,
+			{viewportWidth, viewportHeight, currentScale} = Instance;
 
-		canvas.width = Instance.viewportWidth;
-		canvas.height = Instance.viewportHeight;
+		canvas.width = viewportWidth;
+		canvas.height = viewportHeight;
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 
 		const projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
-			.scale(new Vector2(2, 2));
+			.scale(new Vector2(currentScale, currentScale));
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
