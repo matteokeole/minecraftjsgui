@@ -4,6 +4,7 @@
 - Define cases where default imports should be used over named imports
 - `CustomError` for adding new errors?
 - Better error handling in `public/main.js`
+- CSS refactor
 - Unit testing?
 
 - See import map `src` compatibility
