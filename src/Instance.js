@@ -2,6 +2,7 @@ import {clampDown, clampUp} from "math";
 
 /**
  * @todo Apply settings
+ * @todo Implement render pipeline here
  * 
  * Game instance singleton.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
@@ -21,31 +22,31 @@ function Instance() {
 	 * 
 	 * @type {?string}
 	 */
-	this.shaderPath = null;
+	this.shaderPath = "assets/shaders/";
 
 	/**
 	 * Texture folder path, relative to the root folder.
 	 * 
 	 * @type {?string}
 	 */
-	this.texturePath = null;
+	this.texturePath = "assets/textures/";
 
 	/**
-	 * Cached value of device pixel ratio.
+	 * Cached value of window.devicePixelRatio.
 	 * 
 	 * @type {?number}
 	 */
 	this.devicePixelRatio = null;
 
 	/**
-	 * Cached value of window inner width.
+	 * Cached value of window.innerWidth.
 	 * 
 	 * @type {?number}
 	 */
 	this.viewportWidth = innerWidth;
 
 	/**
-	 * Cached value of window inner height.
+	 * Cached value of window.innerHeight.
 	 * 
 	 * @type {?number}
 	 */
@@ -77,9 +78,8 @@ function Instance() {
 	this.maxScale = 4;
 
 	/**
-	 * Resize function.
-	 * - When called, recalculates the max possible GUI scale for the current viewport dimensions
-	 * - Clamps up the desired scale to the max scale to get the current scale
+	 * When called, recalculates the max possible GUI scale for the current viewport dimensions
+	 * Clamps up the desired scale to the max scale to get the current scale
 	 * 
 	 * @param {number} width
 	 * @param {number} height

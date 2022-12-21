@@ -24,7 +24,7 @@ export default function Component({align, margin, size}) {
 	this.size = size;
 
 	/**
-	 * This method is called by the GUI renderer at draw time.
+	 * Render method called by the GUI renderer at draw time.
 	 * NOTE: Must be overridden in an instance.
 	 * 
 	 * @method
@@ -33,7 +33,7 @@ export default function Component({align, margin, size}) {
 	this.render = null;
 
 	/**
-	 * Calculates the absolute position from the component alignment and margin.
+	 * Uses the component alignment and margin values to calculate its absolute position.
 	 */
 	this.computePosition = function() {
 		const
@@ -43,11 +43,8 @@ export default function Component({align, margin, size}) {
 			{viewportWidth, viewportHeight, currentScale} = Instance;
 		let x = 0,
 			y = 0,
-			ow = viewportWidth / currentScale,
-			oh = viewportHeight / currentScale;
-
-		ow -= w;
-		oh -= h;
+			ow = viewportWidth / currentScale - w,
+			oh = viewportHeight / currentScale - h;
 
 		switch (horizontal) {
 			case "left":

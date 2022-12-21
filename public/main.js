@@ -1,12 +1,8 @@
 import {NoWebGL2Error} from "errors";
 import {Image} from "gui";
 import GUIRenderer from "gui-renderer";
-import Instance from "instance";
 import {Vector2} from "math";
 import SceneRenderer from "scene-renderer";
-
-Instance.shaderPath = "assets/shaders/";
-Instance.texturePath = "assets/textures/";
 
 try {
 	SceneRenderer.build();
