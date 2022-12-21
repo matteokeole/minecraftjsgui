@@ -1,6 +1,6 @@
 import Renderer from "./Renderer.js";
 import GUIRenderer from "gui-renderer";
-import Instance from "instance";
+import instance from "instance";
 
 /**
  * Scene renderer singleton.
@@ -119,7 +119,7 @@ const resizeObserver = new ResizeObserver(function([entry]) {
 		} else ({width, height} = entry.contentRect);
 	}
 
-	Instance.resize(width, height, dpr);
+	instance.resize(width, height, dpr);
 	GUIRenderer.resize();
 	sceneRenderer.resize();
 });

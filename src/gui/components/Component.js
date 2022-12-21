@@ -1,4 +1,4 @@
-import Instance from "instance";
+import instance from "instance";
 import {Vector2} from "math";
 
 /**
@@ -40,7 +40,7 @@ export default function Component({align, margin, size}) {
 			[horizontal, vertical] = this.align,
 			{x: mx, y: my} = this.margin,
 			{x: w, y: h} = this.size,
-			{viewportWidth, viewportHeight, currentScale} = Instance;
+			{viewportWidth, viewportHeight, currentScale} = instance;
 		let x = 0,
 			y = 0,
 			ow = viewportWidth / currentScale - w,

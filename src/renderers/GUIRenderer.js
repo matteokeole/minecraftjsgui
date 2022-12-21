@@ -1,5 +1,5 @@
 import Renderer from "./Renderer.js";
-import Instance from "instance";
+import instance from "instance";
 import {Matrix3, Vector2} from "math";
 import SceneRenderer from "scene-renderer";
 
@@ -106,7 +106,7 @@ function GUIRenderer() {
 	this.resize = function() {
 		const
 			{canvas, gl} = this,
-			{viewportWidth, viewportHeight, currentScale} = Instance;
+			{viewportWidth, viewportHeight, currentScale} = instance;
 
 		canvas.width = viewportWidth;
 		canvas.height = viewportHeight;

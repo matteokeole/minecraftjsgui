@@ -1,5 +1,5 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
-import Instance from "instance";
+import instance from "instance";
 import Texture from "texture";
 
 /**
@@ -35,7 +35,7 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		const {viewportWidth, viewportHeight} = Instance;
+		const {viewportWidth, viewportHeight} = instance;
 		let canvas, gl;
 
 		// Create canvas
@@ -75,7 +75,7 @@ export default function Renderer({offscreen, generateMipmaps}) {
 		const
 			{gl} = this,
 			{length} = paths,
-			base = Instance.texturePath;
+			base = instance.texturePath;
 		let path, image, source;
 
 		for (let i = 0; i < length; i++) {
@@ -132,7 +132,7 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.createShader = async function(path, type) {
 		const
 			{gl} = this,
-			base = Instance.shaderPath,
+			base = instance.shaderPath,
 			shader = gl.createShader(type),
 			source = await (await fetch(`${base}${path}`)).text();
 
@@ -225,8 +225,8 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.resize = function() {
 		const {canvas, gl} = this;
 
-		canvas.width = Instance.viewportWidth;
-		canvas.height = Instance.viewportHeight;
+		canvas.width = instance.viewportWidth;
+		canvas.height = instance.viewportHeight;
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
