@@ -8,6 +8,13 @@ import particleRenderer from "particle-renderer";
 import sceneRenderer from "scene-renderer";
 import skyboxRenderer from "skybox-renderer";
 
+// Set instance options
+const options = new InstanceOptions({
+	"monochrome-logo": true,
+});
+
+instance.setOptions(options);
+
 // Bind the renderers to the current instance
 instance.renderers = {
 	skybox: skyboxRenderer,
@@ -66,3 +73,45 @@ instance.setPipeline(
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, 6);
 	},
 );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Game loop test
+
+(() => {
+	let lastHeapSize, lastFrameTime;
+
+	function runGame() {
+		requestAnimationFrame(runGame);
+
+		const
+			heapSize = performance.memory.usedJSHeapSize,
+			frameTime = performance.now();
+
+		lastHeapSize ??= heapSize;
+		lastFrameTime ??= frameTime;
+
+		const
+			dt = frameTime - lastFrameTime,
+			dh = heapSize - lastHeapSize;
+
+		frameDataList.push([dt, dh]);
+
+		lastHeapSize = heapSize;
+		lastFrameTime = frameTime;
+
+		computeNextGameStateAndPaint();
+	}
+})();
