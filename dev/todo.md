@@ -1,10 +1,13 @@
+- Expose the Instance constructor in instance.js (better to instanciate it in public)
+- *main* shaders: change position/uv attributes to uniform and set them in the instance initializer
+- Create an `output` HTMLCanvas inside the instance
 - Change world matrix from uniform to attribute (component shader)
 - Rename `translation`/`translate` methods on Matrix3/4
 - `Layer` class
 - Define cases where default imports should be used over named imports
 - `CustomError` for adding new errors?
 - Better error handling in `public/main.js`
-- CSS refactor
+- CSS review
 - Unit testing?
 
 - See import map `src` compatibility
