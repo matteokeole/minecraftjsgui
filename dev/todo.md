@@ -1,6 +1,4 @@
-- Expose the Instance constructor in instance.js (better to instanciate it in public)
-- *main* shaders: change position/uv attributes to uniform and set them in the instance initializer
-- Create an `output` HTMLCanvas inside the instance
+- Remove `{instance}` imports in `src/` files
 - Change world matrix from uniform to attribute (component shader)
 - Rename `translation`/`translate` methods on Matrix3/4
 - `Layer` class

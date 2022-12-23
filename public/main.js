@@ -3,8 +3,26 @@ import {Image} from "gui";
 import GUIRenderer from "gui-renderer";
 import {Vector2} from "math";
 import SceneRenderer from "scene-renderer";
+import Instance from "instance";
+
+export const instance = new Instance();
+
+function initializeInstance(instance) {
+	instance.output = document.createElement("canvas");
+	instance.output.width = instance.viewportWidth;
+	instance.output.height = instance.viewportHeight;
+	instance.gl = instance.output.getContext("webgl2");
+
+	if (instance.gl === null) throw NoWebGL2Error();
+
+	console.warn("Initializing");
+
+	// document.body.appendChild(instance.output);
+}
 
 try {
+	initializeInstance(instance);
+
 	SceneRenderer.build();
 	GUIRenderer.build();
 

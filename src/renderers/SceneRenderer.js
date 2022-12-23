@@ -1,6 +1,6 @@
 import Renderer from "./Renderer.js";
 import GUIRenderer from "gui-renderer";
-import instance from "instance";
+import {instance} from "../../public/main.js";
 
 /**
  * Scene renderer singleton.

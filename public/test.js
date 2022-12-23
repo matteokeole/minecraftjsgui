@@ -1,19 +1,26 @@
 // This is an example file for testing the structure of the next features.
 
-import instance from "instance";
-import animationRenderer from "animation-renderer";
-import guiRenderer from "gui-renderer";
-import hudRenderer from "hud-renderer";
-import particleRenderer from "particle-renderer";
-import sceneRenderer from "scene-renderer";
-import skyboxRenderer from "skybox-renderer";
+import instance from "./main.js";
+import animationRenderer from "./animation-renderer.js";
+import guiRenderer from "./gui-renderer.js";
+import hudRenderer from "./hud-renderer.js";
+import particleRenderer from "./particle-renderer.js";
+import sceneRenderer from "./scene-renderer.js";
+import skyboxRenderer from "./skybox-renderer.js";
 
-// Set instance options
-const options = new InstanceOptions({
-	"monochrome-logo": true,
+// Create an instance option
+const monochromeLogo = new Option({
+	name: "monochrome-logo",
+	validator: function(value) {
+		if (typeof value !== "boolean") return false;
+
+		return true;
+	},
+	defaultValue: false,
 });
 
-instance.setOptions(options);
+// Set instance options
+instance.setOption(monochromeLogo); // To access an option: instance.options["monochrome-logo"]
 
 // Bind the renderers to the current instance
 instance.renderers = {
@@ -35,26 +42,27 @@ instance.setInitializer(
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		// Load program
-		gl.attribute.position = 0;
-		gl.buffer.position = gl.createBuffer();
+		/** @todo load `main` program */
 
 		gl.useProgram(program);
+
+		gl.attribute.position = 0;
+		gl.attribute.uv = 0;
+		gl.buffer.position = gl.createBuffer();
 
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
 		gl.vertexAttribPointer(gl.attribute.position, 2, gl.FLOAT, false, 0, 0);
 
-		gl.bufferData(
-			gl.ARRAY_BUFFER,
-			new Float32Array([
-				1,  1,
-			   -1,  1,
-			   -1, -1,
-				1, -1,
-			]),
-			gl.STATIC_DRAW,
-		);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+			1,  1,
+		   -1,  1,
+		   -1, -1,
+			1, -1,
+		]), gl.STATIC_DRAW);
+
+		gl.enableVertexAttribArray(gl.attribute.uv);
+		gl.vertexAttribPointer(gl.attribute.uv, 2, gl.FLOAT, true, 0, 0);
 	},
 );
 

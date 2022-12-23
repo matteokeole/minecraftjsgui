@@ -4,18 +4,21 @@ import {clampDown, clampUp} from "math";
  * @todo Apply settings
  * @todo Implement render pipeline here
  * 
- * Game instance singleton.
+ * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
  * 
  * @constructor
  */
-function Instance() {
-	if (Instance._instance) return Instance._instance;
-
-	Instance._instance = this;
-
+export default function Instance() {
 	const DEFAULT_WIDTH = 320;
 	const DEFAULT_HEIGHT = 240;
+
+	/**
+	 * HTMLCanvas output.
+	 * 
+	 * @type {?HTMLCanvasElement}
+	 */
+	this.output = null;
 
 	/**
 	 * Shader folder path, relative to the root folder.
@@ -78,6 +81,12 @@ function Instance() {
 	this.maxScale = 4;
 
 	/**
+	 * @todo
+	 * 
+	 * Initializer for the instance.
+	 */
+
+	/**
 	 * When called, recalculates the max possible GUI scale for the current viewport dimensions
 	 * Clamps up the desired scale to the max scale to get the current scale
 	 * 
@@ -110,5 +119,3 @@ function Instance() {
 		/** @todo Redraw the GUI with the new scale here? */
 	};
 }
-
-export default new Instance();

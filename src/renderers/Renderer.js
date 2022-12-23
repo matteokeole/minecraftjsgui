@@ -1,5 +1,5 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
-import instance from "instance";
+import {instance} from "../../public/main.js";
 import Texture from "texture";
 
 /**

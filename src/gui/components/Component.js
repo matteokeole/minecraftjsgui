@@ -1,4 +1,4 @@
-import instance from "instance";
+import {instance} from "../../../public/main.js";
 import {Vector2} from "math";
 
 /**

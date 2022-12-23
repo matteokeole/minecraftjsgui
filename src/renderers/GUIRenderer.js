@@ -1,5 +1,5 @@
 import Renderer from "./Renderer.js";
-import instance from "instance";
+import {instance} from "../../public/main.js";
 import {Matrix3, Vector2} from "math";
 import SceneRenderer from "scene-renderer";
 
