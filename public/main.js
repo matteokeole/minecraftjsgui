@@ -15,8 +15,6 @@ function initializeInstance(instance) {
 
 	if (instance.gl === null) throw NoWebGL2Error();
 
-	console.warn("Initializing");
-
 	// document.body.appendChild(instance.output);
 }
 
