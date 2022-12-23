@@ -2,7 +2,7 @@ import {instance} from "../../../public/main.js";
 import {Vector2} from "math";
 
 /**
- * @todo Summary
+ * @todo Remove instance import
  * 
  * @constructor
  * @param {object} options

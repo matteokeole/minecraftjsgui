@@ -1,25 +1,14 @@
 import {NoWebGL2Error} from "errors";
 import {Image} from "gui";
-import GUIRenderer from "gui-renderer";
 import {Vector2} from "math";
-import SceneRenderer from "scene-renderer";
 import Instance from "instance";
+import GUIRenderer from "./renderers/GUIRenderer.js";
+import SceneRenderer from "./renderers/SceneRenderer.js";
 
 export const instance = new Instance();
 
-function initializeInstance(instance) {
-	instance.output = document.createElement("canvas");
-	instance.output.width = instance.viewportWidth;
-	instance.output.height = instance.viewportHeight;
-	instance.gl = instance.output.getContext("webgl2");
-
-	if (instance.gl === null) throw NoWebGL2Error();
-
-	// document.body.appendChild(instance.output);
-}
-
 try {
-	initializeInstance(instance);
+	instance.build();
 
 	SceneRenderer.build();
 	GUIRenderer.build();
@@ -32,11 +21,11 @@ try {
 	await GUIRenderer.loadTextures(guiTextures);
 
 	const image = new Image({
-		align: ["left", "top"],
-		margin: new Vector2(10, 10),
+		align: ["center", "center"],
+		margin: new Vector2(0, 0),
 		size: new Vector2(20, 20),
 		image: GUIRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 106),
+		uv: new Vector2(0, 146),
 	});
 
 	GUIRenderer.add(image);

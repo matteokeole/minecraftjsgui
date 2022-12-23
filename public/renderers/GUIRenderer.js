@@ -1,7 +1,7 @@
-import Renderer from "./Renderer.js";
-import {instance} from "../../public/main.js";
+import Renderer from "renderer";
+import {instance} from "../main.js";
 import {Matrix3, Vector2} from "math";
-import SceneRenderer from "scene-renderer";
+import SceneRenderer from "./SceneRenderer.js";
 
 /**
  * 2D GUI renderer singleton.

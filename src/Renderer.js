@@ -1,9 +1,9 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
-import {instance} from "../../public/main.js";
 import Texture from "texture";
+import {instance} from "../public/main.js";
 
 /**
- * @todo Summary
+ * @todo Remove instance import
  * 
  * @constructor
  * @param {object} options

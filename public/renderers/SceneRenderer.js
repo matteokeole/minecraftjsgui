@@ -1,6 +1,6 @@
-import Renderer from "./Renderer.js";
-import GUIRenderer from "gui-renderer";
-import {instance} from "../../public/main.js";
+import Renderer from "renderer";
+import GUIRenderer from "./GUIRenderer.js";
+import {instance} from "../main.js";
 
 /**
  * Scene renderer singleton.
