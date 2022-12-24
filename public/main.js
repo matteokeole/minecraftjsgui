@@ -16,6 +16,7 @@ try {
 	]);
 
 	guiRenderer.build();
+	guiRenderer.enable();
 
 	await guiRenderer.init();
 

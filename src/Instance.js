@@ -333,6 +333,8 @@ export default function Instance() {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		for (let i = 0; i < rendererLength; i++) {
+			if (this.renderers[i].disabled) return;
+
 			gl.bindTexture(gl.TEXTURE_2D, rendererTextures[i]);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 		}

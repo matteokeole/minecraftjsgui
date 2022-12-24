@@ -17,6 +17,9 @@ export default function Renderer(instance, {generateMipmaps}) {
 		now,
 		diff;
 
+	/** @type {boolean} */
+	let enabled = false;
+
 	/** @type {OffscreenCanvas} */
 	this.canvas = null;
 
@@ -28,6 +31,27 @@ export default function Renderer(instance, {generateMipmaps}) {
 
 	/** @type {boolean} */
 	this.isInLoop = false;
+
+	/** @type {boolean} */
+	this.disabled = !enabled;
+
+	/**
+	 * Enables this renderer.
+	 */
+	this.enable = function() {
+		enabled = true;
+
+		this.disabled = false;
+	};
+
+	/**
+	 * Disables this renderer.
+	 */
+	this.disable = function() {
+		enabled = false;
+
+		this.disabled = true;
+	};
 
 	/**
 	 * Initializes the canvas element and its WebGL context.
