@@ -1,20 +1,18 @@
-import Renderer from "./Renderer.js";
-import Instance from "instance";
 import {Matrix3, Vector2} from "math";
-import SceneRenderer from "scene-renderer";
+import Renderer from "renderer";
 
 /**
- * 2D GUI renderer singleton.
+ * GUI renderer singleton.
  * 
  * @constructor
  * @extends Renderer
+ * @param {Instance} instance
  */
-function GUIRenderer() {
+export default function GUIRenderer(instance) {
 	if (GUIRenderer._instance) return GUIRenderer._instance;
 
-	Renderer.call(this, {
-		offscreen: true,
-		generateMipmaps: true,
+	Renderer.call(this, instance, {
+		generateMipmaps: false,
 	});
 
 	GUIRenderer._instance = this;
@@ -67,8 +65,24 @@ function GUIRenderer() {
 	 */
 	this.add = function(...components) {
 		const {length} = components;
+		let component;
 
 		for (let i = 0; i < length; i++) {
+			component = components[i];
+			component.renderer = this;
+
+			if (component.onMouseMove) {
+				component.onMouseMove.component = component;
+
+				this.instance.addMouseMoveListener(component.onMouseMove);
+			}
+
+			if (component.onMouseDown) {
+				component.onMouseDown.component = component;
+
+				this.instance.addMouseDownListener(component.onMouseDown);
+			}
+
 			this.components.add(components[i]);
 		}
 	};
@@ -86,10 +100,18 @@ function GUIRenderer() {
 		}
 	};
 
+	this.compute = function() {
+		const
+			components = [...this.components],
+			{length} = components;
+		
+		for (let i = 0; i < length; i++) {
+			components[i].computePosition(this.instance);
+		}
+	};
+
 	/**
 	 * Renders the GUI and updates the scene renderer GUI texture.
-	 * 
-	 * @callback {SceneRenderer~updateGUITexture}
 	 */
 	this.render = function() {
 		const
@@ -97,20 +119,20 @@ function GUIRenderer() {
 			{length} = components;
 
 		for (let i = 0; i < length; i++) {
-			components[i].render(this.gl);
+			components[i].render(this.gl, this.instance);
 		}
 
-		SceneRenderer.updateGUITexture(this.canvas);
+		this.instance.updateRendererTexture(0, this.canvas);
 	};
 
+	/**
+	 * @override
+	 */
 	this.resize = function() {
-		const
-			{canvas, gl} = this,
-			{viewportWidth, viewportHeight, currentScale} = Instance;
+		const {canvas, gl, instance: {viewportWidth, viewportHeight, currentScale}} = this;
 
 		canvas.width = viewportWidth;
 		canvas.height = viewportHeight;
-
 		gl.viewport(0, 0, canvas.width, canvas.height);
 
 		const projectionMatrix = Matrix3
@@ -119,6 +141,7 @@ function GUIRenderer() {
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
+		this.compute();
 		this.render();
 	};
 }
@@ -128,5 +151,3 @@ GUIRenderer.prototype = Object.create(Renderer.prototype, {
 		value: GUIRenderer,
 	},
 });
-
-export default new GUIRenderer();

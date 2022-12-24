@@ -9,7 +9,7 @@
 export function Matrix4(...elements) {
 	const {length} = elements;
 
-	if (length < 16) throw TypeError(`Failed to create Matrix4 instance: 16 arguments required, but only ${length} present.`);
+	if (length < 16) throw TypeError(`Failed to construct 'Matrix4': 16 arguments required, but only ${length} present.`);
 
 	this?.push.apply(this, elements.slice(0, 16));
 }
@@ -132,7 +132,7 @@ Matrix4.orthographic = function(l, r, t, b, n, f) {
 /**
  * @param {Vector3} v
  */
-Matrix4.translation = function(v) {
+Matrix4.translate = function(v) {
 	const {x, y, z} = v;
 
 	return new Matrix4(

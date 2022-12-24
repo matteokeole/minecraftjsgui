@@ -1,17 +1,18 @@
+import {Matrix3, Vector2} from "math";
 import Component from "./Component.js";
-import {Matrix3} from "math";
+import Texture from "../../Texture.js";
 
 /**
- * Image component.
- * Stores a pre-loaded `WebGLTexture` and render a rectangular part of it.
- * 
  * @constructor
  * @extends Component
- * @param {object} options
- * @param {Texture} options.image
- * @param {Vector2} options.uv
+ * @param {{
+ *    image: Texture,
+ *    uv: Vector2,
+ *    onMouseMove: Function
+ *    onMouseDown: Function
+ * }}
  */
-export default function Image({image, uv}) {
+export default function ImageButton({image, uv, onMouseMove, onMouseDown}) {
 	Component.apply(this, arguments);
 
 	/** @type {Texture} */
@@ -19,6 +20,12 @@ export default function Image({image, uv}) {
 
 	/** @type {Vector2} */
 	this.uv = uv;
+
+	/** @type {Function} */
+	this.onMouseMove = onMouseMove?.bind(this);
+
+	/** @type {Function} */
+	this.onMouseDown = onMouseDown?.bind(this);
 
 	/** @override */
 	this.render = function(gl) {

@@ -1,8 +1,7 @@
-import Instance from "instance";
 import {Vector2} from "math";
 
 /**
- * @todo Summary
+ * A GUI component.
  * 
  * @constructor
  * @param {object} options
@@ -32,15 +31,21 @@ export default function Component({align, margin, size}) {
 	 */
 	this.render = null;
 
+	this.requestRedraw = function() {
+		this.render(this.renderer.gl);
+	};
+
 	/**
 	 * Uses the component alignment and margin values to calculate its absolute position.
+	 * 
+	 * @param {Instance} instance
 	 */
-	this.computePosition = function() {
+	this.computePosition = function(instance) {
 		const
 			[horizontal, vertical] = this.align,
 			{x: mx, y: my} = this.margin,
 			{x: w, y: h} = this.size,
-			{viewportWidth, viewportHeight, currentScale} = Instance;
+			{viewportWidth, viewportHeight, currentScale} = instance;
 		let x = 0,
 			y = 0,
 			ow = viewportWidth / currentScale - w,

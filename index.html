@@ -3,29 +3,29 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<!-- @todo Metadata -->
-		<!-- @todo Add favicon -->
-		<link rel="icon" href="data:">
+		<meta name="author" content="matteokeole">
+		<meta name="description" content="WebGL 2D GUI library with Minecraft-related base components.">
+		<!-- @todo OG -->
+		<link rel="icon" href="assets/images/favicon.ico">
 		<link rel="stylesheet" media="screen" href="assets/css/main.css">
 		<script type="importmap">
 			{
 				"imports": {
 					"errors": "./src/errors/index.js",
 					"gui": "./src/gui/index.js",
-					"gui-renderer": "./src/renderers/GUIRenderer.js",
 					"instance": "./src/Instance.js",
 					"math": "./src/math/index.js",
-					"scene-renderer": "./src/renderers/SceneRenderer.js",
-					"texture": "./src/Texture.js"
+					"renderer": "./src/Renderer.js"
 				}
 			}
 		</script>
 		<script type="module" src="public/main.js"></script>
+		<!-- @todo Title -->
 	</head>
 
 	<body>
 		<noscript class="error">
-			<img src="assets/images/js.png">
+			<img src="assets/images/js.png" alt="">
 
 			This page needs JavaScript enabled to run.
 		</noscript>

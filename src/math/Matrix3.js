@@ -9,7 +9,7 @@
 export function Matrix3(...elements) {
 	const {length} = elements;
 
-	if (length < 9) throw TypeError(`Failed to create Matrix3 instance: 9 arguments required, but only ${length} present.`);
+	if (length < 9) throw TypeError(`Failed to construct 'Matrix3': 9 arguments required, but only ${length} present.`);
 
 	this?.push.apply(this, elements.slice(0, 9));
 }
@@ -20,7 +20,7 @@ Matrix3.prototype = Array.prototype;
  * @param {Vector2} v
  */
 Matrix3.prototype.translate = function(v) {
-	return this.multiplyMatrix3(Matrix3.translation(v));
+	return this.multiplyMatrix3(Matrix3.translate(v));
 };
 
 /**
@@ -124,7 +124,7 @@ Matrix3.projection = function(v) {
 /**
  * @param {Vector2} v
  */
-Matrix3.translation = function(v) {
+Matrix3.translate = function(v) {
 	const {x, y} = v;
 
 	return new Matrix3(

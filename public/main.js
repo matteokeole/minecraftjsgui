@@ -1,73 +1,55 @@
 import {NoWebGL2Error} from "errors";
-import {Image} from "gui";
-import GUIRenderer from "gui-renderer";
+import {Image, ImageButton} from "gui";
 import {Vector2} from "math";
-import SceneRenderer from "scene-renderer";
+import Instance from "instance";
+import GUIRenderer from "./extensions/GUIRenderer.js";
+
+export const instance = new Instance();
+export let guiRenderer;
 
 try {
-	SceneRenderer.build();
-	GUIRenderer.build();
+	instance.build();
+	await instance.initialize();
 
-	await SceneRenderer.init();
-	await GUIRenderer.init();
+	instance.setupRenderers([
+		guiRenderer = new GUIRenderer(instance),
+	]);
+
+	guiRenderer.build();
+	guiRenderer.enable();
+
+	await guiRenderer.init();
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
-	await GUIRenderer.loadTextures(guiTextures);
+	await guiRenderer.loadTextures(guiTextures);
 
-	const image = new Image({
+	/* const image = new Image({
 		align: ["left", "top"],
-		margin: new Vector2(10, 10),
+		margin: new Vector2(0, 0),
+		size: new Vector2(256, 256),
+		image: guiRenderer.textures["gui/widgets.png"],
+		uv: new Vector2(0, 0), // 146
+	}); */
+
+	const btn = new ImageButton({
+		align: ["left", "top"],
+		margin: new Vector2(20, 20),
 		size: new Vector2(20, 20),
-		image: GUIRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 106),
+		image: guiRenderer.textures["gui/widgets.png"],
+		uv: new Vector2(0, 146),
 	});
 
-	GUIRenderer.add(image);
+	guiRenderer.add(btn);
+	guiRenderer.compute();
+	guiRenderer.render();
 
-	GUIRenderer.render();
-
-	/** @todo Loop-related methods must be in the instance */
-	SceneRenderer.startLoop();
+	instance.startLoop();
 } catch (error) {
 	// Make sure the renderers have been built before dispose
-	if (!(error instanceof NoWebGL2Error)) {
-		GUIRenderer.dispose();
-		SceneRenderer.dispose();
-	}
+	if (!(error instanceof NoWebGL2Error)) instance.dispose();
 
 	error.display?.();
 
 	console.error("An error occurred:", error);
 }
-
-
-
-/* Pipeline example
-
-import {Layer, TextButton} from "gui";
-
-// Each layer has an onEscape listener that decrements the current layer priority and displays the correct one.
-// The only exception is the root layer, which has a priority of 0 and can't be escaped.
-const rootLayer = new Layer({
-	priority: 0,
-});
-const optionLayer = new Layer({
-	priority: 1,
-	background: TEXTURES["gui/option_background.png"],
-});
-
-const optionButton = new TextButton({
-	align: ["center", "center"],
-	margin: [0, 0],
-	text: "Options...",
-	disabled: false,
-	onClick: () => GUIRenderer.push(optionLayer),
-});
-
-rootLayer.add(optionButton);
-
-GUIRenderer.setLayers([rootLayer, optionLayer]);
-GUIRenderer.render();
-
-*/

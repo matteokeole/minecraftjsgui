@@ -10,7 +10,7 @@
 export function Vector3(x, y, z) {
 	const {length} = arguments;
 
-	if (length < 3) throw TypeError(`Failed to create Vector3 instance: 3 arguments required, but only ${length} present.`);
+	if (length < 3) throw TypeError(`Failed to construct 'Vector3': 3 arguments required, but only ${length} present.`);
 
 	this.x = x;
 	this.y = y;

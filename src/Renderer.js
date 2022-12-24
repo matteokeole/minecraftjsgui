@@ -1,23 +1,26 @@
-import {NoWebGL2Error, ShaderCompilationError} from "errors";
-import Instance from "instance";
-import Texture from "texture";
+import {ShaderCompilationError} from "errors";
+import Texture from "./Texture.js";
 
 /**
- * @todo Summary
+ * @todo Remove instance import
  * 
  * @constructor
+ * @param {Instance} instance
  * @param {object} options
- * @param {boolean} options.offscreen
  * @param {boolean} options.generateMipmaps
  */
-export default function Renderer({offscreen, generateMipmaps}) {
+export default function Renderer(instance, {generateMipmaps}) {
 	let request,
-		interval = 1000 / 10,
+		fps = 10,
+		interval = 1000 / fps,
 		then,
 		now,
 		diff;
 
-	/** @type {HTMLCanvasElement|OffscreenCanvas} */
+	/** @type {boolean} */
+	let enabled = false;
+
+	/** @type {OffscreenCanvas} */
 	this.canvas = null;
 
 	/** @type {WebGL2RenderingContext} */
@@ -29,39 +32,45 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	/** @type {boolean} */
 	this.isInLoop = false;
 
+	/** @type {boolean} */
+	this.disabled = !enabled;
+
+	/**
+	 * Enables this renderer.
+	 */
+	this.enable = function() {
+		enabled = true;
+
+		this.disabled = false;
+	};
+
+	/**
+	 * Disables this renderer.
+	 */
+	this.disable = function() {
+		enabled = false;
+
+		this.disabled = true;
+	};
+
 	/**
 	 * Initializes the canvas element and its WebGL context.
-	 * 
-	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		const {viewportWidth, viewportHeight} = Instance;
-		let canvas, gl;
+		const {viewportWidth, viewportHeight} = instance;
 
-		// Create canvas
-		if (!offscreen) {
-			canvas = document.createElement("canvas");
-			canvas.width = viewportWidth;
-			canvas.height = viewportHeight;
-		} else canvas = new OffscreenCanvas(viewportWidth, viewportHeight);
+		this.canvas = new OffscreenCanvas(viewportWidth, viewportHeight);
+		this.gl = this.canvas.getContext("webgl2");
 
-		// Get WebGL context
-		if ((gl = canvas.getContext("webgl2")) === null) throw new NoWebGL2Error();
-
-		Object.assign(gl, {
+		Object.assign(this.gl, {
 			attribute: {},
 			buffer: {},
 			texture: {},
 			uniform: {},
 			vao: {
-				main: gl.createVertexArray(),
+				main: this.gl.createVertexArray(),
 			},
 		});
-
-		this.canvas = canvas;
-		this.gl = gl;
-
-		if (!offscreen) document.body.appendChild(canvas);
 	};
 
 	/**
@@ -75,7 +84,7 @@ export default function Renderer({offscreen, generateMipmaps}) {
 		const
 			{gl} = this,
 			{length} = paths,
-			base = Instance.texturePath;
+			base = instance.texturePath;
 		let path, image, source;
 
 		for (let i = 0; i < length; i++) {
@@ -132,7 +141,7 @@ export default function Renderer({offscreen, generateMipmaps}) {
 	this.createShader = async function(path, type) {
 		const
 			{gl} = this,
-			base = Instance.shaderPath,
+			base = instance.shaderPath,
 			shader = gl.createShader(type),
 			source = await (await fetch(`${base}${path}`)).text();
 
@@ -221,12 +230,16 @@ export default function Renderer({offscreen, generateMipmaps}) {
 
 	/**
 	 * Resizes the renderer canvas and the context viewport.
+	 * NOTE: Must be overridden in an instance.
+	 * 
+	 * @method
 	 */
 	this.resize = function() {
 		const {canvas, gl} = this;
+		const {viewportWidth, viewportHeight} = instance;
 
-		canvas.width = Instance.viewportWidth;
-		canvas.height = Instance.viewportHeight;
+		canvas.width = viewportWidth;
+		canvas.height = viewportHeight;
 
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
@@ -243,8 +256,6 @@ export default function Renderer({offscreen, generateMipmaps}) {
 		 */
 		this.gl.getExtension("WEBGL_lose_context").loseContext();
 		this.gl = null;
-
-		if (!offscreen) this.canvas.remove();
 
 		this.canvas = null;
 	};

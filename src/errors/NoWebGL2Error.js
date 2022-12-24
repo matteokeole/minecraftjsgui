@@ -16,6 +16,7 @@ export function NoWebGL2Error() {
 			img = document.createElement("img");
 
 		img.src = "assets/images/webgl.png";
+		img.alt = '';
 
 		div.classList.add("error");
 		div.append(img, this.message);
