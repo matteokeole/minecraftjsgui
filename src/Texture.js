@@ -1,7 +1,7 @@
 import {Vector2} from "math";
 
 /**
- * WebGLTexture layer constructor.
+ * Wrapper for WebGLTextures.
  * 
  * @constructor
  * @param {Image} image
@@ -14,13 +14,6 @@ export default function Texture(image, source) {
 	/** @type {WebGLTexture} */
 	this.source = source;
 
-	/**
-	 * Returns the base image size as a Vector2.
-	 * 
-	 * @returns {Vector2}
-	 */
-	this.getSizeVector = () => new Vector2(
-		this.image.width,
-		this.image.height,
-	);
+	/** @type {Vector2} */
+	this.size = new Vector2(this.image.width, this.image.height);
 }

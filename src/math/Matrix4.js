@@ -132,7 +132,7 @@ Matrix4.orthographic = function(l, r, t, b, n, f) {
 /**
  * @param {Vector3} v
  */
-Matrix4.translation = function(v) {
+Matrix4.translate = function(v) {
 	const {x, y, z} = v;
 
 	return new Matrix4(

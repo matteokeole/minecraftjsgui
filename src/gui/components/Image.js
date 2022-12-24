@@ -1,9 +1,9 @@
 import Component from "./Component.js";
-import {Matrix3, Vector2} from "math";
+import {Matrix3} from "math";
 
 /**
- * @todo Add image source (WebGLTexture)
- * @todo Summary
+ * Image component.
+ * Stores a pre-loaded `WebGLTexture` and render a rectangular part of it.
  * 
  * @constructor
  * @extends Component
@@ -24,21 +24,19 @@ export default function Image({image, uv}) {
 	this.render = function(gl, instance) {
 		this.computePosition(instance);
 
-		const imageSize = this.image.getSizeVector();
-
 		const worldMatrix = Matrix3
-			.translation(this.position)
+			.translate(this.position)
 			.scale(this.size);
 
+		const imageSize = this.image.size;
+
 		const textureMatrix = Matrix3
-			.translation(this.uv.divide(imageSize))
+			.translate(this.uv.divide(imageSize))
 			.scale(this.size.divide(imageSize));
 
 		gl.uniformMatrix3fv(gl.uniform.worldMatrix, false, new Float32Array(worldMatrix));
 		gl.uniformMatrix3fv(gl.uniform.textureMatrix, false, new Float32Array(textureMatrix));
-
 		gl.bindTexture(gl.TEXTURE_2D, image.source);
-
 		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 	};
 }

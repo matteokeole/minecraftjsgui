@@ -1,7 +1,7 @@
 import {Vector2} from "math";
 
 /**
- * @todo Remove instance import
+ * A GUI component.
  * 
  * @constructor
  * @param {object} options

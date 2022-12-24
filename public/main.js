@@ -2,7 +2,7 @@ import {NoWebGL2Error} from "errors";
 import {Image} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
-import GUIRenderer from "./renderers/GUIRenderer.js";
+import GUIRenderer from "./extensions/GUIRenderer.js";
 
 export const instance = new Instance();
 export let guiRenderer;
@@ -24,11 +24,11 @@ try {
 	await guiRenderer.loadTextures(guiTextures);
 
 	const image = new Image({
-		align: ["right", "top"],
-		margin: new Vector2(0, 40),
-		size: new Vector2(20, 20),
+		align: ["left", "top"],
+		margin: new Vector2(0, 0),
+		size: new Vector2(256, 256),
 		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 146),
+		uv: new Vector2(0, 0), // 146
 	});
 
 	guiRenderer.add(image);
