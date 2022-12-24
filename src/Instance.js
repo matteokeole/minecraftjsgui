@@ -20,6 +20,7 @@ export default function Instance() {
 		then,
 		now,
 		diff;
+	let rendererLength;
 
 	/**
 	 * HTMLCanvas output.
@@ -182,12 +183,13 @@ export default function Instance() {
 	 * 
 	 * @param {Renderer[]} renderers
 	 */
-	this.setRenderers = function(renderers) {
+	this.setupRenderers = function(renderers) {
 		const {gl, rendererTextures} = this;
-		const {length} = renderers;
 		let texture;
 
-		for (let i = 0; i < length; i++) {
+		rendererLength = renderers.length;
+
+		for (let i = 0; i < rendererLength; i++) {
 			renderers[i].instance = this;
 
 			this.renderers.push(renderers[i]);
@@ -234,9 +236,7 @@ export default function Instance() {
 
 		this.currentScale = currentScale;
 
-		const {length} = this.renderers;
-
-		for (let i = 0; i < length; i++) {
+		for (let i = 0; i < rendererLength; i++) {
 			this.renderers[i].resize();
 		}
 	};
@@ -327,14 +327,12 @@ export default function Instance() {
      * @todo Implement
      */
 	this.render = function() {
-		const
-			{gl, rendererTextures} = this,
-			{length} = rendererTextures;
+		const {gl, rendererTextures} = this;
 
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		for (let i = 0; i < length; i++) {
+		for (let i = 0; i < rendererLength; i++) {
 			gl.bindTexture(gl.TEXTURE_2D, rendererTextures[i]);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 		}
@@ -343,7 +341,16 @@ export default function Instance() {
 	/**
 	 * @todo Implement
 	 */
-	this.dispose = () => null;
+	this.dispose = function() {
+		// Dispose offscreen renderers
+		for (let i = 0; i < rendererLength; i++) {
+			renderers[i].dispose();
+		}
+
+		/** @todo Dispose the output context */
+		this.canvas.remove();
+		this.canvas = null;
+	};
 
 	this.addMouseMoveListener = function(callback) {
 		this.mouseMoveEvents.push(callback);

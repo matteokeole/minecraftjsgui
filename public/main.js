@@ -11,7 +11,7 @@ try {
 	instance.build();
 	await instance.initialize();
 
-	instance.setRenderers([
+	instance.setupRenderers([
 		guiRenderer = new GUIRenderer(instance),
 	]);
 
@@ -37,8 +37,6 @@ try {
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 146),
-		// onMouseMove: p => console.log("Hovering.", p),
-		onMouseDown: () => console.log("Click!"),
 	});
 
 	guiRenderer.add(btn);

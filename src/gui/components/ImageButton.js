@@ -22,10 +22,10 @@ export default function ImageButton({image, uv, onMouseMove, onMouseDown}) {
 	this.uv = uv;
 
 	/** @type {Function} */
-	this.onMouseMove = onMouseMove;
+	this.onMouseMove = onMouseMove?.bind(this);
 
 	/** @type {Function} */
-	this.onMouseDown = onMouseDown;
+	this.onMouseDown = onMouseDown?.bind(this);
 
 	/** @override */
 	this.render = function(gl) {
