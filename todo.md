@@ -6,3 +6,4 @@
 - [ ] Rename `translation`/`translate` methods on Matrix3/4
 - [ ] Define cases where default imports should be used over named imports
 - [ ] Better error handling in `public/main.js`
+- [ ] Add `src` before named imports from the `src/` folder?

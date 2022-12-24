@@ -6,14 +6,20 @@ import GUIRenderer from "./renderers/GUIRenderer.js";
 import SceneRenderer from "./renderers/SceneRenderer.js";
 
 export const instance = new Instance();
+export let guiRenderer;
 
 try {
 	instance.build();
 
-	SceneRenderer.build();
-	GUIRenderer.build();
+	instance.setRenderers([
+		// sceneRenderer = new SceneRenderer(instance),
+		guiRenderer = new GUIRenderer(instance),
+	]);
 
-	await SceneRenderer.init();
+	// sceneRenderer.build();
+	guiRenderer.build();
+
+	/*await SceneRenderer.init();
 	await GUIRenderer.init();
 
 	// Load GUI textures
@@ -30,16 +36,13 @@ try {
 
 	GUIRenderer.add(image);
 
-	GUIRenderer.render();
+	GUIRenderer.render(); */
 
-	/** @todo Loop-related methods must be in the instance */
-	SceneRenderer.startLoop();
+	/** @todo Put the loop-related methods in the instance */
+	instance.startLoop();
 } catch (error) {
 	// Make sure the renderers have been built before dispose
-	if (!(error instanceof NoWebGL2Error)) {
-		GUIRenderer.dispose();
-		SceneRenderer.dispose();
-	}
+	if (!(error instanceof NoWebGL2Error)) instance.dispose();
 
 	error.display?.();
 

@@ -1,5 +1,6 @@
 import {NoWebGL2Error} from "errors";
 import {clampDown, clampUp} from "math";
+import Texture from "./Texture.js";
 
 /**
  * @todo Apply settings
@@ -13,7 +14,13 @@ import {clampDown, clampUp} from "math";
 export default function Instance() {
 	const DEFAULT_WIDTH = 320;
 	const DEFAULT_HEIGHT = 240;
-	let _firstResize = true;
+	let firstResize = true,
+		request,
+		fps = 10,
+		interval = 1000 / fps,
+		then,
+		now,
+		diff;
 
 	/**
 	 * HTMLCanvas output.
@@ -21,6 +28,20 @@ export default function Instance() {
 	 * @type {?HTMLCanvasElement}
 	 */
 	this.output = null;
+
+	/**
+	 * Offscreen renderers.
+	 * 
+	 * @type {Renderer[]}
+	 */
+	this.renderers = [];
+
+	/**
+	 * Textures for each offscreen renderer.
+	 * 
+	 * @type {WebGLTexture[]}
+	 */
+	 this.rendererTextures = [];
 
 	/**
 	 * Shader folder path, relative to the root folder.
@@ -95,10 +116,9 @@ export default function Instance() {
 
 		if (this.gl === null) throw NoWebGL2Error();
 
-		return;
-
-		this.resizeObserver = new ResizeObserver(function([entry]) {
-			if (_firstResize) return _firstResize = false;
+		this.resizeObserver = new ResizeObserver(([entry]) => {
+			// Avoid the first resize
+			if (firstResize) return firstResize = null;
 
 			let width, height, dpr = 1;
 
@@ -132,6 +152,26 @@ export default function Instance() {
 	};
 
 	/**
+	 * Setups the instance renderers.
+	 * 
+	 * @param {Renderer[]} renderers
+	 */
+	this.setRenderers = function(renderers) {
+		const {gl, rendererTextures} = this;
+		const {length} = renderers;
+		let texture;
+
+		for (let i = 0; i < length; i++) {
+			this.renderers.push(renderers[i]);
+
+			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
+
+			rendererTextures.push(texture);
+		}
+	};
+
+	/**
 	 * When called, recalculates the max possible GUI scale for the current viewport dimensions
 	 * Clamps up the desired scale to the max scale to get the current scale
 	 * 
@@ -144,6 +184,9 @@ export default function Instance() {
 		this.viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0;
 		this.viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0;
 		this.devicePixelRatio = dpr;
+
+		this.output.width = this.viewportWidth;
+		this.output.height = this.viewportHeight;
 
 		// Calculate scale multiplier
 		let i = 1;
@@ -163,4 +206,58 @@ export default function Instance() {
 
 		/** @todo Redraw the GUI with the new scale here? */
 	};
+
+	/**
+	 * @todo RGB or RGBA?
+	 * 
+     * @param {number} index
+	 * @param {OffscreenCanvas} canvas
+	 */
+	this.updateRendererTexture = function(index, canvas) {
+		const {gl, rendererTextures} = this;
+
+		gl.bindTexture(gl.TEXTURE_2D, rendererTextures[index]);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+	};
+
+	/**
+	 * Starts the render loop.
+	 */
+	 this.startLoop = function() {
+		then = performance.now();
+
+		this.loop();
+	};
+
+	/**
+	 * Caller for updates and renders within a render loop.
+	 */
+	this.loop = function() {
+		request = requestAnimationFrame(this.loop);
+
+		diff = (now = performance.now()) - then;
+
+		if (diff > interval) {
+			then = now - diff % interval;
+
+			this.render();
+		}
+	}.bind(this);
+
+	/**
+	 * Stops the render loop.
+	 */
+	this.stopLoop = function() {
+		cancelAnimationFrame(request);
+	};
+
+	/**
+     * @todo Implement
+     */
+	this.render = () => null;
+
+	/**
+	 * @todo Implement
+	 */
+	this.dispose = () => null;
 }

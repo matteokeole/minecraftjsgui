@@ -9,7 +9,7 @@
 export function Vector2(x, y) {
 	const {length} = arguments;
 
-	if (length < 2) throw TypeError(`Failed to create Vector3 instance: 2 arguments required, but only ${length} present.`);
+	if (length < 2) throw TypeError(`Failed to construct 'Vector2': 2 arguments required, but only ${length} present.`);
 
 	this.x = x;
 	this.y = y;

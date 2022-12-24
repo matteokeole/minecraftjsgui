@@ -1,20 +1,18 @@
-import Renderer from "renderer";
-import {instance} from "../main.js";
 import {Matrix3, Vector2} from "math";
-import SceneRenderer from "./SceneRenderer.js";
+import Renderer from "renderer";
 
 /**
- * 2D GUI renderer singleton.
+ * GUI renderer singleton.
  * 
  * @constructor
  * @extends Renderer
+ * @param {Instance} instance
  */
-function GUIRenderer() {
+export default function GUIRenderer(instance) {
 	if (GUIRenderer._instance) return GUIRenderer._instance;
 
-	Renderer.call(this, {
-		offscreen: true,
-		generateMipmaps: true,
+	Renderer.call(this, instance, {
+		generateMipmaps: false,
 	});
 
 	GUIRenderer._instance = this;
@@ -100,9 +98,12 @@ function GUIRenderer() {
 			components[i].render(this.gl);
 		}
 
-		SceneRenderer.updateGUITexture(this.canvas);
+		this.instance.updateRendererTexture(0, this.canvas);
 	};
 
+	/**
+	 * @override
+	 */
 	this.resize = function() {
 		const
 			{canvas, gl} = this,
@@ -128,5 +129,3 @@ GUIRenderer.prototype = Object.create(Renderer.prototype, {
 		value: GUIRenderer,
 	},
 });
-
-export default new GUIRenderer();

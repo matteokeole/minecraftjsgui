@@ -1,18 +1,16 @@
 import Renderer from "renderer";
-import GUIRenderer from "./GUIRenderer.js";
-import {instance} from "../main.js";
 
 /**
  * Scene renderer singleton.
  * 
  * @constructor
  * @extends Renderer
+ * @param {Instance} instance
  */
-function SceneRenderer() {
+export default function SceneRenderer(instance) {
 	if (SceneRenderer._instance) return SceneRenderer._instance;
 
-	Renderer.call(this, {
-		offscreen: false,
+	Renderer.call(this, instance, {
 		generateMipmaps: true,
 	});
 
@@ -99,10 +97,7 @@ SceneRenderer.prototype = Object.create(Renderer.prototype, {
 	},
 });
 
-const sceneRenderer = new SceneRenderer();
-
-/** @todo Append to the instance instead of the scene renderer */
-const resizeObserver = new ResizeObserver(function([entry]) {
+/* const resizeObserver = new ResizeObserver(function([entry]) {
 	if (_firstResize) return _firstResize = false;
 
 	let width, height, dpr = 1;
@@ -124,6 +119,4 @@ const resizeObserver = new ResizeObserver(function([entry]) {
 	sceneRenderer.resize();
 });
 
-let _firstResize = true;
-
-export default sceneRenderer;
+let _firstResize = true; */

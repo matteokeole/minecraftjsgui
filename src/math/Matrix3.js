@@ -9,7 +9,7 @@
 export function Matrix3(...elements) {
 	const {length} = elements;
 
-	if (length < 9) throw TypeError(`Failed to create Matrix3 instance: 9 arguments required, but only ${length} present.`);
+	if (length < 9) throw TypeError(`Failed to construct 'Matrix3': 9 arguments required, but only ${length} present.`);
 
 	this?.push.apply(this, elements.slice(0, 9));
 }
