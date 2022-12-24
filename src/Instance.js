@@ -1,5 +1,5 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
-import {clampDown, clampUp} from "math";
+import {Vector2, clampDown, clampUp, intersects} from "math";
 
 /**
  * @todo Apply settings
@@ -103,6 +103,30 @@ export default function Instance() {
 	this.maxScale = 4;
 
 	/**
+	 * Current position of the pointer.
+	 * Used for GUI event listeners.
+	 * 
+	 * @type {Vector2}
+	 */
+	this.pointerPosition = new Vector2(0, 0);
+
+	/**
+	 * List of registered `mousemove` events.
+	 * 
+	 * @type {Function[]}
+	 */
+	this.mouseMoveEvents = [];
+	this.mouseMoveEventCount = () => this.mouseMoveEvents.length;
+
+	/**
+	 * List of registered `mousedown` events.
+	 * 
+	 * @type {Function[]}
+	 */
+	 this.mouseDownEvents = [];
+	 this.mouseDownEventCount = () => this.mouseDownEvents.length;
+
+	/**
 	 * @todo Finish implementing
 	 * 
 	 * @throws {NoWebGL2Error}
@@ -148,6 +172,9 @@ export default function Instance() {
 				box: "content-box",
 			});
 		}
+
+		this.output.addEventListener("mousemove", mouveMoveListener.bind(this));
+		this.output.addEventListener("mousedown", mouveDownListener.bind(this));
 	};
 
 	/**
@@ -317,6 +344,44 @@ export default function Instance() {
 	 * @todo Implement
 	 */
 	this.dispose = () => null;
+
+	this.addMouseMoveListener = function(callback) {
+		this.mouseMoveEvents.push(callback);
+	};
+
+	this.addMouseDownListener = function(callback) {
+		this.mouseDownEvents.push(callback);
+	};
+
+	function mouveMoveListener({clientX: x, clientY: y}) {
+		this.pointerPosition.x = x;
+		this.pointerPosition.y = y;
+		this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
+
+		const length = this.mouseMoveEventCount();
+		let event;
+
+		for (let i = 0; i < length; i++) {
+			event = this.mouseMoveEvents[i];
+
+			if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
+
+			event(this.pointerPosition);
+		}
+	}
+
+	function mouveDownListener() {
+		const length = this.mouseDownEventCount();
+		let event;
+
+		for (let i = 0; i < length; i++) {
+			event = this.mouseDownEvents[i];
+
+			if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
+
+			event(this.pointerPosition);
+		}
+	}
 }
 
 

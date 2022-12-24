@@ -65,8 +65,24 @@ export default function GUIRenderer(instance) {
 	 */
 	this.add = function(...components) {
 		const {length} = components;
+		let component;
 
 		for (let i = 0; i < length; i++) {
+			component = components[i];
+			component.renderer = this;
+
+			if (component.onMouseMove) {
+				component.onMouseMove.component = component;
+
+				this.instance.addMouseMoveListener(component.onMouseMove);
+			}
+
+			if (component.onMouseDown) {
+				component.onMouseDown.component = component;
+
+				this.instance.addMouseDownListener(component.onMouseDown);
+			}
+
 			this.components.add(components[i]);
 		}
 	};
@@ -81,6 +97,16 @@ export default function GUIRenderer(instance) {
 
 		for (let i = 0; i < length; i++) {
 			this.components.delete(components[i]);
+		}
+	};
+
+	this.compute = function() {
+		const
+			components = [...this.components],
+			{length} = components;
+		
+		for (let i = 0; i < length; i++) {
+			components[i].computePosition(this.instance);
 		}
 	};
 
@@ -115,6 +141,7 @@ export default function GUIRenderer(instance) {
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
+		this.compute();
 		this.render();
 	};
 }

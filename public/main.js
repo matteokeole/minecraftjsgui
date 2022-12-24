@@ -1,5 +1,5 @@
 import {NoWebGL2Error} from "errors";
-import {Image} from "gui";
+import {Image, ImageButton} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
@@ -23,15 +23,26 @@ try {
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
 	await guiRenderer.loadTextures(guiTextures);
 
-	const image = new Image({
+	/* const image = new Image({
 		align: ["left", "top"],
 		margin: new Vector2(0, 0),
 		size: new Vector2(256, 256),
 		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 0), // 146
+	}); */
+
+	const btn = new ImageButton({
+		align: ["left", "top"],
+		margin: new Vector2(20, 20),
+		size: new Vector2(20, 20),
+		image: guiRenderer.textures["gui/widgets.png"],
+		uv: new Vector2(0, 146),
+		onMouseMove: p => console.log("Hovering.", p),
+		onMouseDown: () => alert("Click!"),
 	});
 
-	guiRenderer.add(image);
+	guiRenderer.add(btn);
+	guiRenderer.compute();
 	guiRenderer.render();
 
 	instance.startLoop();
