@@ -86,8 +86,6 @@ export default function GUIRenderer(instance) {
 
 	/**
 	 * Renders the GUI and updates the scene renderer GUI texture.
-	 * 
-	 * @callback {SceneRenderer~updateGUITexture}
 	 */
 	this.render = function() {
 		const
@@ -95,7 +93,7 @@ export default function GUIRenderer(instance) {
 			{length} = components;
 
 		for (let i = 0; i < length; i++) {
-			components[i].render(this.gl);
+			components[i].render(this.gl, this.instance);
 		}
 
 		this.instance.updateRendererTexture(0, this.canvas);
@@ -105,13 +103,10 @@ export default function GUIRenderer(instance) {
 	 * @override
 	 */
 	this.resize = function() {
-		const
-			{canvas, gl} = this,
-			{viewportWidth, viewportHeight, currentScale} = instance;
+		const {canvas, gl, instance: {viewportWidth, viewportHeight, currentScale}} = this;
 
 		canvas.width = viewportWidth;
 		canvas.height = viewportHeight;
-
 		gl.viewport(0, 0, canvas.width, canvas.height);
 
 		const projectionMatrix = Matrix3

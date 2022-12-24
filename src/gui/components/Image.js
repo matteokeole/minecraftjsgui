@@ -20,8 +20,9 @@ export default function Image({image, uv}) {
 	/** @type {Vector2} */
 	this.uv = uv;
 
-	this.render = function(gl) {
-		this.computePosition();
+	/** @override */
+	this.render = function(gl, instance) {
+		this.computePosition(instance);
 
 		const imageSize = this.image.getSizeVector();
 

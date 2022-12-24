@@ -1,6 +1,5 @@
-import {NoWebGL2Error} from "errors";
+import {NoWebGL2Error, ShaderCompilationError} from "errors";
 import {clampDown, clampUp} from "math";
-import Texture from "./Texture.js";
 
 /**
  * @todo Apply settings
@@ -162,6 +161,8 @@ export default function Instance() {
 		let texture;
 
 		for (let i = 0; i < length; i++) {
+			renderers[i].instance = this;
+
 			this.renderers.push(renderers[i]);
 
 			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
@@ -180,13 +181,17 @@ export default function Instance() {
 	 * @param {number} dpr
 	 */
 	this.resize = function(width, height, dpr) {
+		const {output, gl} = this;
+
 		/** @todo Set viewport size as multiples of 2? */
 		this.viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0;
 		this.viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0;
 		this.devicePixelRatio = dpr;
 
-		this.output.width = this.viewportWidth;
-		this.output.height = this.viewportHeight;
+		output.width = this.viewportWidth;
+		output.height = this.viewportHeight;
+
+		gl.viewport(0, 0, output.width, output.height);
 
 		// Calculate scale multiplier
 		let i = 1;
@@ -200,11 +205,13 @@ export default function Instance() {
 			this.maxScale = clampDown(i - 1, 1),
 		);
 
-		if (currentScale === this.currentScale) return;
-
 		this.currentScale = currentScale;
 
-		/** @todo Redraw the GUI with the new scale here? */
+		const {length} = this.renderers;
+
+		for (let i = 0; i < length; i++) {
+			this.renderers[i].resize();
+		}
 	};
 
 	/**
@@ -251,13 +258,116 @@ export default function Instance() {
 		cancelAnimationFrame(request);
 	};
 
+	this.initialize = async function() {
+		const {gl} = this;
+
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+		/** @todo load `main` program */
+		const [program, vertexShader, fragmentShader] = await createProgram(gl, this.shaderPath, [
+			"main.vert",
+			"main.frag",
+		]);
+
+		linkProgram(gl, program, vertexShader, fragmentShader);
+
+		gl.useProgram(program);
+
+		Object.assign(gl, {
+			attribute: {},
+			buffer: {},
+			uniform: {},
+		});
+
+		gl.attribute.position = 0;
+		gl.buffer.position = gl.createBuffer();
+
+		gl.enableVertexAttribArray(gl.attribute.position);
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
+		gl.vertexAttribPointer(gl.attribute.position, 2, gl.FLOAT, false, 0, 0);
+
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+			1,  1,
+		   -1,  1,
+		   -1, -1,
+			1, -1,
+		]), gl.STATIC_DRAW);
+	};
+
 	/**
      * @todo Implement
      */
-	this.render = () => null;
+	this.render = function() {
+		const
+			{gl, rendererTextures} = this,
+			{length} = rendererTextures;
+
+		gl.clearColor(0, 0, 0, 1);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		for (let i = 0; i < length; i++) {
+			gl.bindTexture(gl.TEXTURE_2D, rendererTextures[i]);
+			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+		}
+	};
 
 	/**
 	 * @todo Implement
 	 */
 	this.dispose = () => null;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/** @todo remove duplicate utils */
+async function createProgram(gl, basePath, [vertexPath, fragmentPath]) {
+	const
+		program = gl.createProgram(),
+		vertexShader = await createShader(gl, basePath, vertexPath, gl.VERTEX_SHADER),
+		fragmentShader = await createShader(gl, basePath, fragmentPath, gl.FRAGMENT_SHADER);
+
+	gl.attachShader(program, vertexShader);
+	gl.attachShader(program, fragmentShader);
+	gl.linkProgram(program);
+
+	return [program, vertexShader, fragmentShader];
+};
+
+async function createShader(gl, base, path, type) {
+	const
+		shader = gl.createShader(type),
+		source = await (await fetch(`${base}${path}`)).text();
+
+	gl.shaderSource(shader, source);
+	gl.compileShader(shader);
+
+	return shader;
+};
+
+function linkProgram(gl, program, vertexShader, fragmentShader) {
+	gl.linkProgram(program);
+
+	if (gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+
+	let log;
+
+	if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
+		throw ShaderCompilationError(log, gl.VERTEX_SHADER);
+	}
+
+	if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
+		throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
+	}
+};

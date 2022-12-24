@@ -3,42 +3,37 @@ import {Image} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
 import GUIRenderer from "./renderers/GUIRenderer.js";
-import SceneRenderer from "./renderers/SceneRenderer.js";
 
 export const instance = new Instance();
 export let guiRenderer;
 
 try {
 	instance.build();
+	await instance.initialize();
 
 	instance.setRenderers([
-		// sceneRenderer = new SceneRenderer(instance),
 		guiRenderer = new GUIRenderer(instance),
 	]);
 
-	// sceneRenderer.build();
 	guiRenderer.build();
 
-	/*await SceneRenderer.init();
-	await GUIRenderer.init();
+	await guiRenderer.init();
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
-	await GUIRenderer.loadTextures(guiTextures);
+	await guiRenderer.loadTextures(guiTextures);
 
 	const image = new Image({
-		align: ["center", "center"],
-		margin: new Vector2(0, 0),
+		align: ["right", "top"],
+		margin: new Vector2(0, 40),
 		size: new Vector2(20, 20),
-		image: GUIRenderer.textures["gui/widgets.png"],
+		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 146),
 	});
 
-	GUIRenderer.add(image);
+	guiRenderer.add(image);
+	guiRenderer.render();
 
-	GUIRenderer.render(); */
-
-	/** @todo Put the loop-related methods in the instance */
 	instance.startLoop();
 } catch (error) {
 	// Make sure the renderers have been built before dispose
@@ -48,34 +43,3 @@ try {
 
 	console.error("An error occurred:", error);
 }
-
-
-
-/* Pipeline example
-
-import {Layer, TextButton} from "gui";
-
-// Each layer has an onEscape listener that decrements the current layer priority and displays the correct one.
-// The only exception is the root layer, which has a priority of 0 and can't be escaped.
-const rootLayer = new Layer({
-	priority: 0,
-});
-const optionLayer = new Layer({
-	priority: 1,
-	background: TEXTURES["gui/option_background.png"],
-});
-
-const optionButton = new TextButton({
-	align: ["center", "center"],
-	margin: [0, 0],
-	text: "Options...",
-	disabled: false,
-	onClick: () => GUIRenderer.push(optionLayer),
-});
-
-rootLayer.add(optionButton);
-
-GUIRenderer.setLayers([rootLayer, optionLayer]);
-GUIRenderer.render();
-
-*/

@@ -1,4 +1,3 @@
-import {instance} from "../../../public/main.js";
 import {Vector2} from "math";
 
 /**
@@ -34,8 +33,10 @@ export default function Component({align, margin, size}) {
 
 	/**
 	 * Uses the component alignment and margin values to calculate its absolute position.
+	 * 
+	 * @param {Instance} instance
 	 */
-	this.computePosition = function() {
+	this.computePosition = function(instance) {
 		const
 			[horizontal, vertical] = this.align,
 			{x: mx, y: my} = this.margin,
