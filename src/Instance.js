@@ -116,7 +116,7 @@ export default function Instance() {
 	 * @type {Function[]}
 	 */
 	this.mouseMoveEvents = [];
-	this.mouseMoveEventCount = () => this.mouseMoveEvents.length;
+	this.mouseMoveEventCount = 0;
 
 	/**
 	 * List of registered `mousedown` events.
@@ -124,7 +124,7 @@ export default function Instance() {
 	 * @type {Function[]}
 	 */
 	 this.mouseDownEvents = [];
-	 this.mouseDownEventCount = () => this.mouseDownEvents.length;
+	 this.mouseDownEventCount = 0;
 
 	/**
 	 * @todo Finish implementing
@@ -347,21 +347,22 @@ export default function Instance() {
 
 	this.addMouseMoveListener = function(callback) {
 		this.mouseMoveEvents.push(callback);
+		this.mouseMoveEventCount++;
 	};
 
 	this.addMouseDownListener = function(callback) {
 		this.mouseDownEvents.push(callback);
+		this.mouseDownEventCount++;
 	};
 
 	function mouveMoveListener({clientX: x, clientY: y}) {
+		let event;
+
 		this.pointerPosition.x = x;
 		this.pointerPosition.y = y;
 		this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
 
-		const length = this.mouseMoveEventCount();
-		let event;
-
-		for (let i = 0; i < length; i++) {
+		for (let i = 0; i < this.mouseMoveEventCount; i++) {
 			event = this.mouseMoveEvents[i];
 
 			if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
@@ -371,10 +372,9 @@ export default function Instance() {
 	}
 
 	function mouveDownListener() {
-		const length = this.mouseDownEventCount();
 		let event;
 
-		for (let i = 0; i < length; i++) {
+		for (let i = 0; i < this.mouseDownEventCount; i++) {
 			event = this.mouseDownEvents[i];
 
 			if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
