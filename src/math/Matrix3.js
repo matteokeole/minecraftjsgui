@@ -1,9 +1,11 @@
+import {Vector2} from "./Vector2.js";
+
 /**
  * 3x3 matrix class.
  * 
  * @constructor
  * @extends Array
- * @param {...number} elements
+ * @param {...Number} elements
  * @throws {TypeError}
  */
 export function Matrix3(...elements) {
@@ -31,7 +33,7 @@ Matrix3.prototype.scale = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Matrix3.prototype.multiplyScalar = function(n) {
 	const m = this;
@@ -135,7 +137,7 @@ Matrix3.translate = function(v) {
 };
 
 /**
- * @param {number} a Angle in radians
+ * @param {Number} a Angle in radians
  */
 Matrix3.rotationZ = function(a) {
 	const s = Math.sin(a), c = Math.cos(a);

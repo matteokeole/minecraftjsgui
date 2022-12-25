@@ -1,5 +1,6 @@
 import {NoWebGL2Error, ShaderCompilationError} from "errors";
 import {Vector2, clampDown, clampUp, intersects} from "math";
+import Renderer from "./Renderer.js";
 
 /**
  * @todo Apply settings
@@ -46,60 +47,60 @@ export default function Instance() {
 	/**
 	 * Shader folder path, relative to the root folder.
 	 * 
-	 * @type {?string}
+	 * @type {?String}
 	 */
 	this.shaderPath = "assets/shaders/";
 
 	/**
 	 * Texture folder path, relative to the root folder.
 	 * 
-	 * @type {?string}
+	 * @type {?String}
 	 */
 	this.texturePath = "assets/textures/";
 
 	/**
 	 * Cached value of window.devicePixelRatio.
 	 * 
-	 * @type {?number}
+	 * @type {?Number}
 	 */
 	this.devicePixelRatio = null;
 
 	/**
 	 * Cached value of window.innerWidth.
 	 * 
-	 * @type {?number}
+	 * @type {?Number}
 	 */
 	this.viewportWidth = innerWidth;
 
 	/**
 	 * Cached value of window.innerHeight.
 	 * 
-	 * @type {?number}
+	 * @type {?Number}
 	 */
 	this.viewportHeight = innerHeight;
+
+	/**
+	 * Current GUI scale multiplier.
+	 * Determines the scale of the crosshair and most of the GUI components.
+	 * 
+	 * @type {?Number}
+	 */
+	this.currentScale = 2;
 
 	/**
 	 * @todo Since this is controlled by the user, move it to a public class?
 	 * 
 	 * GUI scale multiplier chosen by the user.
 	 * 
-	 * @type {?number}
+	 * @type {?Number}
 	 */
 	this.desiredScale = 2;
-
-	/**
-	 * Current GUI scale multiplier.
-	 * Determines the scale of the crosshair and most of the GUI components.
-	 * 
-	 * @type {?number}
-	 */
-	this.currentScale = 2;
 
 	/**
 	 * Maximum GUI scale multiplier appliable to the current viewport.
 	 * This caps the desired scale multiplier.
 	 * 
-	 * @type {?number}
+	 * @type {?Number}
 	 */
 	this.maxScale = 4;
 
@@ -205,9 +206,9 @@ export default function Instance() {
 	 * When called, recalculates the max possible GUI scale for the current viewport dimensions
 	 * Clamps up the desired scale to the max scale to get the current scale
 	 * 
-	 * @param {number} width
-	 * @param {number} height
-	 * @param {number} dpr
+	 * @param {Number} width
+	 * @param {Number} height
+	 * @param {Number} dpr
 	 */
 	this.resize = function(width, height, dpr) {
 		const {output, gl} = this;
@@ -244,7 +245,7 @@ export default function Instance() {
 	/**
 	 * @todo RGB or RGBA?
 	 * 
-     * @param {number} index
+     * @param {Number} index
 	 * @param {OffscreenCanvas} canvas
 	 */
 	this.updateRendererTexture = function(index, canvas) {
@@ -340,9 +341,6 @@ export default function Instance() {
 		}
 	};
 
-	/**
-	 * @todo Implement
-	 */
 	this.dispose = function() {
 		// Dispose offscreen renderers
 		for (let i = 0; i < rendererLength; i++) {
@@ -363,34 +361,6 @@ export default function Instance() {
 		this.mouseDownEvents.push(callback);
 		this.mouseDownEventCount++;
 	};
-
-	function mouveMoveListener({clientX: x, clientY: y}) {
-		let event;
-
-		this.pointerPosition.x = x;
-		this.pointerPosition.y = y;
-		this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
-
-		for (let i = 0; i < this.mouseMoveEventCount; i++) {
-			event = this.mouseMoveEvents[i];
-
-			if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
-
-			event(this.pointerPosition);
-		}
-	}
-
-	function mouveDownListener() {
-		let event;
-
-		for (let i = 0; i < this.mouseDownEventCount; i++) {
-			event = this.mouseDownEvents[i];
-
-			if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
-
-			event(this.pointerPosition);
-		}
-	}
 }
 
 
@@ -445,3 +415,36 @@ function linkProgram(gl, program, vertexShader, fragmentShader) {
 		throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
 	}
 };
+
+
+
+
+
+
+function mouveMoveListener({clientX: x, clientY: y}) {
+	let event;
+
+	this.pointerPosition.x = x;
+	this.pointerPosition.y = y;
+	this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
+
+	for (let i = 0; i < this.mouseMoveEventCount; i++) {
+		event = this.mouseMoveEvents[i];
+
+		if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
+
+		event(this.pointerPosition);
+	}
+}
+
+function mouveDownListener() {
+	let event;
+
+	for (let i = 0; i < this.mouseDownEventCount; i++) {
+		event = this.mouseDownEvents[i];
+
+		if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
+
+		event(this.pointerPosition);
+	}
+}

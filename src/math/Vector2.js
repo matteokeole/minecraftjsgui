@@ -2,8 +2,8 @@
  * Bi-dimensional vector class.
  * 
  * @constructor
- * @param {number} x
- * @param {number} y
+ * @param {Number} x
+ * @param {Number} y
  * @throws {TypeError}
  */
 export function Vector2(x, y) {
@@ -26,7 +26,7 @@ Vector2.prototype.add = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Vector2.prototype.addScalar = function(n) {
 	return new Vector2(
@@ -59,7 +59,7 @@ Vector2.prototype.divide = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  * @throws {RangeError}
  */
 Vector2.prototype.divideScalar = function(n) {
@@ -89,7 +89,7 @@ Vector2.prototype.lengthSquared = function() {
 
 /**
  * @param {Vector2} v
- * @param {number} n
+ * @param {Number} n
  */
 Vector2.prototype.lerp = function(v, n) {
 	const a = this.multiplyScalar(1 - n);
@@ -109,7 +109,7 @@ Vector2.prototype.multiply = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Vector2.prototype.multiplyScalar = function(n) {
 	return new Vector2(
@@ -144,7 +144,7 @@ Vector2.prototype.substract = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Vector2.prototype.substractScalar = function(n) {
 	return this.addScalar(-n);

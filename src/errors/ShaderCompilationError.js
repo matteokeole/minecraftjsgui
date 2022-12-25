@@ -4,8 +4,8 @@
  * 
  * @constructor
  * @extends Error
- * @param {string} message Shader info log
- * @param {number} type Shader type (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
+ * @param {String} message Shader info log
+ * @param {Number} type Shader type (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
  */
 export function ShaderCompilationError(message, type) {
 	if (!(this instanceof ShaderCompilationError)) return new ShaderCompilationError(message, type);

@@ -4,11 +4,11 @@ import {Vector2} from "math";
  * Wrapper for WebGLTextures.
  * 
  * @constructor
- * @param {Image} image
+ * @param {HTMLImageElement} image
  * @param {WebGLTexture} source
  */
 export default function Texture(image, source) {
-	/** @type {Image} */
+	/** @type {HTMLImageElement} */
 	this.image = image;
 
 	/** @type {WebGLTexture} */
