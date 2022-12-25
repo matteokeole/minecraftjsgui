@@ -40,3 +40,9 @@ If a single component needs a redraw (e.g. a hover update), it registers itself 
 ###### Constraints
 
 How to render TextButtons, which need at least 2 draw calls (left & right sides), without taking the text into account?
+
+#### GUI containers
+
+Containers are components which contain slots.
+When creating a container, a slot builder function is passed in the `slotBuilder` property. This function defines the position of the slot at a specific index.
+Each slot can have a stack of objects on [0, 64].
