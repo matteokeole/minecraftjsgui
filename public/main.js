@@ -22,25 +22,31 @@ try {
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
-	await guiRenderer.loadTextures(guiTextures);
-
-	/* const image = new Image({
-		align: ["left", "top"],
-		margin: new Vector2(0, 0),
-		size: new Vector2(256, 256),
-		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 0), // 146
-	}); */
+	await guiRenderer.loadTextures(...guiTextures);
 
 	const btn = new ImageButton({
 		align: ["left", "top"],
-		margin: new Vector2(20, 20),
+		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 146),
+		onMouseDown: function() {
+			this.uv.y = 166;
+
+			this.requestRedraw();
+			instance.updateRendererTexture(0, guiRenderer.canvas);
+		},
 	});
 
-	guiRenderer.add(btn);
+	const inventory = new Image({
+		align: ["center", "center"],
+		margin: new Vector2(0, 0),
+		size: new Vector2(176, 166),
+		image: guiRenderer.textures["gui/container/inventory.png"],
+		uv: new Vector2(0, 0),
+	});
+
+	guiRenderer.add(btn, inventory);
 	guiRenderer.compute();
 	guiRenderer.render();
 
