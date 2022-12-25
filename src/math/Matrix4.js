@@ -1,9 +1,11 @@
+import {Vector3} from "./Vector3.js";
+
 /**
  * 4x4 matrix class.
  * 
  * @constructor
  * @extends Array
- * @param {...number} elements
+ * @param {...Number} elements
  * @throws {TypeError}
  */
 export function Matrix4(...elements) {
@@ -17,7 +19,7 @@ export function Matrix4(...elements) {
 Matrix4.prototype = Array.prototype;
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Matrix4.prototype.multiplyScalar = function(n) {
 	const m = this;
@@ -108,12 +110,12 @@ Matrix4.identity = () => new Matrix4(
 );
 
 /**
- * @param {number} l Left
- * @param {number} r Right
- * @param {number} t Top
- * @param {number} b Bottom
- * @param {number} n Near
- * @param {number} f Far
+ * @param {Number} l Left
+ * @param {Number} r Right
+ * @param {Number} t Top
+ * @param {Number} b Bottom
+ * @param {Number} n Near
+ * @param {Number} f Far
  * @throws {RangeError}
  */
 Matrix4.orthographic = function(l, r, t, b, n, f) {
@@ -144,7 +146,7 @@ Matrix4.translate = function(v) {
 };
 
 /**
- * @param {number} a Angle in radians
+ * @param {Number} a Angle in radians
  */
 Matrix4.rotationX = function(a) {
 	const s = Math.sin(a), c = Math.cos(a);
@@ -158,7 +160,7 @@ Matrix4.rotationX = function(a) {
 };
 
 /**
- * @param {number} a Angle in radians
+ * @param {Number} a Angle in radians
  */
 Matrix4.rotationY = function(a) {
 	const s = Math.sin(a), c = Math.cos(a);
@@ -172,7 +174,7 @@ Matrix4.rotationY = function(a) {
 };
 
 /**
- * @param {number} a Angle in radians
+ * @param {Number} a Angle in radians
  */
 Matrix4.rotationZ = function(a) {
 	const s = Math.sin(a), c = Math.cos(a);

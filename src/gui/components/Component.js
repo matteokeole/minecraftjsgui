@@ -1,4 +1,5 @@
 import {Vector2} from "math";
+import Instance from "../../Instance.js";
 
 /**
  * A GUI component.

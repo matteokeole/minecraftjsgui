@@ -70,9 +70,8 @@ instance.setInitializer(
 instance.setPipeline(
 	/**
 	 * @param {WebGL2RenderingContext} gl Instance context
-	 * @param {Object<string, Renderer>} renderers Renderers bound to the instance
 	 */
-	function(gl, renderers) {
+	function(gl) {
 		// Draw instanced renderer textures with the instance context
 		// - Texture array
 		// - Draw each texture above the others, on the same plane

@@ -1,5 +1,5 @@
 import Component from "./Component.js";
-import {Matrix3} from "math";
+import {Matrix3, Vector2} from "math";
 
 /**
  * Image component.

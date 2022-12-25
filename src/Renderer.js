@@ -2,22 +2,16 @@ import {ShaderCompilationError} from "errors";
 import Texture from "./Texture.js";
 
 /**
- * @todo Remove instance import
+ * Offscreen renderer.
  * 
  * @constructor
  * @param {Instance} instance
- * @param {object} options
- * @param {boolean} options.generateMipmaps
+ * @param {{
+ *    generateMipmaps: Boolean
+ * }}
  */
 export default function Renderer(instance, {generateMipmaps}) {
-	let request,
-		fps = 10,
-		interval = 1000 / fps,
-		then,
-		now,
-		diff;
-
-	/** @type {boolean} */
+	/** @type {Boolean} */
 	let enabled = false;
 
 	/** @type {OffscreenCanvas} */
@@ -29,10 +23,7 @@ export default function Renderer(instance, {generateMipmaps}) {
 	/** @type {object<string, Texture>} */
 	this.textures = {};
 
-	/** @type {boolean} */
-	this.isInLoop = false;
-
-	/** @type {boolean} */
+	/** @type {Boolean} */
 	this.disabled = !enabled;
 
 	/**
@@ -78,7 +69,7 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * NOTE: Textures are loaded with the RGB format.
 	 * 
 	 * @async
-	 * @param {...string} paths File paths (relative to *assets/textures/*)
+	 * @param {...String} paths File paths (relative to *assets/textures/*)
 	 */
 	this.loadTextures = async function(...paths) {
 		const
@@ -112,9 +103,9 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Creates and returns a WebGLProgram from the provided sources.
 	 * 
 	 * @async
-	 * @param {string} vertexPath
-	 * @param {string} fragmentPath
-	 * @returns {array}
+	 * @param {String} vertexPath
+	 * @param {String} fragmentPath
+	 * @returns {Array}
 	 */
 	this.createProgram = async function([vertexPath, fragmentPath]) {
 		const
@@ -134,8 +125,8 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Creates, compiles and returns a WebGLShader.
 	 * 
 	 * @async
-	 * @param {string} path File path (relative to *assets/shaders*)
-	 * @param {number} type Shader type
+	 * @param {String} path File path (relative to *assets/shaders*)
+	 * @param {Number} type Shader type
 	 * @returns {WebGLShader}
 	 */
 	this.createShader = async function(path, type) {
@@ -187,40 +178,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	this.init = null;
 
 	/**
-	 * Starts the render loop.
-	 */
-	this.startLoop = function() {
-		then = performance.now();
-		this.isInLoop = true;
-
-		this.loop();
-	};
-
-	/**
-	 * Caller for updates and renders within a render loop.
-	 */
-	this.loop = function() {
-		request = requestAnimationFrame(this.loop);
-
-		diff = (now = performance.now()) - then;
-
-		if (diff > interval) {
-			then = now - diff % interval;
-
-			this.render();
-		}
-	}.bind(this);
-
-	/**
-	 * Stops the render loop.
-	 */
-	this.stopLoop = function() {
-		cancelAnimationFrame(request);
-
-		this.isInLoop = false;
-	}
-
-	/**
 	 * Renders a frame.
 	 * NOTE: Must be overridden in an instance.
 	 * 
@@ -248,8 +205,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Destroys the renderer.
 	 */
 	this.dispose = function() {
-		if (this.isInLoop) this.stopLoop();
-
 		/**
 		 * @todo Unbind and delete all linked objects (buffers, textures, etc) before this
 		 * @see {@link https://registry.khronos.org/webgl/extensions/WEBGL_lose_context}

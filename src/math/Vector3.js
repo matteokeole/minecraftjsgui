@@ -2,9 +2,9 @@
  * Tri-dimensional vector class.
  * 
  * @constructor
- * @param {number} x
- * @param {number} y
- * @param {number} z
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
  * @throws {TypeError}
  */
 export function Vector3(x, y, z) {
@@ -29,7 +29,7 @@ Vector3.prototype.add = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Vector3.prototype.addScalar = function(n) {
 	return new Vector3(
@@ -76,7 +76,7 @@ Vector3.prototype.divide = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  * @throws {RangeError}
  */
 Vector3.prototype.divideScalar = function(n) {
@@ -106,7 +106,7 @@ Vector3.prototype.lengthSquared = function() {
 
 /**
  * @param {Vector3} v
- * @param {number} n
+ * @param {Number} n
  */
 Vector3.prototype.lerp = function(v, n) {
 	const a = this.multiplyScalar(1 - n);
@@ -127,7 +127,7 @@ Vector3.prototype.multiply = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Vector3.prototype.multiplyScalar = function(n) {
 	return new Vector3(
@@ -165,7 +165,7 @@ Vector3.prototype.substract = function(v) {
 };
 
 /**
- * @param {number} n
+ * @param {Number} n
  */
 Vector3.prototype.substractScalar = function(n) {
 	return this.addScalar(-n);

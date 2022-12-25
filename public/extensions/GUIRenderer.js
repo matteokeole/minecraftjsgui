@@ -1,5 +1,7 @@
 import {Matrix3, Vector2} from "math";
 import Renderer from "renderer";
+import Instance from "../../src/Instance.js";
+import Component from "../../src/gui/components/Component.js";
 
 /**
  * GUI renderer singleton.
