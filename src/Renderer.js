@@ -209,6 +209,10 @@ export default function Renderer(instance, {generateMipmaps}) {
 		 * @todo Unbind and delete all linked objects (buffers, textures, etc) before this
 		 * @see {@link https://registry.khronos.org/webgl/extensions/WEBGL_lose_context}
 		 */
+		// gl.deleteBuffer(buffer);
+        // gl.deleteTexture(texture);
+        // gl.deleteProgram(program);
+        // gl.deleteVertexArray(vao);
 		this.gl.getExtension("WEBGL_lose_context").loseContext();
 		this.gl = null;
 
