@@ -50,10 +50,12 @@ export default function GUIRenderer(instance) {
 		gl.attribute.position = 0;
 		gl.attribute.worldMatrix = 1;
 		gl.attribute.textureMatrix = 4;
+		gl.attribute.layer = 7;
 		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projection");
 		gl.buffer.position = gl.createBuffer();
 		gl.buffer.worldMatrix = gl.createBuffer();
 		gl.buffer.textureMatrix = gl.createBuffer();
+		gl.buffer.layer = gl.createBuffer();
 
 		gl.bindVertexArray(gl.vao.main);
 
@@ -67,6 +69,7 @@ export default function GUIRenderer(instance) {
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.enableVertexAttribArray(gl.attribute.worldMatrix);
 		gl.enableVertexAttribArray(gl.attribute.textureMatrix);
+		gl.enableVertexAttribArray(gl.attribute.layer);
 
 		// Set vertex positions
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
@@ -77,6 +80,10 @@ export default function GUIRenderer(instance) {
 			1, 1,
 			0, 1,
 		]), gl.STATIC_DRAW);
+
+		// Set vertex positions
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
+		gl.vertexAttribPointer(gl.attribute.layer, 1, gl.FLOAT, false, 0, 0);
 	};
 
 	/**
@@ -128,7 +135,7 @@ export default function GUIRenderer(instance) {
 	};
 
 	/**
-	 * @todo Set `gl` private
+	 * @todo Privatise `gl`
 	 * 
 	 * Renders the GUI and updates the scene renderer GUI texture.
 	 */
@@ -196,6 +203,15 @@ export default function GUIRenderer(instance) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
 
+		/* gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
+		const layers = new Float32Array(length);
+		for (let i = 0; i < length; i++) {
+			layers[i] = componentRenderStack[i].image.layer;
+		}
+		console.log(layers)
+		gl.bufferData(gl.ARRAY_BUFFER, layers, gl.STATIC_DRAW); */
+		gl.vertexAttrib1f(gl.attribute.layer, 1);
+
 		// Clear the render stack
 		componentRenderStack.length = 0;
 
@@ -204,9 +220,6 @@ export default function GUIRenderer(instance) {
 		this.instance.updateRendererTexture(0, this.canvas);
 	};
 
-	/**
-	 * @override
-	 */
 	this.resize = function() {
 		const {canvas, gl, instance: {viewportWidth, viewportHeight, currentScale}} = this;
 

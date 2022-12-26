@@ -65,41 +65,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	};
 
 	/**
-	 * Asynchronous texture loader which uses the instance context.
-	 * NOTE: Textures are loaded with the RGB format.
-	 * 
-	 * @async
-	 * @param {...String} paths File paths (relative to *assets/textures/*)
-	 */
-	this.loadTextures = async function(...paths) {
-		const
-			{gl} = this,
-			{length} = paths,
-			base = instance.texturePath;
-		let path, image, source;
-
-		for (let i = 0; i < length; i++) {
-			path = paths[i];
-			(image = new Image()).src = `${base}${path}`;
-
-			try {
-				await image.decode();
-			} catch (error) {
-				continue;
-			}
-
-			gl.bindTexture(gl.TEXTURE_2D, source = gl.createTexture());
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // Pixelated effect
-			generateMipmaps ?
-				gl.generateMipmap(gl.TEXTURE_2D) :
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-			this.textures[path] = new Texture(image, source);
-		}
-	};
-
-	/**
 	 * Creates and returns a WebGLProgram from the provided sources.
 	 * 
 	 * @async
@@ -169,6 +134,42 @@ export default function Renderer(instance, {generateMipmaps}) {
 	};
 
 	/**
+	 * Asynchronous texture loader.
+	 * Textures are loaded as 256x256 texture array layers.
+	 * 
+	 * @async
+	 * @param {...String} paths
+	 */
+	this.loadTextures = async function(...paths) {
+		const
+			{gl} = this,
+			{length} = paths,
+			base = instance.texturePath;
+
+		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
+		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 256, 256, length);
+		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST); // Pixelated effect
+		generateMipmaps ?
+			gl.generateMipmap(gl.TEXTURE_2D_ARRAY) :
+			gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+		for (let i = 0, path, image, source; i < length; i++) {
+			path = paths[i];
+			(image = new Image()).src = `${base}${path}`;
+
+			try {
+				await image.decode();
+			} catch (error) {
+				continue;
+			}
+
+			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 256, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+			this.textures[path] = new Texture(image, source, i);
+		}
+	};
+
+	/**
 	 * Initializes the renderer.
 	 * NOTE: Must be overridden in an instance.
 	 * 
@@ -184,22 +185,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * @method
 	 */
 	this.render = null;
-
-	/**
-	 * Resizes the renderer canvas and the context viewport.
-	 * NOTE: Must be overridden in an instance.
-	 * 
-	 * @method
-	 */
-	this.resize = function() {
-		const {canvas, gl} = this;
-		const {viewportWidth, viewportHeight} = instance;
-
-		canvas.width = viewportWidth;
-		canvas.height = viewportHeight;
-
-		gl.viewport(0, 0, canvas.width, canvas.height);
-	};
 
 	/**
 	 * Destroys the renderer.
