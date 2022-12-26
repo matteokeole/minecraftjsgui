@@ -24,29 +24,67 @@ try {
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
 	await guiRenderer.loadTextures(...guiTextures);
 
-	const btn = new ImageButton({
+	const btn1 = new ImageButton({
 		align: ["left", "top"],
 		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 146),
-		onMouseDown: function() {
+		onMouseEnter: function() {
 			this.uv.y = 166;
 
-			this.requestRedraw();
-			instance.updateRendererTexture(0, guiRenderer.canvas);
+			this.pushToRenderStack();
+			guiRenderer.render();
+		},
+		onMouseLeave: function() {
+			this.uv.y = 146;
+
+			this.pushToRenderStack();
+			guiRenderer.render();
 		},
 	});
 
-	const inventory = new Image({
-		align: ["center", "center"],
-		margin: new Vector2(0, 0),
-		size: new Vector2(176, 166),
-		image: guiRenderer.textures["gui/container/inventory.png"],
-		uv: new Vector2(0, 0),
+	const btn2 = new ImageButton({
+		align: ["left", "top"],
+		margin: new Vector2(32, 10),
+		size: new Vector2(20, 20),
+		image: guiRenderer.textures["gui/widgets.png"],
+		uv: new Vector2(0, 146),
+		onMouseEnter: function() {
+			this.uv.y = 166;
+
+			this.pushToRenderStack();
+			guiRenderer.render();
+		},
+		onMouseLeave: function() {
+			this.uv.y = 146;
+
+			this.pushToRenderStack();
+			guiRenderer.render();
+		},
 	});
 
-	guiRenderer.add(btn, inventory);
+	const btn3 = new ImageButton({
+		align: ["left", "top"],
+		margin: new Vector2(54, 10),
+		size: new Vector2(20, 20),
+		image: guiRenderer.textures["gui/widgets.png"],
+		uv: new Vector2(0, 146),
+		onMouseEnter: function() {
+			this.uv.y = 166;
+
+			this.pushToRenderStack();
+			guiRenderer.render();
+		},
+		onMouseLeave: function() {
+			this.uv.y = 146;
+
+			this.pushToRenderStack();
+			guiRenderer.render();
+		},
+	});
+
+	guiRenderer.add(btn1, btn2, btn3);
 	guiRenderer.compute();
 	guiRenderer.render();
 

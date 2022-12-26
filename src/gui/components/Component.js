@@ -11,6 +11,8 @@ import Instance from "../../Instance.js";
  * @param {Vector2} options.size
  */
 export default function Component({align, margin, size}) {
+	let isHovered = false;
+
 	/** @type {Vector2} */
 	this.position = null;
 
@@ -31,10 +33,6 @@ export default function Component({align, margin, size}) {
 	 * @param {WebGL2RenderingContext} gl
 	 */
 	this.render = null;
-
-	this.requestRedraw = function() {
-		this.render(this.renderer.gl);
-	};
 
 	/**
 	 * Uses the component alignment and margin values to calculate its absolute position.
@@ -84,4 +82,8 @@ export default function Component({align, margin, size}) {
 
 		this.position = new Vector2(x | 0, y | 0);
 	};
+
+	this.isHovered = () => isHovered;
+
+	this.setIsHovered = value => void (isHovered = !!value);
 }

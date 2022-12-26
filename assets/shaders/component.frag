@@ -1,13 +1,15 @@
 #version 300 es
 
 precision mediump float;
+precision mediump sampler2DArray;
 
+in float v_layer;
 in vec2 v_uv;
 
-uniform sampler2D u_texture;
+uniform sampler2DArray u_textures;
 
 out vec4 FragColor;
 
 void main() {
-	FragColor = texture(u_texture, v_uv);
+	FragColor = texture(u_textures, vec3(v_uv, v_layer));
 }

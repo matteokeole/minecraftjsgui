@@ -19,11 +19,23 @@ export default function GUIRenderer(instance) {
 
 	GUIRenderer._instance = this;
 
+	/**
+	 * List of components marked for redraw.
+	 * 
+	 * @type {Component[]}
+	 */
+	const componentRenderStack = [];
+
+	function pushToRenderStack() {
+		componentRenderStack.push(this);
+	};
+
 	/** @type {Set<Component>} */
 	this.components = new Set();
 
 	this.init = async function() {
 		const {canvas, gl} = this;
+		const {currentScale} = this.instance;
 
 		// Load component program
 		const [program, vertexShader, fragmentShader] = await this.createProgram([
@@ -36,20 +48,30 @@ export default function GUIRenderer(instance) {
 		gl.useProgram(program);
 
 		gl.attribute.position = 0;
-		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projectionMatrix");
-		gl.uniform.worldMatrix = gl.getUniformLocation(program, "u_worldMatrix");
-		gl.uniform.textureMatrix = gl.getUniformLocation(program, "u_textureMatrix");
+		gl.attribute.worldMatrix = 1;
+		gl.attribute.textureMatrix = 4;
+		gl.attribute.layer = 7;
+		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projection");
 		gl.buffer.position = gl.createBuffer();
+		gl.buffer.worldMatrix = gl.createBuffer();
+		gl.buffer.textureMatrix = gl.createBuffer();
+		gl.buffer.layer = gl.createBuffer();
 
 		gl.bindVertexArray(gl.vao.main);
 
 		const projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
-			.scale(new Vector2(2, 2));
+			.scale(new Vector2(currentScale, currentScale));
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
+		// Enable attributes
 		gl.enableVertexAttribArray(gl.attribute.position);
+		gl.enableVertexAttribArray(gl.attribute.worldMatrix);
+		gl.enableVertexAttribArray(gl.attribute.textureMatrix);
+		gl.enableVertexAttribArray(gl.attribute.layer);
+
+		// Set vertex positions
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
 		gl.vertexAttribPointer(gl.attribute.position, 2, gl.FLOAT, false, 0, 0);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -58,9 +80,15 @@ export default function GUIRenderer(instance) {
 			1, 1,
 			0, 1,
 		]), gl.STATIC_DRAW);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
+		gl.vertexAttribPointer(gl.attribute.layer, 1, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribDivisor(gl.attribute.layer, 1);
 	};
 
 	/**
+	 * @todo Securize
+	 * 
 	 * Adds the provided components to the component draw list.
 	 * 
 	 * @param {...Component} components
@@ -71,12 +99,19 @@ export default function GUIRenderer(instance) {
 
 		for (let i = 0; i < length; i++) {
 			component = components[i];
-			component.renderer = this;
+			component.pushToRenderStack = pushToRenderStack;
+			component.pushToRenderStack();
 
-			if (component.onMouseMove) {
-				component.onMouseMove.component = component;
+			if (component.onMouseEnter) {
+				component.onMouseEnter.component = component;
 
-				this.instance.addMouseMoveListener(component.onMouseMove);
+				this.instance.addMouseEnterListener(component.onMouseEnter);
+			}
+
+			if (component.onMouseLeave) {
+				component.onMouseLeave.component = component;
+
+				this.instance.addMouseLeaveListener(component.onMouseLeave);
 			}
 
 			if (component.onMouseDown) {
@@ -86,19 +121,6 @@ export default function GUIRenderer(instance) {
 			}
 
 			this.components.add(components[i]);
-		}
-	};
-
-	/**
-	 * Removes the provided components from the component draw list.
-	 * 
-	 * @param {...Component} components
-	 */
-	this.remove = function(...components) {
-		const {length} = components;
-
-		for (let i = 0; i < length; i++) {
-			this.components.delete(components[i]);
 		}
 	};
 
@@ -113,23 +135,90 @@ export default function GUIRenderer(instance) {
 	};
 
 	/**
+	 * @todo Privatise `gl`
+	 * 
 	 * Renders the GUI and updates the scene renderer GUI texture.
 	 */
 	this.render = function() {
 		const
-			components = [...this.components],
-			{length} = components;
+			{length} = componentRenderStack,
+			{gl} = this,
+			worldMatrixData = new Float32Array(length * 9),
+			worldMatrices = [],
+			textureMatrixData = new Float32Array(length * 9),
+			textureMatrices = [];
 
+		// Register component world/texture matrices
 		for (let i = 0; i < length; i++) {
-			components[i].render(this.gl, this.instance);
+			worldMatrices.push(new Float32Array(
+				worldMatrixData.buffer,
+				i * 36,
+				9,
+			));
+
+			textureMatrices.push(new Float32Array(
+				textureMatrixData.buffer,
+				i * 36,
+				9,
+			));
+
+			const component = componentRenderStack[i];
+			const worldMatrix = Matrix3
+				.translate(component.position)
+				.scale(component.size);
+			const textureMatrix = Matrix3
+				.translate(component.uv.divide(component.image.size))
+				.scale(component.size.divide(component.image.size));
+
+			for (let j = 0; j < 9; j++) {
+				worldMatrices[i][j] = worldMatrix[j];
+				textureMatrices[i][j] = textureMatrix[j];
+			}
 		}
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.worldMatrix);
+		gl.bufferData(gl.ARRAY_BUFFER, worldMatrixData.byteLength, gl.DYNAMIC_DRAW);
+
+		// Setup world matrix divisors
+		for (let i = 0; i < 3; i++) {
+			const loc = gl.attribute.worldMatrix + i;
+
+			gl.enableVertexAttribArray(loc);
+			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+			gl.vertexAttribDivisor(loc, 1);
+		}
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.worldMatrix);
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, worldMatrixData);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
+		gl.bufferData(gl.ARRAY_BUFFER, textureMatrixData.byteLength, gl.DYNAMIC_DRAW);
+
+		// Setup texture matrix divisors
+		for (let i = 0; i < 3; i++) {
+			const loc = gl.attribute.textureMatrix + i;
+
+			gl.enableVertexAttribArray(loc);
+			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+			gl.vertexAttribDivisor(loc, 1);
+		}
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
+		const layers = new Float32Array(length);
+		for (let i = 0; i < length; i++) layers[i] = componentRenderStack[i].image.layer;
+		gl.bufferData(gl.ARRAY_BUFFER, layers, gl.STATIC_DRAW);
+
+		// Clear the render stack
+		componentRenderStack.length = 0;
+
+		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, length);
 
 		this.instance.updateRendererTexture(0, this.canvas);
 	};
 
-	/**
-	 * @override
-	 */
 	this.resize = function() {
 		const {canvas, gl, instance: {viewportWidth, viewportHeight, currentScale}} = this;
 
@@ -142,6 +231,13 @@ export default function GUIRenderer(instance) {
 			.scale(new Vector2(currentScale, currentScale));
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
+
+		// Register all components
+		const
+			components = [...this.components],
+			{length} = components;
+
+		for (let i = 0; i < length; i++) components[i].pushToRenderStack();
 
 		this.compute();
 		this.render();

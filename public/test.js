@@ -122,3 +122,18 @@ instance.setPipeline(
 		computeNextGameStateAndPaint();
 	}
 })();
+
+
+
+
+
+// Item slot tests
+import {Slot} from "gui";
+import {HelmetItem} from "items";
+import {Vector2} from "math";
+
+const slot = new Slot({
+	position: new Vector2(0, 0),
+	permanent: true,
+	validator: item => item instanceof HelmetItem,
+});

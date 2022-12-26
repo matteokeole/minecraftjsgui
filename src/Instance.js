@@ -16,12 +16,21 @@ export default function Instance() {
 	const DEFAULT_HEIGHT = 240;
 	let firstResize = true,
 		request,
-		fps = 10,
+		fps = 60,
 		interval = 1000 / fps,
 		then,
 		now,
 		diff;
 	let rendererLength;
+
+	let mouseEnterListeners = [];
+	let mouseEnterListenerCount = 0;
+
+	let mouseLeaveListeners = [];
+	let mouseLeaveListenerCount = 0;
+
+	let mouseDownListeners = [];
+	let mouseDownListenerCount = 0;
 
 	/**
 	 * HTMLCanvas output.
@@ -42,7 +51,7 @@ export default function Instance() {
 	 * 
 	 * @type {WebGLTexture[]}
 	 */
-	 this.rendererTextures = [];
+	this.rendererTextures = [];
 
 	/**
 	 * Shader folder path, relative to the root folder.
@@ -113,22 +122,6 @@ export default function Instance() {
 	this.pointerPosition = new Vector2(0, 0);
 
 	/**
-	 * List of registered `mousemove` events.
-	 * 
-	 * @type {Function[]}
-	 */
-	this.mouseMoveEvents = [];
-	this.mouseMoveEventCount = 0;
-
-	/**
-	 * List of registered `mousedown` events.
-	 * 
-	 * @type {Function[]}
-	 */
-	 this.mouseDownEvents = [];
-	 this.mouseDownEventCount = 0;
-
-	/**
 	 * @todo Finish implementing
 	 * 
 	 * @throws {NoWebGL2Error}
@@ -175,8 +168,8 @@ export default function Instance() {
 			});
 		}
 
-		this.output.addEventListener("mousemove", mouveMoveListener.bind(this));
-		this.output.addEventListener("mousedown", mouveDownListener.bind(this));
+		this.output.addEventListener("mousemove", mouseMoveListener.bind(this));
+		this.output.addEventListener("mousedown", mouseDownListener.bind(this));
 	};
 
 	/**
@@ -237,9 +230,7 @@ export default function Instance() {
 
 		this.currentScale = currentScale;
 
-		for (let i = 0; i < rendererLength; i++) {
-			this.renderers[i].resize();
-		}
+		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize();
 	};
 
 	/**
@@ -258,7 +249,7 @@ export default function Instance() {
 	/**
 	 * Starts the render loop.
 	 */
-	 this.startLoop = function() {
+	this.startLoop = function() {
 		then = performance.now();
 
 		this.loop();
@@ -352,15 +343,63 @@ export default function Instance() {
 		this.canvas = null;
 	};
 
-	this.addMouseMoveListener = function(callback) {
-		this.mouseMoveEvents.push(callback);
-		this.mouseMoveEventCount++;
+	/* Listener managers */
+
+	this.addMouseDownListener = function(listener) {
+		mouseDownListeners.push(listener);
+		mouseDownListenerCount++;
 	};
 
-	this.addMouseDownListener = function(callback) {
-		this.mouseDownEvents.push(callback);
-		this.mouseDownEventCount++;
+	this.addMouseEnterListener = function(listener) {
+		mouseEnterListeners.push(listener);
+		mouseEnterListenerCount++;
 	};
+
+	this.addMouseLeaveListener = function(listener) {
+		mouseLeaveListeners.push(listener);
+		mouseLeaveListenerCount++;
+	};
+
+	/**
+	 * Manager for the `mouseenter` and `mouseleave` events.
+	 * 
+	 * @param {{x: Number, y: Number}}
+	 */
+	function mouseMoveListener({clientX: x, clientY: y}) {
+		this.pointerPosition.x = x;
+		this.pointerPosition.y = y;
+		this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
+
+		for (let i = 0, listener; i < mouseEnterListenerCount; i++) {
+			listener = mouseEnterListeners[i];
+
+			if (!intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
+			if (listener.component.isHovered()) continue;
+
+			listener.component.setIsHovered(true);
+			listener(this.pointerPosition);
+		}
+
+		for (let i = 0, listener; i < mouseLeaveListenerCount; i++) {
+			listener = mouseLeaveListeners[i];
+
+			if (intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
+			if (!listener.component.isHovered()) continue;
+
+			listener.component.setIsHovered(false);
+			listener(this.pointerPosition);
+		}
+	}
+
+	function mouseDownListener() {
+		for (let i = 0, listener; i < mouseDownListenerCount; i++) {
+			listener = mouseDownListeners[i];
+
+			if (!intersects(this.pointerPosition, listener.component.position, listener.component.size)) return;
+
+			listener(this.pointerPosition);
+		}
+	}
 }
 
 
@@ -415,36 +454,3 @@ function linkProgram(gl, program, vertexShader, fragmentShader) {
 		throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
 	}
 };
-
-
-
-
-
-
-function mouveMoveListener({clientX: x, clientY: y}) {
-	let event;
-
-	this.pointerPosition.x = x;
-	this.pointerPosition.y = y;
-	this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
-
-	for (let i = 0; i < this.mouseMoveEventCount; i++) {
-		event = this.mouseMoveEvents[i];
-
-		if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
-
-		event(this.pointerPosition);
-	}
-}
-
-function mouveDownListener() {
-	let event;
-
-	for (let i = 0; i < this.mouseDownEventCount; i++) {
-		event = this.mouseDownEvents[i];
-
-		if (!intersects(this.pointerPosition, event.component.position, event.component.size)) return;
-
-		event(this.pointerPosition);
-	}
-}
