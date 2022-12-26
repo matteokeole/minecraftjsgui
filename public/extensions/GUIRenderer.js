@@ -48,13 +48,14 @@ export default function GUIRenderer(instance) {
 		gl.useProgram(program);
 
 		gl.attribute.position = 0;
-		gl.attribute.worldMatrix = gl.getAttribLocation(program, "a_world");
-		// gl.attribute.textureMatrix = 4;
+		gl.attribute.worldMatrix = 1;
+		gl.attribute.textureMatrix = 4;
 		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projection");
 		gl.buffer.position = gl.createBuffer();
 		gl.buffer.worldMatrix = gl.createBuffer();
+		gl.buffer.textureMatrix = gl.createBuffer();
 
-		// gl.bindVertexArray(gl.vao.main);
+		gl.bindVertexArray(gl.vao.main);
 
 		const projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
@@ -65,7 +66,7 @@ export default function GUIRenderer(instance) {
 		// Enable attributes
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.enableVertexAttribArray(gl.attribute.worldMatrix);
-		// gl.enableVertexAttribArray(gl.attribute.textureMatrix);
+		gl.enableVertexAttribArray(gl.attribute.textureMatrix);
 
 		// Set vertex positions
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
@@ -132,16 +133,24 @@ export default function GUIRenderer(instance) {
 	 * Renders the GUI and updates the scene renderer GUI texture.
 	 */
 	this.render = function() {
-		const {length} = componentRenderStack;
-		const {canvas, gl, instance} = this;
+		const
+			{length} = componentRenderStack,
+			{gl} = this,
+			worldMatrixData = new Float32Array(length * 9),
+			worldMatrices = [],
+			textureMatrixData = new Float32Array(length * 9),
+			textureMatrices = [];
 
-		const worldMatrixData = new Float32Array(length * 9);
-		const worldMatrices = [];
-
-		// Register component matrices
+		// Register component world/texture matrices
 		for (let i = 0; i < length; i++) {
 			worldMatrices.push(new Float32Array(
 				worldMatrixData.buffer,
+				i * 36,
+				9,
+			));
+
+			textureMatrices.push(new Float32Array(
+				textureMatrixData.buffer,
 				i * 36,
 				9,
 			));
@@ -150,32 +159,49 @@ export default function GUIRenderer(instance) {
 			const worldMatrix = Matrix3
 				.translate(component.position)
 				.scale(component.size);
+			const textureMatrix = Matrix3
+				.translate(component.uv.divide(component.image.size))
+				.scale(component.size.divide(component.image.size));
 
-			for (let j = 0; j < 9; j++) worldMatrices[i][j] = worldMatrix[j];
+			for (let j = 0; j < 9; j++) {
+				worldMatrices[i][j] = worldMatrix[j];
+				textureMatrices[i][j] = textureMatrix[j];
+			}
 		}
 
-		// Allocate space on the world matrix buffer
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
+		gl.bufferData(gl.ARRAY_BUFFER, textureMatrixData.byteLength, gl.DYNAMIC_DRAW);
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.worldMatrix);
 		gl.bufferData(gl.ARRAY_BUFFER, worldMatrixData.byteLength, gl.DYNAMIC_DRAW);
 
-		// Setup divisors
+		// Setup world/texture matrix divisors
 		for (let i = 0; i < 3; i++) {
-			const loc = gl.attribute.worldMatrix + i;
-	
+			let loc = gl.attribute.worldMatrix + i;
+
 			gl.enableVertexAttribArray(loc);
-			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 9);
+			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+			gl.vertexAttribDivisor(loc, 1);
+
+			loc = gl.attribute.textureMatrix + i;
+
+			gl.enableVertexAttribArray(loc);
+			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
 			gl.vertexAttribDivisor(loc, 1);
 		}
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.worldMatrix);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, worldMatrixData);
 
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
+
 		// Clear the render stack
 		componentRenderStack.length = 0;
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, length);
 
-		instance.updateRendererTexture(0, canvas);
+		this.instance.updateRendererTexture(0, this.canvas);
 	};
 
 	/**
