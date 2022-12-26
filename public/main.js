@@ -84,14 +84,6 @@ try {
 		},
 	});
 
-	/* const inventory = new ImageButton({
-		align: ["center", "center"],
-		margin: new Vector2(0, 0),
-		size: new Vector2(176, 166),
-		image: guiRenderer.textures["gui/container/inventory.png"],
-		uv: new Vector2(0, 0),
-	}); */
-
 	guiRenderer.add(btn1, btn2, btn3);
 	guiRenderer.compute();
 	guiRenderer.render();

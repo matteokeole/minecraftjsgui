@@ -81,9 +81,9 @@ export default function GUIRenderer(instance) {
 			0, 1,
 		]), gl.STATIC_DRAW);
 
-		// Set vertex positions
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
 		gl.vertexAttribPointer(gl.attribute.layer, 1, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribDivisor(gl.attribute.layer, 1);
 	};
 
 	/**
@@ -176,21 +176,12 @@ export default function GUIRenderer(instance) {
 			}
 		}
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
-		gl.bufferData(gl.ARRAY_BUFFER, textureMatrixData.byteLength, gl.DYNAMIC_DRAW);
-
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.worldMatrix);
 		gl.bufferData(gl.ARRAY_BUFFER, worldMatrixData.byteLength, gl.DYNAMIC_DRAW);
 
-		// Setup world/texture matrix divisors
+		// Setup world matrix divisors
 		for (let i = 0; i < 3; i++) {
-			let loc = gl.attribute.worldMatrix + i;
-
-			gl.enableVertexAttribArray(loc);
-			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
-			gl.vertexAttribDivisor(loc, 1);
-
-			loc = gl.attribute.textureMatrix + i;
+			const loc = gl.attribute.worldMatrix + i;
 
 			gl.enableVertexAttribArray(loc);
 			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
@@ -201,16 +192,24 @@ export default function GUIRenderer(instance) {
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, worldMatrixData);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
+		gl.bufferData(gl.ARRAY_BUFFER, textureMatrixData.byteLength, gl.DYNAMIC_DRAW);
+
+		// Setup texture matrix divisors
+		for (let i = 0; i < 3; i++) {
+			const loc = gl.attribute.textureMatrix + i;
+
+			gl.enableVertexAttribArray(loc);
+			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+			gl.vertexAttribDivisor(loc, 1);
+		}
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
 
-		/* gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
 		const layers = new Float32Array(length);
-		for (let i = 0; i < length; i++) {
-			layers[i] = componentRenderStack[i].image.layer;
-		}
-		console.log(layers)
-		gl.bufferData(gl.ARRAY_BUFFER, layers, gl.STATIC_DRAW); */
-		gl.vertexAttrib1f(gl.attribute.layer, 1);
+		for (let i = 0; i < length; i++) layers[i] = componentRenderStack[i].image.layer;
+		gl.bufferData(gl.ARRAY_BUFFER, layers, gl.STATIC_DRAW);
 
 		// Clear the render stack
 		componentRenderStack.length = 0;
@@ -232,6 +231,13 @@ export default function GUIRenderer(instance) {
 			.scale(new Vector2(currentScale, currentScale));
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
+
+		// Register all components
+		const
+			components = [...this.components],
+			{length} = components;
+
+		for (let i = 0; i < length; i++) components[i].pushToRenderStack();
 
 		this.compute();
 		this.render();
