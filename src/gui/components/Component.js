@@ -11,6 +11,8 @@ import Instance from "../../Instance.js";
  * @param {Vector2} options.size
  */
 export default function Component({align, margin, size}) {
+	let isHovered = false;
+
 	/** @type {Vector2} */
 	this.position = null;
 
@@ -84,4 +86,8 @@ export default function Component({align, margin, size}) {
 
 		this.position = new Vector2(x | 0, y | 0);
 	};
+
+	this.isHovered = () => isHovered;
+
+	this.setIsHovered = value => void (isHovered = !!value);
 }

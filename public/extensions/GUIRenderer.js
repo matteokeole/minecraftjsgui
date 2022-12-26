@@ -61,6 +61,8 @@ export default function GUIRenderer(instance) {
 	};
 
 	/**
+	 * @todo Securize
+	 * 
 	 * Adds the provided components to the component draw list.
 	 * 
 	 * @param {...Component} components
@@ -73,10 +75,16 @@ export default function GUIRenderer(instance) {
 			component = components[i];
 			component.renderer = this;
 
-			if (component.onMouseMove) {
-				component.onMouseMove.component = component;
+			if (component.onMouseEnter) {
+				component.onMouseEnter.component = component;
 
-				this.instance.addMouseMoveListener(component.onMouseMove);
+				this.instance.addMouseEnterListener(component.onMouseEnter);
+			}
+
+			if (component.onMouseLeave) {
+				component.onMouseLeave.component = component;
+
+				this.instance.addMouseLeaveListener(component.onMouseLeave);
 			}
 
 			if (component.onMouseDown) {
