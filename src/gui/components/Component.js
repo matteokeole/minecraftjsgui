@@ -34,10 +34,6 @@ export default function Component({align, margin, size}) {
 	 */
 	this.render = null;
 
-	this.requestRedraw = function() {
-		this.render(this.renderer.gl);
-	};
-
 	/**
 	 * Uses the component alignment and margin values to calculate its absolute position.
 	 * 

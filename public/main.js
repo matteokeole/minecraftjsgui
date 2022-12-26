@@ -25,7 +25,7 @@ try {
 	await guiRenderer.loadTextures(...guiTextures);
 
 	const btn = new ImageButton({
-		align: ["center", "center"],
+		align: ["left", "top"],
 		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
@@ -33,64 +33,26 @@ try {
 		onMouseEnter: function() {
 			this.uv.y = 166;
 
-			this.requestRedraw();
-			instance.updateRendererTexture(0, guiRenderer.canvas);
+			this.pushToRenderStack();
+			guiRenderer.render();
 		},
 		onMouseLeave: function() {
 			this.uv.y = 146;
 
-			this.requestRedraw();
-			instance.updateRendererTexture(0, guiRenderer.canvas);
-		},
-	});
-	const btn2 = new ImageButton({
-		align: ["center", "center"],
-		margin: new Vector2(10, 40),
-		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 146),
-		onMouseEnter: function() {
-			this.uv.y = 166;
-
-			this.requestRedraw();
-			instance.updateRendererTexture(0, guiRenderer.canvas);
-		},
-		onMouseLeave: function() {
-			this.uv.y = 146;
-
-			this.requestRedraw();
-			instance.updateRendererTexture(0, guiRenderer.canvas);
-		},
-	});
-	const btn3 = new ImageButton({
-		align: ["center", "center"],
-		margin: new Vector2(10, 70),
-		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 146),
-		onMouseEnter: function() {
-			this.uv.y = 166;
-
-			this.requestRedraw();
-			instance.updateRendererTexture(0, guiRenderer.canvas);
-		},
-		onMouseLeave: function() {
-			this.uv.y = 146;
-
-			this.requestRedraw();
-			instance.updateRendererTexture(0, guiRenderer.canvas);
+			this.pushToRenderStack();
+			guiRenderer.render();
 		},
 	});
 
-	/* const inventory = new Image({
+	const inventory = new ImageButton({
 		align: ["center", "center"],
 		margin: new Vector2(0, 0),
 		size: new Vector2(176, 166),
 		image: guiRenderer.textures["gui/container/inventory.png"],
 		uv: new Vector2(0, 0),
-	}); */
+	});
 
-	guiRenderer.add(btn, btn2, btn3);
+	guiRenderer.add(btn, inventory);
 	guiRenderer.compute();
 	guiRenderer.render();
 

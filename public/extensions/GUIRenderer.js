@@ -19,6 +19,17 @@ export default function GUIRenderer(instance) {
 
 	GUIRenderer._instance = this;
 
+	/**
+	 * List of components marked for redraw.
+	 * 
+	 * @type {Component[]}
+	 */
+	const componentRenderStack = [];
+
+	function pushToRenderStack() {
+		componentRenderStack.push(this);
+	}
+
 	/** @type {Set<Component>} */
 	this.components = new Set();
 
@@ -73,7 +84,8 @@ export default function GUIRenderer(instance) {
 
 		for (let i = 0; i < length; i++) {
 			component = components[i];
-			component.renderer = this;
+			component.pushToRenderStack = pushToRenderStack;
+			component.pushToRenderStack();
 
 			if (component.onMouseEnter) {
 				component.onMouseEnter.component = component;
@@ -97,19 +109,6 @@ export default function GUIRenderer(instance) {
 		}
 	};
 
-	/**
-	 * Removes the provided components from the component draw list.
-	 * 
-	 * @param {...Component} components
-	 */
-	this.remove = function(...components) {
-		const {length} = components;
-
-		for (let i = 0; i < length; i++) {
-			this.components.delete(components[i]);
-		}
-	};
-
 	this.compute = function() {
 		const
 			components = [...this.components],
@@ -124,15 +123,15 @@ export default function GUIRenderer(instance) {
 	 * Renders the GUI and updates the scene renderer GUI texture.
 	 */
 	this.render = function() {
-		const
-			components = [...this.components],
-			{length} = components;
+		const {length} = componentRenderStack;
 
 		for (let i = 0; i < length; i++) {
-			components[i].render(this.gl, this.instance);
+			componentRenderStack[i].render(this.gl, this.instance);
 		}
 
 		this.instance.updateRendererTexture(0, this.canvas);
+
+		componentRenderStack.length = 0;
 	};
 
 	/**
