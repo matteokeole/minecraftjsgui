@@ -29,15 +29,15 @@ try {
 		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 146),
+		uv: new Vector2(0, 106),
 		onMouseEnter: function() {
-			this.uv.y = 166;
+			this.uv.y = 126;
 
 			this.pushToRenderStack();
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.uv.y = 146;
+			this.uv.y = 106;
 
 			this.pushToRenderStack();
 			guiRenderer.render();
@@ -69,19 +69,7 @@ try {
 		margin: new Vector2(54, 10),
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 146),
-		onMouseEnter: function() {
-			this.uv.y = 166;
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
-		onMouseLeave: function() {
-			this.uv.y = 146;
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
+		uv: new Vector2(0, 186),
 	});
 
 	guiRenderer.add(btn1, btn2, btn3);
