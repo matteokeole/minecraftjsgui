@@ -1,6 +1,4 @@
-import {Matrix3, Vector2} from "math";
 import Component from "./Component.js";
-import TextureWrapper from "../../TextureWrapper.js";
 
 /**
  * @constructor
@@ -16,11 +14,13 @@ import TextureWrapper from "../../TextureWrapper.js";
 export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMouseDown}) {
 	Component.apply(this, arguments);
 
-	/** @type {TextureWrapper} */
-	this.image = image;
+	this.getImageSize = () => image.size;
 
-	/** @type {Vector2} */
-	this.uv = uv;
+	this.getImageIndex = () => image.index;
+
+	this.getUV = () => uv;
+
+	this.setUV = callback => void (uv = callback(uv));
 
 	/** @type {Function} */
 	this.onMouseEnter = onMouseEnter?.bind(this);

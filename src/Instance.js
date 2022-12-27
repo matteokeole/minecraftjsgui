@@ -5,6 +5,7 @@ import Renderer from "./Renderer.js";
 /**
  * @todo Apply settings
  * @todo Implement render pipeline here
+ * @todo JSDoc for private properties?
  * 
  * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
@@ -16,20 +17,26 @@ export default function Instance() {
 	const DEFAULT_HEIGHT = 240;
 	const RESIZE_DELAY = 50;
 
-	let firstResize = true;
+	/**
+	 * Prevents the first `ResizeObserver` call.
+	 * 
+	 * @type {?Boolean}
+	 */
+	let isFirstResize = true;
 
 	/**
-	 * @todo Descriotion
+	 * Timeout ID of the `ResizeObserver`, used to clear the timeout.
+	 * 
 	 * @type {Number}
 	 */
-	let resizeTimeout;
+	let resizeTimeoutID;
 
 	/**
 	 * Animation request ID, used to interrupt the loop.
 	 * 
 	 * @type {Number}
 	 */
-	let requestID;
+	let animationRequestID;
 
 	/**
 	 * Returns `true` if the instance canvas has been added to the DOM, `false` otherwise.
@@ -49,11 +56,10 @@ export default function Instance() {
 	let mouseDownListeners = [];
 	let mouseDownListenerCount = 0;
 
-	/** @todo Privatize */
-	/** @type {HTMLCanvasElement} */
-	this.output;
+	/** @type {?HTMLCanvasElement} */
+	let canvas;
 
-	/** @type {WebGL2RenderingContext} */
+	/** @type {?WebGL2RenderingContext} */
 	let gl;
 
 	/**
@@ -85,25 +91,22 @@ export default function Instance() {
 	this.texturePath = "assets/textures/";
 
 	/**
-	 * Cached value of window.devicePixelRatio.
+	 * @todo Define null first?
 	 * 
-	 * @type {?Number}
+	 * Cached value of `window.innerWidth`.
+	 * 
+	 * @type {Number}
 	 */
-	this.devicePixelRatio = null;
+	let viewportWidth = innerWidth;
 
 	/**
-	 * Cached value of window.innerWidth.
+	 * @todo Define null first?
 	 * 
-	 * @type {?Number}
-	 */
-	this.viewportWidth = innerWidth;
-
-	/**
-	 * Cached value of window.innerHeight.
+	 * Cached value of `window.innerHeight`.
 	 * 
-	 * @type {?Number}
+	 * @type {Number}
 	 */
-	this.viewportHeight = innerHeight;
+	let viewportHeight = innerHeight;
 
 	/**
 	 * Current GUI scale multiplier.
@@ -144,19 +147,19 @@ export default function Instance() {
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		this.output = document.createElement("canvas");
-		this.output.width = this.viewportWidth;
-		this.output.height = this.viewportHeight;
-		gl = this.output.getContext("webgl2");
+		canvas = document.createElement("canvas");
+		canvas.width = viewportWidth;
+		canvas.height = viewportHeight;
+		gl = canvas.getContext("webgl2");
 
 		if (gl === null) throw NoWebGL2Error();
 
 		this.resizeObserver = new ResizeObserver(([entry]) => {
 			// Avoid the first resize
-			if (firstResize) return firstResize = null;
+			if (isFirstResize) return isFirstResize = null;
 
-			clearTimeout(resizeTimeout);
-			resizeTimeout = setTimeout(() => {
+			clearTimeout(resizeTimeoutID);
+			resizeTimeoutID = setTimeout(() => {
 				let width, height, dpr = 1;
 
 				if (entry.devicePixelContentBoxSize) {
@@ -175,23 +178,23 @@ export default function Instance() {
 			}, RESIZE_DELAY);
 		});
 
-		document.body.appendChild(this.output);
+		document.body.appendChild(canvas);
 
 		hasBeenBuilt = true;
 
 		try {
-			this.resizeObserver.observe(this.output, {
+			this.resizeObserver.observe(canvas, {
 				box: "device-pixel-content-box",
 			});
 		} catch (error) {
 			// "device-pixel-content-box" isn't defined, try with "content-box"
-			this.resizeObserver.observe(this.output, {
+			this.resizeObserver.observe(canvas, {
 				box: "content-box",
 			});
 		}
 
-		this.output.addEventListener("mousemove", mouseMoveListener.bind(this));
-		this.output.addEventListener("mousedown", mouseDownListener.bind(this));
+		canvas.addEventListener("mousemove", mouseMoveListener.bind(this));
+		canvas.addEventListener("mousedown", mouseDownListener.bind(this));
 	};
 
 	this.hasBeenBuilt = () => hasBeenBuilt;
@@ -228,23 +231,19 @@ export default function Instance() {
 	 * @param {Number} dpr
 	 */
 	this.resize = function(width, height, dpr) {
-		const {output} = this;
-
-		/** @todo Set viewport size as multiples of 2? */
-		this.viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0;
-		this.viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0;
-		this.devicePixelRatio = dpr;
-
-		output.width = this.viewportWidth;
-		output.height = this.viewportHeight;
-
-		gl.viewport(0, 0, output.width, output.height);
+		gl.viewport(
+			0,
+			0,
+			/** @todo Set viewport size as multiples of 2? */
+			canvas.width = viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0,
+			canvas.height = viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0,
+		);
 
 		// Calculate scale multiplier
 		let i = 1;
 		while (
-			this.viewportWidth > DEFAULT_WIDTH * i &&
-			this.viewportHeight > DEFAULT_HEIGHT * i
+			viewportWidth > DEFAULT_WIDTH * i &&
+			viewportHeight > DEFAULT_HEIGHT * i
 		) i++;
 
 		const currentScale = clampUp(
@@ -283,7 +282,7 @@ export default function Instance() {
 	 * Game loop.
 	 */
 	this.loop = function() {
-		requestID = requestAnimationFrame(this.loop);
+		animationRequestID = requestAnimationFrame(this.loop);
 
 		this.render();
 	}.bind(this);
@@ -293,7 +292,7 @@ export default function Instance() {
 	 * 
 	 * Stops the game loop.
 	 */
-	this.stopLoop = () => cancelAnimationFrame(requestID);
+	this.stopLoop = () => cancelAnimationFrame(animationRequestID);
 
 	/**
 	 * @todo Use `Renderer` class to avoid duplicate methods (createProgram/createShader/linkProgram)?
@@ -352,18 +351,16 @@ export default function Instance() {
 		/** @todo Stop the game loop if it has started */
 
 		// Dispose child renderers
-		for (let i = 0; i < rendererLength; i++) {
-			this.renderers[i].dispose();
-		}
+		for (let i = 0; i < rendererLength; i++) this.renderers[i].dispose();
 
 		/** @todo Dispose the output context */
 
 		// Remove the resize observer
-		this.resizeObserver.unobserve(this.output);
+		this.resizeObserver.unobserve(canvas);
 
 		// Remove the output canvas from the DOM
-		this.output.remove();
-		this.output = null;
+		canvas.remove();
+		canvas = null;
 	};
 
 	this.addMouseDownListener = function(listener) {
@@ -393,7 +390,7 @@ export default function Instance() {
 		for (i = 0; i < mouseEnterListenerCount; i++) {
 			listener = mouseEnterListeners[i];
 
-			if (!intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
+			if (!intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 			if (listener.component.isHovered()) continue;
 
 			listener.component.setIsHovered(true);
@@ -403,7 +400,7 @@ export default function Instance() {
 		for (i = 0; i < mouseLeaveListenerCount; i++) {
 			listener = mouseLeaveListeners[i];
 
-			if (intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
+			if (intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 			if (!listener.component.isHovered()) continue;
 
 			listener.component.setIsHovered(false);
@@ -411,17 +408,20 @@ export default function Instance() {
 		}
 	}
 
+	/**
+	 * Manager for the `mousedown` event.
+	 */
 	function mouseDownListener() {
 		for (let i = 0, listener; i < mouseDownListenerCount; i++) {
 			listener = mouseDownListeners[i];
 
-			if (!intersects(this.pointerPosition, listener.component.position, listener.component.size)) return;
+			if (!intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) return;
 
 			listener(this.pointerPosition);
 		}
 	}
 
-	/** @todo remove duplicate utils */
+	/** @todo Remove duplicate util */
 	async function createProgram(basePath, [vertexPath, fragmentPath]) {
 		const
 			program = gl.createProgram(),
@@ -435,6 +435,7 @@ export default function Instance() {
 		return [program, vertexShader, fragmentShader];
 	}
 
+	/** @todo Remove duplicate util */
 	async function createShader(base, path, type) {
 		const
 			shader = gl.createShader(type),
@@ -446,6 +447,7 @@ export default function Instance() {
 		return shader;
 	}
 
+	/** @todo Remove duplicate util */
 	function linkProgram(program, vertexShader, fragmentShader) {
 		gl.linkProgram(program);
 
@@ -461,4 +463,8 @@ export default function Instance() {
 			throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
 		}
 	}
+
+	this.getViewportWidth = () => viewportWidth;
+
+	this.getViewportHeight = () => viewportHeight;
 }

@@ -42,7 +42,7 @@ instance.setInitializer(
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		/** @todo load `main` program */
+		/** @todo load `main` program without using a duplicate Renderer method */
 
 		gl.useProgram(program);
 
@@ -72,10 +72,9 @@ instance.setPipeline(
 	 * @param {WebGL2RenderingContext} gl Instance context
 	 */
 	function(gl) {
-		// Draw instanced renderer textures with the instance context
+		// @todo Draw instanced renderer textures with the instance context
 		// - Texture array
 		// - Draw each texture above the others, on the same plane
-		/** @todo */
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, 6);
 	},

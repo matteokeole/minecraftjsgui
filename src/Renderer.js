@@ -11,18 +11,20 @@ import TextureWrapper from "./TextureWrapper.js";
  * }}
  */
 export default function Renderer(instance, {generateMipmaps}) {
+	/** @type {?OffscreenCanvas} */
+	let canvas;
+
+	/** @type {?WebGL2RenderingContext} */
+	let gl;
+
 	/** @type {Boolean} */
 	let enabled = false;
 
-	/** @type {OffscreenCanvas} */
-	let canvas;
-	this.getCanvas = () => canvas;
-
-	/** @type {WebGL2RenderingContext} */
-	let gl;
-	this.getGL = () => gl;
-
-	/** @type {object<string, Texture>} */
+	/**
+	 * @todo Privatize
+	 * @todo Public texture getter
+	 * @type {object<string, TextureWrapper>}
+	 */
 	this.textures = {};
 
 	/** @type {Boolean} */
@@ -50,7 +52,8 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Initializes the canvas element and its WebGL context.
 	 */
 	this.build = function() {
-		const {viewportWidth, viewportHeight} = instance;
+		const viewportWidth = instance.getViewportWidth();
+		const viewportHeight = instance.getViewportHeight();
 
 		canvas = new OffscreenCanvas(viewportWidth, viewportHeight);
 		gl = canvas.getContext("webgl2");
@@ -183,7 +186,8 @@ export default function Renderer(instance, {generateMipmaps}) {
 	this.render = null;
 
 	/**
-	 * Destroys the renderer.
+	 * Destroys all the context/canvas data.
+	 * Called by the parent instance.
 	 */
 	this.dispose = function() {
 		/**
@@ -200,4 +204,8 @@ export default function Renderer(instance, {generateMipmaps}) {
 
 		canvas = null;
 	};
+
+	this.getCanvas = () => canvas;
+
+	this.getContext = () => gl;
 }

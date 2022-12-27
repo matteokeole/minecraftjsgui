@@ -37,7 +37,7 @@ export default function GUIRenderer(instance) {
 
 	this.init = async function() {
 		canvas = this.getCanvas();
-		gl = this.getGL();
+		gl = this.getContext();
 
 		const {currentScale} = this.instance;
 
@@ -139,8 +139,6 @@ export default function GUIRenderer(instance) {
 	};
 
 	/**
-	 * @todo Privatise `gl`
-	 * 
 	 * Renders the GUI and updates the scene renderer GUI texture.
 	 */
 	this.render = function() {
@@ -167,11 +165,11 @@ export default function GUIRenderer(instance) {
 
 			const component = componentRenderStack[i];
 			const worldMatrix = Matrix3
-				.translate(component.position)
-				.scale(component.size);
+				.translate(component.getPosition())
+				.scale(component.getSize());
 			const textureMatrix = Matrix3
-				.translate(component.uv.divide(component.image.size))
-				.scale(component.size.divide(component.image.size));
+				.translate(component.getUV().divide(component.getImageSize()))
+				.scale(component.getSize().divide(component.getImageSize()));
 
 			for (let j = 0; j < 9; j++) {
 				worldMatrices[i][j] = worldMatrix[j];
@@ -211,7 +209,7 @@ export default function GUIRenderer(instance) {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
 		const textureIndices = new Float32Array(length);
-		for (let i = 0; i < length; i++) textureIndices[i] = componentRenderStack[i].image.index;
+		for (let i = 0; i < length; i++) textureIndices[i] = componentRenderStack[i].getImageIndex();
 		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
 		// Clear the render stack
@@ -222,8 +220,13 @@ export default function GUIRenderer(instance) {
 		this.instance.updateRendererTexture(0, canvas);
 	};
 
+	/**
+	 * @todo Pass the resize data (w/h (+ dpr?)) from the instance
+	 */
 	this.resize = function() {
-		const {viewportWidth, viewportHeight, currentScale} = this.instance;
+		const {currentScale} = this.instance;
+		const viewportWidth = this.instance.getViewportWidth();
+		const viewportHeight = this.instance.getViewportHeight();
 
 		canvas.width = viewportWidth;
 		canvas.height = viewportHeight;

@@ -11,19 +11,19 @@ import Instance from "../../Instance.js";
  * @param {Vector2} options.size
  */
 export default function Component({align, margin, size}) {
+	/**
+	 * Component offset from the top-left corner of the viewport.
+	 * 
+	 * @type {Vector2}
+	 */
+	let position;
+
+	/**
+	 * Determines if the pointer hovers over the component.
+	 * 
+	 * @type {boolean}
+	 */
 	let isHovered = false;
-
-	/** @type {Vector2} */
-	this.position = null;
-
-	/** @type {String[2]} */
-	this.align = align;
-
-	/** @type {Vector2} */
-	this.margin = margin;
-
-	/** @type {Vector2} */
-	this.size = size;
 
 	/**
 	 * Uses the component alignment and margin values to calculate its absolute position.
@@ -32,14 +32,13 @@ export default function Component({align, margin, size}) {
 	 */
 	this.computePosition = function(instance) {
 		const
-			[horizontal, vertical] = this.align,
-			{x: mx, y: my} = this.margin,
-			{x: w, y: h} = this.size,
-			{viewportWidth, viewportHeight, currentScale} = instance;
-		let x = 0,
-			y = 0,
+			{viewportWidth, viewportHeight, currentScale} = instance,
+			[horizontal, vertical] = align,
+			{x: mx, y: my} = margin,
+			{x: w, y: h} = size,
 			ow = viewportWidth / currentScale - w,
 			oh = viewportHeight / currentScale - h;
+		let x = 0, y = 0;
 
 		switch (horizontal) {
 			case "left":
@@ -71,8 +70,16 @@ export default function Component({align, margin, size}) {
 				break;
 		}
 
-		this.position = new Vector2(x | 0, y | 0);
+		position = new Vector2(x | 0, y | 0);
 	};
+
+	this.getPosition = () => position;
+
+	this.getAlignment = () => align;
+
+	this.getMargin = () => margin;
+
+	this.getSize = () => size;
 
 	this.isHovered = () => isHovered;
 

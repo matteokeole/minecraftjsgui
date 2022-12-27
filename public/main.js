@@ -30,13 +30,19 @@ try {
 		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 106),
 		onMouseEnter: function() {
-			this.uv.y = 126;
+			this.setUV(uv => {
+				uv.y = 126;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.uv.y = 106;
+			this.setUV(uv => {
+				uv.y = 106;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
@@ -50,13 +56,19 @@ try {
 		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 146),
 		onMouseEnter: function() {
-			this.uv.y = 166;
+			this.setUV(uv => {
+				uv.y = 166;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.uv.y = 146;
+			this.setUV(uv => {
+				uv.y = 146;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
