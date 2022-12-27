@@ -14,7 +14,15 @@ import Renderer from "./Renderer.js";
 export default function Instance() {
 	const DEFAULT_WIDTH = 320;
 	const DEFAULT_HEIGHT = 240;
+	const RESIZE_DELAY = 50;
+
 	let firstResize = true;
+
+	/**
+	 * @todo Descriotion
+	 * @type {Number}
+	 */
+	let resizeTimeout;
 
 	/**
 	 * Animation request ID, used to interrupt the loop.
@@ -41,12 +49,9 @@ export default function Instance() {
 	let mouseDownListeners = [];
 	let mouseDownListenerCount = 0;
 
-	/**
-	 * HTMLCanvas output.
-	 * 
-	 * @type {?HTMLCanvasElement}
-	 */
-	this.output = null;
+	/** @todo Privatize */
+	/** @type {HTMLCanvasElement} */
+	this.output;
 
 	/** @type {WebGL2RenderingContext} */
 	let gl;
@@ -150,21 +155,24 @@ export default function Instance() {
 			// Avoid the first resize
 			if (firstResize) return firstResize = null;
 
-			let width, height, dpr = 1;
+			clearTimeout(resizeTimeout);
+			resizeTimeout = setTimeout(() => {
+				let width, height, dpr = 1;
 
-			if (entry.devicePixelContentBoxSize) {
-				({inlineSize: width, blockSize: height} = entry.devicePixelContentBoxSize[0]);
-			} else {
-				dpr = devicePixelRatio;
+				if (entry.devicePixelContentBoxSize) {
+					({inlineSize: width, blockSize: height} = entry.devicePixelContentBoxSize[0]);
+				} else {
+					dpr = devicePixelRatio;
 
-				if (entry.contentBoxSize) {
-					entry.contentBoxSize[0] ?
-						({inlineSize: width, blockSize: height} = entry.contentBoxSize[0]) :
-						({inlineSize: width, blockSize: height} = entry.contentBoxSize);
-				} else ({width, height} = entry.contentRect);
-			}
+					if (entry.contentBoxSize) {
+						entry.contentBoxSize[0] ?
+							({inlineSize: width, blockSize: height} = entry.contentBoxSize[0]) :
+							({inlineSize: width, blockSize: height} = entry.contentBoxSize);
+					} else ({width, height} = entry.contentRect);
+				}
 
-			this.resize(width, height, dpr);
+				this.resize(width, height, dpr);
+			}, RESIZE_DELAY);
 		});
 
 		document.body.appendChild(this.output);
@@ -185,6 +193,8 @@ export default function Instance() {
 		this.output.addEventListener("mousemove", mouseMoveListener.bind(this));
 		this.output.addEventListener("mousedown", mouseDownListener.bind(this));
 	};
+
+	this.hasBeenBuilt = () => hasBeenBuilt;
 
 	/**
 	 * Setups the instance renderers.
@@ -248,9 +258,9 @@ export default function Instance() {
 	};
 
 	/**
-	 * @todo RGB or RGBA?
+	 * @todo `gl.RGB` or `gl.RGBA`?
 	 * 
-     * @param {Number} index
+	 * @param {Number} index
 	 * @param {OffscreenCanvas} canvas
 	 */
 	this.updateRendererTexture = function(index, canvas) {
@@ -285,18 +295,21 @@ export default function Instance() {
 	 */
 	this.stopLoop = () => cancelAnimationFrame(requestID);
 
+	/**
+	 * @todo Use `Renderer` class to avoid duplicate methods (createProgram/createShader/linkProgram)?
+	 * @async
+	 */
 	this.initialize = async function() {
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		/** @todo load `main` program */
-		const [program, vertexShader, fragmentShader] = await createProgram(gl, this.shaderPath, [
+		const [program, vertexShader, fragmentShader] = await createProgram(this.shaderPath, [
 			"main.vert",
 			"main.frag",
 		]);
 
-		linkProgram(gl, program, vertexShader, fragmentShader);
+		linkProgram(program, vertexShader, fragmentShader);
 
 		gl.useProgram(program);
 
@@ -322,13 +335,10 @@ export default function Instance() {
 	};
 
 	/**
-     * @todo Instanced drawing with multiple textures
-     */
+	 * @todo Instanced drawing with multiple textures
+	 */
 	this.render = function() {
 		const {rendererTextures} = this;
-
-		gl.clearColor(0, 0, 0, 1);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		for (let i = 0; i < rendererLength; i++) {
 			if (this.renderers[i].disabled) continue;
@@ -337,8 +347,6 @@ export default function Instance() {
 			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 		}
 	};
-
-	this.hasBeenBuilt = () => hasBeenBuilt;
 
 	this.dispose = function() {
 		/** @todo Stop the game loop if it has started */
@@ -357,8 +365,6 @@ export default function Instance() {
 		this.output.remove();
 		this.output = null;
 	};
-
-	/* Listener managers */
 
 	this.addMouseDownListener = function(listener) {
 		mouseDownListeners.push(listener);
@@ -381,11 +387,10 @@ export default function Instance() {
 	 * @param {{x: Number, y: Number}}
 	 */
 	function mouseMoveListener({clientX: x, clientY: y}) {
-		this.pointerPosition.x = x;
-		this.pointerPosition.y = y;
-		this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
+		this.pointerPosition = new Vector2(x, y).divideScalar(this.currentScale);
+		let i, listener;
 
-		for (let i = 0, listener; i < mouseEnterListenerCount; i++) {
+		for (i = 0; i < mouseEnterListenerCount; i++) {
 			listener = mouseEnterListeners[i];
 
 			if (!intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
@@ -395,7 +400,7 @@ export default function Instance() {
 			listener(this.pointerPosition);
 		}
 
-		for (let i = 0, listener; i < mouseLeaveListenerCount; i++) {
+		for (i = 0; i < mouseLeaveListenerCount; i++) {
 			listener = mouseLeaveListeners[i];
 
 			if (intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
@@ -415,57 +420,45 @@ export default function Instance() {
 			listener(this.pointerPosition);
 		}
 	}
+
+	/** @todo remove duplicate utils */
+	async function createProgram(basePath, [vertexPath, fragmentPath]) {
+		const
+			program = gl.createProgram(),
+			vertexShader = await createShader(basePath, vertexPath, gl.VERTEX_SHADER),
+			fragmentShader = await createShader(basePath, fragmentPath, gl.FRAGMENT_SHADER);
+
+		gl.attachShader(program, vertexShader);
+		gl.attachShader(program, fragmentShader);
+		gl.linkProgram(program);
+
+		return [program, vertexShader, fragmentShader];
+	}
+
+	async function createShader(base, path, type) {
+		const
+			shader = gl.createShader(type),
+			source = await (await fetch(`${base}${path}`)).text();
+
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+
+		return shader;
+	}
+
+	function linkProgram(program, vertexShader, fragmentShader) {
+		gl.linkProgram(program);
+
+		if (gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+
+		let log;
+
+		if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
+			throw ShaderCompilationError(log, gl.VERTEX_SHADER);
+		}
+
+		if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
+			throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
+		}
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/** @todo remove duplicate utils */
-async function createProgram(gl, basePath, [vertexPath, fragmentPath]) {
-	const
-		program = gl.createProgram(),
-		vertexShader = await createShader(gl, basePath, vertexPath, gl.VERTEX_SHADER),
-		fragmentShader = await createShader(gl, basePath, fragmentPath, gl.FRAGMENT_SHADER);
-
-	gl.attachShader(program, vertexShader);
-	gl.attachShader(program, fragmentShader);
-	gl.linkProgram(program);
-
-	return [program, vertexShader, fragmentShader];
-};
-
-async function createShader(gl, base, path, type) {
-	const
-		shader = gl.createShader(type),
-		source = await (await fetch(`${base}${path}`)).text();
-
-	gl.shaderSource(shader, source);
-	gl.compileShader(shader);
-
-	return shader;
-};
-
-function linkProgram(gl, program, vertexShader, fragmentShader) {
-	gl.linkProgram(program);
-
-	if (gl.getProgramParameter(program, gl.LINK_STATUS)) return;
-
-	let log;
-
-	if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
-		throw ShaderCompilationError(log, gl.VERTEX_SHADER);
-	}
-
-	if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
-		throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
-	}
-};

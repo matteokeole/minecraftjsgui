@@ -1,7 +1,7 @@
 import {Vector2} from "math";
 
 /**
- * Wrapper for WebGLTextures.
+ * Wrapper for `WebGLTexture` objects.
  * 
  * @constructor
  * @param {HTMLImageElement} image

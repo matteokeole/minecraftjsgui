@@ -1,5 +1,4 @@
-import {NoWebGL2Error, ShaderCompilationError} from "errors";
-import {Image, ImageButton} from "gui";
+import {ImageButton} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
@@ -19,8 +18,6 @@ try {
 	guiRenderer.enable();
 
 	await guiRenderer.init();
-
-	// throw ShaderCompilationError("message goz her", 35632);
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
