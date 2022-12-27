@@ -1,4 +1,4 @@
-import {Vector2} from "math";
+import {Vector2} from "../Vector2.js";
 
 /**
  * @param {Vector2} point
