@@ -26,15 +26,6 @@ export default function Component({align, margin, size}) {
 	this.size = size;
 
 	/**
-	 * Render method called by the GUI renderer at draw time.
-	 * NOTE: Must be overridden in an instance.
-	 * 
-	 * @method
-	 * @param {WebGL2RenderingContext} gl
-	 */
-	this.render = null;
-
-	/**
 	 * Uses the component alignment and margin values to calculate its absolute position.
 	 * 
 	 * @param {Instance} instance
