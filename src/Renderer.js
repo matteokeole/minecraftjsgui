@@ -1,5 +1,5 @@
 import {ShaderCompilationError} from "errors";
-import Texture from "./Texture.js";
+import TextureWrapper from "./TextureWrapper.js";
 
 /**
  * Offscreen renderer.
@@ -15,10 +15,12 @@ export default function Renderer(instance, {generateMipmaps}) {
 	let enabled = false;
 
 	/** @type {OffscreenCanvas} */
-	this.canvas = null;
+	let canvas;
+	this.getCanvas = () => canvas;
 
 	/** @type {WebGL2RenderingContext} */
-	this.gl = null;
+	let gl;
+	this.getGL = () => gl;
 
 	/** @type {object<string, Texture>} */
 	this.textures = {};
@@ -50,17 +52,15 @@ export default function Renderer(instance, {generateMipmaps}) {
 	this.build = function() {
 		const {viewportWidth, viewportHeight} = instance;
 
-		this.canvas = new OffscreenCanvas(viewportWidth, viewportHeight);
-		this.gl = this.canvas.getContext("webgl2");
+		canvas = new OffscreenCanvas(viewportWidth, viewportHeight);
+		gl = canvas.getContext("webgl2");
 
-		Object.assign(this.gl, {
+		Object.assign(gl, {
 			attribute: {},
 			buffer: {},
 			texture: {},
 			uniform: {},
-			vao: {
-				main: this.gl.createVertexArray(),
-			},
+			vao: {},
 		});
 	};
 
@@ -74,7 +74,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 */
 	this.createProgram = async function([vertexPath, fragmentPath]) {
 		const
-			{gl} = this,
 			program = gl.createProgram(),
 			vertexShader = await this.createShader(vertexPath, gl.VERTEX_SHADER),
 			fragmentShader = await this.createShader(fragmentPath, gl.FRAGMENT_SHADER);
@@ -90,13 +89,12 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Creates, compiles and returns a WebGLShader.
 	 * 
 	 * @async
-	 * @param {String} path File path (relative to *assets/shaders*)
+	 * @param {String} path File path
 	 * @param {Number} type Shader type
 	 * @returns {WebGLShader}
 	 */
 	this.createShader = async function(path, type) {
 		const
-			{gl} = this,
 			base = instance.shaderPath,
 			shader = gl.createShader(type),
 			source = await (await fetch(`${base}${path}`)).text();
@@ -116,8 +114,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * @throws {ShaderCompilationError}
 	 */
 	this.linkProgram = function(program, vertexShader, fragmentShader) {
-		const {gl} = this;
-
 		gl.linkProgram(program);
 
 		if (gl.getProgramParameter(program, gl.LINK_STATUS)) return;
@@ -142,9 +138,9 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 */
 	this.loadTextures = async function(...paths) {
 		const
-			{gl} = this,
 			{length} = paths,
-			base = instance.texturePath;
+			base = instance.texturePath,
+			image = new Image();
 
 		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
 		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 256, 256, length);
@@ -153,9 +149,9 @@ export default function Renderer(instance, {generateMipmaps}) {
 			gl.generateMipmap(gl.TEXTURE_2D_ARRAY) :
 			gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-		for (let i = 0, path, image, source; i < length; i++) {
+		for (let i = 0, path, source; i < length; i++) {
 			path = paths[i];
-			(image = new Image()).src = `${base}${path}`;
+			image.src = `${base}${path}`;
 
 			try {
 				await image.decode();
@@ -165,7 +161,7 @@ export default function Renderer(instance, {generateMipmaps}) {
 
 			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 256, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-			this.textures[path] = new Texture(image, source, i);
+			this.textures[path] = new TextureWrapper(source, image, i);
 		}
 	};
 
@@ -195,12 +191,12 @@ export default function Renderer(instance, {generateMipmaps}) {
 		 * @see {@link https://registry.khronos.org/webgl/extensions/WEBGL_lose_context}
 		 */
 		// gl.deleteBuffer(buffer);
-        // gl.deleteTexture(texture);
-        // gl.deleteProgram(program);
-        // gl.deleteVertexArray(vao);
-		this.gl.getExtension("WEBGL_lose_context").loseContext();
-		this.gl = null;
+		// gl.deleteTexture(texture);
+		// gl.deleteProgram(program);
+		// gl.deleteVertexArray(vao);
+		gl.getExtension("WEBGL_lose_context").loseContext();
+		gl = null;
 
-		this.canvas = null;
+		canvas = null;
 	};
 }

@@ -1,6 +1,6 @@
 import {Matrix3, Vector2} from "math";
 import Component from "./Component.js";
-import Texture from "../../Texture.js";
+import TextureWrapper from "../../TextureWrapper.js";
 
 /**
  * @constructor
@@ -16,7 +16,7 @@ import Texture from "../../Texture.js";
 export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMouseDown}) {
 	Component.apply(this, arguments);
 
-	/** @type {Texture} */
+	/** @type {TextureWrapper} */
 	this.image = image;
 
 	/** @type {Vector2} */
