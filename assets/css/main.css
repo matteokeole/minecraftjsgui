@@ -13,6 +13,10 @@ body {
 	font-family: var(--font-family);
 }
 
+body:has(canvas) {
+	background-color: #000;
+}
+
 canvas {
 	display: block;
 	width: 100vw;

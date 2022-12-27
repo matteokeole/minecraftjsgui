@@ -1,5 +1,4 @@
-import {NoWebGL2Error} from "errors";
-import {Image, ImageButton} from "gui";
+import {ImageButton} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
@@ -29,15 +28,21 @@ try {
 		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 146),
+		uv: new Vector2(0, 106),
 		onMouseEnter: function() {
-			this.uv.y = 166;
+			this.setUV(uv => {
+				uv.y = 126;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.uv.y = 146;
+			this.setUV(uv => {
+				uv.y = 106;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
@@ -51,13 +56,19 @@ try {
 		image: guiRenderer.textures["gui/widgets.png"],
 		uv: new Vector2(0, 146),
 		onMouseEnter: function() {
-			this.uv.y = 166;
+			this.setUV(uv => {
+				uv.y = 166;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.uv.y = 146;
+			this.setUV(uv => {
+				uv.y = 146;
+				return uv;
+			});
 
 			this.pushToRenderStack();
 			guiRenderer.render();
@@ -69,19 +80,7 @@ try {
 		margin: new Vector2(54, 10),
 		size: new Vector2(20, 20),
 		image: guiRenderer.textures["gui/widgets.png"],
-		uv: new Vector2(0, 146),
-		onMouseEnter: function() {
-			this.uv.y = 166;
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
-		onMouseLeave: function() {
-			this.uv.y = 146;
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
+		uv: new Vector2(0, 186),
 	});
 
 	guiRenderer.add(btn1, btn2, btn3);
@@ -91,7 +90,7 @@ try {
 	instance.startLoop();
 } catch (error) {
 	// Make sure the renderers have been built before dispose
-	if (!(error instanceof NoWebGL2Error)) instance.dispose();
+	if (instance.hasBeenBuilt()) instance.dispose();
 
 	error.display?.();
 

@@ -5,6 +5,7 @@ import Renderer from "./Renderer.js";
 /**
  * @todo Apply settings
  * @todo Implement render pipeline here
+ * @todo JSDoc for private properties?
  * 
  * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
@@ -14,13 +15,36 @@ import Renderer from "./Renderer.js";
 export default function Instance() {
 	const DEFAULT_WIDTH = 320;
 	const DEFAULT_HEIGHT = 240;
-	let firstResize = true,
-		request,
-		fps = 60,
-		interval = 1000 / fps,
-		then,
-		now,
-		diff;
+	const RESIZE_DELAY = 50;
+
+	/**
+	 * Prevents the first `ResizeObserver` call.
+	 * 
+	 * @type {?Boolean}
+	 */
+	let isFirstResize = true;
+
+	/**
+	 * Timeout ID of the `ResizeObserver`, used to clear the timeout.
+	 * 
+	 * @type {Number}
+	 */
+	let resizeTimeoutID;
+
+	/**
+	 * Animation request ID, used to interrupt the loop.
+	 * 
+	 * @type {Number}
+	 */
+	let animationRequestID;
+
+	/**
+	 * Returns `true` if the instance canvas has been added to the DOM, `false` otherwise.
+	 * 
+	 * @type {Boolean}
+	 */
+	let hasBeenBuilt = false;
+
 	let rendererLength;
 
 	let mouseEnterListeners = [];
@@ -32,12 +56,11 @@ export default function Instance() {
 	let mouseDownListeners = [];
 	let mouseDownListenerCount = 0;
 
-	/**
-	 * HTMLCanvas output.
-	 * 
-	 * @type {?HTMLCanvasElement}
-	 */
-	this.output = null;
+	/** @type {?HTMLCanvasElement} */
+	let canvas;
+
+	/** @type {?WebGL2RenderingContext} */
+	let gl;
 
 	/**
 	 * Offscreen renderers.
@@ -68,25 +91,22 @@ export default function Instance() {
 	this.texturePath = "assets/textures/";
 
 	/**
-	 * Cached value of window.devicePixelRatio.
+	 * @todo Define null first?
 	 * 
-	 * @type {?Number}
+	 * Cached value of `window.innerWidth`.
+	 * 
+	 * @type {Number}
 	 */
-	this.devicePixelRatio = null;
+	let viewportWidth = innerWidth;
 
 	/**
-	 * Cached value of window.innerWidth.
+	 * @todo Define null first?
 	 * 
-	 * @type {?Number}
-	 */
-	this.viewportWidth = innerWidth;
-
-	/**
-	 * Cached value of window.innerHeight.
+	 * Cached value of `window.innerHeight`.
 	 * 
-	 * @type {?Number}
+	 * @type {Number}
 	 */
-	this.viewportHeight = innerHeight;
+	let viewportHeight = innerHeight;
 
 	/**
 	 * Current GUI scale multiplier.
@@ -127,50 +147,57 @@ export default function Instance() {
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		this.output = document.createElement("canvas");
-		this.output.width = this.viewportWidth;
-		this.output.height = this.viewportHeight;
-		this.gl = this.output.getContext("webgl2");
+		canvas = document.createElement("canvas");
+		canvas.width = viewportWidth;
+		canvas.height = viewportHeight;
+		gl = canvas.getContext("webgl2");
 
-		if (this.gl === null) throw NoWebGL2Error();
+		if (gl === null) throw NoWebGL2Error();
 
 		this.resizeObserver = new ResizeObserver(([entry]) => {
 			// Avoid the first resize
-			if (firstResize) return firstResize = null;
+			if (isFirstResize) return isFirstResize = null;
 
-			let width, height, dpr = 1;
+			clearTimeout(resizeTimeoutID);
+			resizeTimeoutID = setTimeout(() => {
+				let width, height, dpr = 1;
 
-			if (entry.devicePixelContentBoxSize) {
-				({inlineSize: width, blockSize: height} = entry.devicePixelContentBoxSize[0]);
-			} else {
-				dpr = devicePixelRatio;
+				if (entry.devicePixelContentBoxSize) {
+					({inlineSize: width, blockSize: height} = entry.devicePixelContentBoxSize[0]);
+				} else {
+					dpr = devicePixelRatio;
 
-				if (entry.contentBoxSize) {
-					entry.contentBoxSize[0] ?
-						({inlineSize: width, blockSize: height} = entry.contentBoxSize[0]) :
-						({inlineSize: width, blockSize: height} = entry.contentBoxSize);
-				} else ({width, height} = entry.contentRect);
-			}
+					if (entry.contentBoxSize) {
+						entry.contentBoxSize[0] ?
+							({inlineSize: width, blockSize: height} = entry.contentBoxSize[0]) :
+							({inlineSize: width, blockSize: height} = entry.contentBoxSize);
+					} else ({width, height} = entry.contentRect);
+				}
 
-			this.resize(width, height, dpr);
+				this.resize(width, height, dpr);
+			}, RESIZE_DELAY);
 		});
 
-		document.body.appendChild(this.output);
+		document.body.appendChild(canvas);
+
+		hasBeenBuilt = true;
 
 		try {
-			this.resizeObserver.observe(this.output, {
+			this.resizeObserver.observe(canvas, {
 				box: "device-pixel-content-box",
 			});
 		} catch (error) {
 			// "device-pixel-content-box" isn't defined, try with "content-box"
-			this.resizeObserver.observe(this.output, {
+			this.resizeObserver.observe(canvas, {
 				box: "content-box",
 			});
 		}
 
-		this.output.addEventListener("mousemove", mouseMoveListener.bind(this));
-		this.output.addEventListener("mousedown", mouseDownListener.bind(this));
+		canvas.addEventListener("mousemove", mouseMoveListener.bind(this));
+		canvas.addEventListener("mousedown", mouseDownListener.bind(this));
 	};
+
+	this.hasBeenBuilt = () => hasBeenBuilt;
 
 	/**
 	 * Setups the instance renderers.
@@ -178,7 +205,7 @@ export default function Instance() {
 	 * @param {Renderer[]} renderers
 	 */
 	this.setupRenderers = function(renderers) {
-		const {gl, rendererTextures} = this;
+		const {rendererTextures} = this;
 		let texture;
 
 		rendererLength = renderers.length;
@@ -204,23 +231,19 @@ export default function Instance() {
 	 * @param {Number} dpr
 	 */
 	this.resize = function(width, height, dpr) {
-		const {output, gl} = this;
-
-		/** @todo Set viewport size as multiples of 2? */
-		this.viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0;
-		this.viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0;
-		this.devicePixelRatio = dpr;
-
-		output.width = this.viewportWidth;
-		output.height = this.viewportHeight;
-
-		gl.viewport(0, 0, output.width, output.height);
+		gl.viewport(
+			0,
+			0,
+			/** @todo Set viewport size as multiples of 2? */
+			canvas.width = viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0,
+			canvas.height = viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0,
+		);
 
 		// Calculate scale multiplier
 		let i = 1;
 		while (
-			this.viewportWidth > DEFAULT_WIDTH * i &&
-			this.viewportHeight > DEFAULT_HEIGHT * i
+			viewportWidth > DEFAULT_WIDTH * i &&
+			viewportHeight > DEFAULT_HEIGHT * i
 		) i++;
 
 		const currentScale = clampUp(
@@ -234,63 +257,58 @@ export default function Instance() {
 	};
 
 	/**
-	 * @todo RGB or RGBA?
+	 * @todo `gl.RGB` or `gl.RGBA`?
 	 * 
-     * @param {Number} index
+	 * @param {Number} index
 	 * @param {OffscreenCanvas} canvas
 	 */
 	this.updateRendererTexture = function(index, canvas) {
-		const {gl, rendererTextures} = this;
+		const {rendererTextures} = this;
 
 		gl.bindTexture(gl.TEXTURE_2D, rendererTextures[index]);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 	};
 
 	/**
-	 * Starts the render loop.
+	 * @todo Better naming
+	 * 
+	 * Starts the game loop.
 	 */
-	this.startLoop = function() {
-		then = performance.now();
-
-		this.loop();
-	};
+	this.startLoop = () => this.loop();
 
 	/**
-	 * Caller for updates and renders within a render loop.
+	 * @todo Better naming
+	 * 
+	 * Game loop.
 	 */
 	this.loop = function() {
-		request = requestAnimationFrame(this.loop);
+		animationRequestID = requestAnimationFrame(this.loop);
 
-		diff = (now = performance.now()) - then;
-
-		if (diff > interval) {
-			then = now - diff % interval;
-
-			this.render();
-		}
+		this.render();
 	}.bind(this);
 
 	/**
-	 * Stops the render loop.
+	 * @todo Better naming
+	 * 
+	 * Stops the game loop.
 	 */
-	this.stopLoop = function() {
-		cancelAnimationFrame(request);
-	};
+	this.stopLoop = () => cancelAnimationFrame(animationRequestID);
 
+	/**
+	 * @todo Use `Renderer` class to avoid duplicate methods (createProgram/createShader/linkProgram)?
+	 * @async
+	 */
 	this.initialize = async function() {
-		const {gl} = this;
-
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		/** @todo load `main` program */
-		const [program, vertexShader, fragmentShader] = await createProgram(gl, this.shaderPath, [
+		const [program, vertexShader, fragmentShader] = await createProgram(this.shaderPath, [
 			"main.vert",
 			"main.frag",
 		]);
 
-		linkProgram(gl, program, vertexShader, fragmentShader);
+		linkProgram(program, vertexShader, fragmentShader);
 
 		gl.useProgram(program);
 
@@ -316,16 +334,13 @@ export default function Instance() {
 	};
 
 	/**
-     * @todo Implement
-     */
+	 * @todo Instanced drawing with multiple textures
+	 */
 	this.render = function() {
-		const {gl, rendererTextures} = this;
-
-		gl.clearColor(0, 0, 0, 1);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		const {rendererTextures} = this;
 
 		for (let i = 0; i < rendererLength; i++) {
-			if (this.renderers[i].disabled) return;
+			if (this.renderers[i].disabled) continue;
 
 			gl.bindTexture(gl.TEXTURE_2D, rendererTextures[i]);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
@@ -333,17 +348,20 @@ export default function Instance() {
 	};
 
 	this.dispose = function() {
-		// Dispose offscreen renderers
-		for (let i = 0; i < rendererLength; i++) {
-			renderers[i].dispose();
-		}
+		/** @todo Stop the game loop if it has started */
+
+		// Dispose child renderers
+		for (let i = 0; i < rendererLength; i++) this.renderers[i].dispose();
 
 		/** @todo Dispose the output context */
-		this.canvas.remove();
-		this.canvas = null;
-	};
 
-	/* Listener managers */
+		// Remove the resize observer
+		this.resizeObserver.unobserve(canvas);
+
+		// Remove the output canvas from the DOM
+		canvas.remove();
+		canvas = null;
+	};
 
 	this.addMouseDownListener = function(listener) {
 		mouseDownListeners.push(listener);
@@ -366,24 +384,23 @@ export default function Instance() {
 	 * @param {{x: Number, y: Number}}
 	 */
 	function mouseMoveListener({clientX: x, clientY: y}) {
-		this.pointerPosition.x = x;
-		this.pointerPosition.y = y;
-		this.pointerPosition = this.pointerPosition.divideScalar(this.currentScale);
+		this.pointerPosition = new Vector2(x, y).divideScalar(this.currentScale);
+		let i, listener;
 
-		for (let i = 0, listener; i < mouseEnterListenerCount; i++) {
+		for (i = 0; i < mouseEnterListenerCount; i++) {
 			listener = mouseEnterListeners[i];
 
-			if (!intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
+			if (!intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 			if (listener.component.isHovered()) continue;
 
 			listener.component.setIsHovered(true);
 			listener(this.pointerPosition);
 		}
 
-		for (let i = 0, listener; i < mouseLeaveListenerCount; i++) {
+		for (i = 0; i < mouseLeaveListenerCount; i++) {
 			listener = mouseLeaveListeners[i];
 
-			if (intersects(this.pointerPosition, listener.component.position, listener.component.size)) continue;
+			if (intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 			if (!listener.component.isHovered()) continue;
 
 			listener.component.setIsHovered(false);
@@ -391,66 +408,63 @@ export default function Instance() {
 		}
 	}
 
+	/**
+	 * Manager for the `mousedown` event.
+	 */
 	function mouseDownListener() {
 		for (let i = 0, listener; i < mouseDownListenerCount; i++) {
 			listener = mouseDownListeners[i];
 
-			if (!intersects(this.pointerPosition, listener.component.position, listener.component.size)) return;
+			if (!intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) return;
 
 			listener(this.pointerPosition);
 		}
 	}
+
+	/** @todo Remove duplicate util */
+	async function createProgram(basePath, [vertexPath, fragmentPath]) {
+		const
+			program = gl.createProgram(),
+			vertexShader = await createShader(basePath, vertexPath, gl.VERTEX_SHADER),
+			fragmentShader = await createShader(basePath, fragmentPath, gl.FRAGMENT_SHADER);
+
+		gl.attachShader(program, vertexShader);
+		gl.attachShader(program, fragmentShader);
+		gl.linkProgram(program);
+
+		return [program, vertexShader, fragmentShader];
+	}
+
+	/** @todo Remove duplicate util */
+	async function createShader(base, path, type) {
+		const
+			shader = gl.createShader(type),
+			source = await (await fetch(`${base}${path}`)).text();
+
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+
+		return shader;
+	}
+
+	/** @todo Remove duplicate util */
+	function linkProgram(program, vertexShader, fragmentShader) {
+		gl.linkProgram(program);
+
+		if (gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+
+		let log;
+
+		if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
+			throw ShaderCompilationError(log, gl.VERTEX_SHADER);
+		}
+
+		if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
+			throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
+		}
+	}
+
+	this.getViewportWidth = () => viewportWidth;
+
+	this.getViewportHeight = () => viewportHeight;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/** @todo remove duplicate utils */
-async function createProgram(gl, basePath, [vertexPath, fragmentPath]) {
-	const
-		program = gl.createProgram(),
-		vertexShader = await createShader(gl, basePath, vertexPath, gl.VERTEX_SHADER),
-		fragmentShader = await createShader(gl, basePath, fragmentPath, gl.FRAGMENT_SHADER);
-
-	gl.attachShader(program, vertexShader);
-	gl.attachShader(program, fragmentShader);
-	gl.linkProgram(program);
-
-	return [program, vertexShader, fragmentShader];
-};
-
-async function createShader(gl, base, path, type) {
-	const
-		shader = gl.createShader(type),
-		source = await (await fetch(`${base}${path}`)).text();
-
-	gl.shaderSource(shader, source);
-	gl.compileShader(shader);
-
-	return shader;
-};
-
-function linkProgram(gl, program, vertexShader, fragmentShader) {
-	gl.linkProgram(program);
-
-	if (gl.getProgramParameter(program, gl.LINK_STATUS)) return;
-
-	let log;
-
-	if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
-		throw ShaderCompilationError(log, gl.VERTEX_SHADER);
-	}
-
-	if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
-		throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
-	}
-};

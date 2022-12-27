@@ -1,6 +1,4 @@
-import {Matrix3, Vector2} from "math";
 import Component from "./Component.js";
-import Texture from "../../Texture.js";
 
 /**
  * @constructor
@@ -16,11 +14,13 @@ import Texture from "../../Texture.js";
 export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMouseDown}) {
 	Component.apply(this, arguments);
 
-	/** @type {Texture} */
-	this.image = image;
+	this.getImageSize = () => image.size;
 
-	/** @type {Vector2} */
-	this.uv = uv;
+	this.getImageIndex = () => image.index;
+
+	this.getUV = () => uv;
+
+	this.setUV = callback => void (uv = callback(uv));
 
 	/** @type {Function} */
 	this.onMouseEnter = onMouseEnter?.bind(this);
@@ -30,22 +30,4 @@ export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMo
 
 	/** @type {Function} */
 	this.onMouseDown = onMouseDown?.bind(this);
-
-	/** @override */
-	this.render = function(gl) {
-		const
-			worldMatrix = Matrix3
-				.translate(this.position)
-				.scale(this.size);
-		/* const
-			imageSize = this.image.size,
-			textureMatrix = Matrix3
-				.translate(this.uv.divide(imageSize))
-				.scale(this.size.divide(imageSize)); */
-
-		gl.uniformMatrix3fv(gl.uniform.worldMatrix, false, new Float32Array(worldMatrix));
-		// gl.uniformMatrix3fv(gl.uniform.textureMatrix, false, new Float32Array(textureMatrix));
-		gl.bindTexture(gl.TEXTURE_2D, image.source);
-		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-	};
 }

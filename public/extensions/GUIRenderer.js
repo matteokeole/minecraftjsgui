@@ -33,8 +33,12 @@ export default function GUIRenderer(instance) {
 	/** @type {Set<Component>} */
 	this.components = new Set();
 
+	let canvas, gl;
+
 	this.init = async function() {
-		const {canvas, gl} = this;
+		canvas = this.getCanvas();
+		gl = this.getContext();
+
 		const {currentScale} = this.instance;
 
 		// Load component program
@@ -50,12 +54,12 @@ export default function GUIRenderer(instance) {
 		gl.attribute.position = 0;
 		gl.attribute.worldMatrix = 1;
 		gl.attribute.textureMatrix = 4;
-		gl.attribute.layer = 7;
+		gl.attribute.textureIndex = 7;
 		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projection");
 		gl.buffer.position = gl.createBuffer();
 		gl.buffer.worldMatrix = gl.createBuffer();
 		gl.buffer.textureMatrix = gl.createBuffer();
-		gl.buffer.layer = gl.createBuffer();
+		gl.buffer.textureIndex = gl.createBuffer();
 
 		gl.bindVertexArray(gl.vao.main);
 
@@ -69,7 +73,7 @@ export default function GUIRenderer(instance) {
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.enableVertexAttribArray(gl.attribute.worldMatrix);
 		gl.enableVertexAttribArray(gl.attribute.textureMatrix);
-		gl.enableVertexAttribArray(gl.attribute.layer);
+		gl.enableVertexAttribArray(gl.attribute.textureIndex);
 
 		// Set vertex positions
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);
@@ -81,9 +85,9 @@ export default function GUIRenderer(instance) {
 			0, 1,
 		]), gl.STATIC_DRAW);
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
-		gl.vertexAttribPointer(gl.attribute.layer, 1, gl.FLOAT, false, 0, 0);
-		gl.vertexAttribDivisor(gl.attribute.layer, 1);
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
+		gl.vertexAttribPointer(gl.attribute.textureIndex, 1, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribDivisor(gl.attribute.textureIndex, 1);
 	};
 
 	/**
@@ -135,14 +139,11 @@ export default function GUIRenderer(instance) {
 	};
 
 	/**
-	 * @todo Privatise `gl`
-	 * 
 	 * Renders the GUI and updates the scene renderer GUI texture.
 	 */
 	this.render = function() {
 		const
 			{length} = componentRenderStack,
-			{gl} = this,
 			worldMatrixData = new Float32Array(length * 9),
 			worldMatrices = [],
 			textureMatrixData = new Float32Array(length * 9),
@@ -164,11 +165,11 @@ export default function GUIRenderer(instance) {
 
 			const component = componentRenderStack[i];
 			const worldMatrix = Matrix3
-				.translate(component.position)
-				.scale(component.size);
+				.translate(component.getPosition())
+				.scale(component.getSize());
 			const textureMatrix = Matrix3
-				.translate(component.uv.divide(component.image.size))
-				.scale(component.size.divide(component.image.size));
+				.translate(component.getUV().divide(component.getImageSize()))
+				.scale(component.getSize().divide(component.getImageSize()));
 
 			for (let j = 0; j < 9; j++) {
 				worldMatrices[i][j] = worldMatrix[j];
@@ -206,21 +207,26 @@ export default function GUIRenderer(instance) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureMatrix);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.layer);
-		const layers = new Float32Array(length);
-		for (let i = 0; i < length; i++) layers[i] = componentRenderStack[i].image.layer;
-		gl.bufferData(gl.ARRAY_BUFFER, layers, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
+		const textureIndices = new Float32Array(length);
+		for (let i = 0; i < length; i++) textureIndices[i] = componentRenderStack[i].getImageIndex();
+		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
 		// Clear the render stack
 		componentRenderStack.length = 0;
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, length);
 
-		this.instance.updateRendererTexture(0, this.canvas);
+		this.instance.updateRendererTexture(0, canvas);
 	};
 
+	/**
+	 * @todo Pass the resize data (w/h (+ dpr?)) from the instance
+	 */
 	this.resize = function() {
-		const {canvas, gl, instance: {viewportWidth, viewportHeight, currentScale}} = this;
+		const {currentScale} = this.instance;
+		const viewportWidth = this.instance.getViewportWidth();
+		const viewportHeight = this.instance.getViewportHeight();
 
 		canvas.width = viewportWidth;
 		canvas.height = viewportHeight;
