@@ -1,4 +1,4 @@
-import {NoWebGL2Error} from "errors";
+import {NoWebGL2Error, ShaderCompilationError} from "errors";
 import {Image, ImageButton} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
@@ -19,6 +19,8 @@ try {
 	guiRenderer.enable();
 
 	await guiRenderer.init();
+
+	// throw ShaderCompilationError("message goz her", 35632);
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
@@ -79,7 +81,7 @@ try {
 	instance.startLoop();
 } catch (error) {
 	// Make sure the renderers have been built before dispose
-	if (!(error instanceof NoWebGL2Error)) instance.dispose();
+	if (instance.hasBeenBuilt()) instance.dispose();
 
 	error.display?.();
 

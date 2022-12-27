@@ -14,13 +14,22 @@ import Renderer from "./Renderer.js";
 export default function Instance() {
 	const DEFAULT_WIDTH = 320;
 	const DEFAULT_HEIGHT = 240;
-	let firstResize = true,
-		request,
-		fps = 60,
-		interval = 1000 / fps,
-		then,
-		now,
-		diff;
+	let firstResize = true;
+
+	/**
+	 * Animation request ID, used to interrupt the loop.
+	 * 
+	 * @type {Number}
+	 */
+	let requestID;
+
+	/**
+	 * Returns `true` if the instance canvas has been added to the DOM, `false` otherwise.
+	 * 
+	 * @type {Boolean}
+	 */
+	let hasBeenBuilt = false;
+
 	let rendererLength;
 
 	let mouseEnterListeners = [];
@@ -38,6 +47,9 @@ export default function Instance() {
 	 * @type {?HTMLCanvasElement}
 	 */
 	this.output = null;
+
+	/** @type {WebGL2RenderingContext} */
+	let gl;
 
 	/**
 	 * Offscreen renderers.
@@ -130,9 +142,9 @@ export default function Instance() {
 		this.output = document.createElement("canvas");
 		this.output.width = this.viewportWidth;
 		this.output.height = this.viewportHeight;
-		this.gl = this.output.getContext("webgl2");
+		gl = this.output.getContext("webgl2");
 
-		if (this.gl === null) throw NoWebGL2Error();
+		if (gl === null) throw NoWebGL2Error();
 
 		this.resizeObserver = new ResizeObserver(([entry]) => {
 			// Avoid the first resize
@@ -157,6 +169,8 @@ export default function Instance() {
 
 		document.body.appendChild(this.output);
 
+		hasBeenBuilt = true;
+
 		try {
 			this.resizeObserver.observe(this.output, {
 				box: "device-pixel-content-box",
@@ -178,7 +192,7 @@ export default function Instance() {
 	 * @param {Renderer[]} renderers
 	 */
 	this.setupRenderers = function(renderers) {
-		const {gl, rendererTextures} = this;
+		const {rendererTextures} = this;
 		let texture;
 
 		rendererLength = renderers.length;
@@ -204,7 +218,7 @@ export default function Instance() {
 	 * @param {Number} dpr
 	 */
 	this.resize = function(width, height, dpr) {
-		const {output, gl} = this;
+		const {output} = this;
 
 		/** @todo Set viewport size as multiples of 2? */
 		this.viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0;
@@ -240,46 +254,38 @@ export default function Instance() {
 	 * @param {OffscreenCanvas} canvas
 	 */
 	this.updateRendererTexture = function(index, canvas) {
-		const {gl, rendererTextures} = this;
+		const {rendererTextures} = this;
 
 		gl.bindTexture(gl.TEXTURE_2D, rendererTextures[index]);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 	};
 
 	/**
-	 * Starts the render loop.
+	 * @todo Better naming
+	 * 
+	 * Starts the game loop.
 	 */
-	this.startLoop = function() {
-		then = performance.now();
-
-		this.loop();
-	};
+	this.startLoop = () => this.loop();
 
 	/**
-	 * Caller for updates and renders within a render loop.
+	 * @todo Better naming
+	 * 
+	 * Game loop.
 	 */
 	this.loop = function() {
-		request = requestAnimationFrame(this.loop);
+		requestID = requestAnimationFrame(this.loop);
 
-		diff = (now = performance.now()) - then;
-
-		if (diff > interval) {
-			then = now - diff % interval;
-
-			this.render();
-		}
+		this.render();
 	}.bind(this);
 
 	/**
-	 * Stops the render loop.
+	 * @todo Better naming
+	 * 
+	 * Stops the game loop.
 	 */
-	this.stopLoop = function() {
-		cancelAnimationFrame(request);
-	};
+	this.stopLoop = () => cancelAnimationFrame(requestID);
 
 	this.initialize = async function() {
-		const {gl} = this;
-
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -316,31 +322,40 @@ export default function Instance() {
 	};
 
 	/**
-     * @todo Implement
+     * @todo Instanced drawing with multiple textures
      */
 	this.render = function() {
-		const {gl, rendererTextures} = this;
+		const {rendererTextures} = this;
 
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		for (let i = 0; i < rendererLength; i++) {
-			if (this.renderers[i].disabled) return;
+			if (this.renderers[i].disabled) continue;
 
 			gl.bindTexture(gl.TEXTURE_2D, rendererTextures[i]);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 		}
 	};
 
+	this.hasBeenBuilt = () => hasBeenBuilt;
+
 	this.dispose = function() {
-		// Dispose offscreen renderers
+		/** @todo Stop the game loop if it has started */
+
+		// Dispose child renderers
 		for (let i = 0; i < rendererLength; i++) {
-			renderers[i].dispose();
+			this.renderers[i].dispose();
 		}
 
 		/** @todo Dispose the output context */
-		this.canvas.remove();
-		this.canvas = null;
+
+		// Remove the resize observer
+		this.resizeObserver.unobserve(this.output);
+
+		// Remove the output canvas from the DOM
+		this.output.remove();
+		this.output = null;
 	};
 
 	/* Listener managers */
