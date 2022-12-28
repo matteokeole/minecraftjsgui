@@ -27,22 +27,18 @@ try {
 		align: ["left", "top"],
 		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
+		image: guiRenderer.getTexture("gui/widgets.png"),
 		uv: new Vector2(0, 106),
 		onMouseEnter: function() {
-			this.setUV(uv => {
-				uv.y = 126;
-				return uv;
-			});
+			const newUV = new Vector2(this.getUV().x, 126);
+			this.setUV(newUV);
 
 			this.pushToRenderStack();
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.setUV(uv => {
-				uv.y = 106;
-				return uv;
-			});
+			const newUV = new Vector2(this.getUV().x, 106);
+			this.setUV(newUV);
 
 			this.pushToRenderStack();
 			guiRenderer.render();
@@ -53,22 +49,18 @@ try {
 		align: ["left", "top"],
 		margin: new Vector2(32, 10),
 		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
+		image: guiRenderer.getTexture("gui/widgets.png"),
 		uv: new Vector2(0, 146),
 		onMouseEnter: function() {
-			this.setUV(uv => {
-				uv.y = 166;
-				return uv;
-			});
+			const newUV = new Vector2(this.getUV().x, 166);
+			this.setUV(newUV);
 
 			this.pushToRenderStack();
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.setUV(uv => {
-				uv.y = 146;
-				return uv;
-			});
+			const newUV = new Vector2(this.getUV().x, 146);
+			this.setUV(newUV);
 
 			this.pushToRenderStack();
 			guiRenderer.render();
@@ -79,7 +71,7 @@ try {
 		align: ["left", "top"],
 		margin: new Vector2(54, 10),
 		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
+		image: guiRenderer.getTexture("gui/widgets.png"),
 		uv: new Vector2(0, 186),
 	});
 

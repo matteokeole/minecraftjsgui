@@ -21,11 +21,9 @@ export default function Renderer(instance, {generateMipmaps}) {
 	let enabled = false;
 
 	/**
-	 * @todo Privatize
-	 * @todo Public texture getter
-	 * @type {object<string, TextureWrapper>}
+	 * @type {Object<string, TextureWrapper>}
 	 */
-	this.textures = {};
+	const textures = {};
 
 	/** @type {Boolean} */
 	this.disabled = !enabled;
@@ -164,9 +162,14 @@ export default function Renderer(instance, {generateMipmaps}) {
 
 			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 256, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-			this.textures[path] = new TextureWrapper(source, image, i);
+			textures[path] = new TextureWrapper(source, image, i);
 		}
 	};
+
+	/**
+	 * @param {String} path
+	 */
+	this.getTexture = path => textures[path];
 
 	/**
 	 * Initializes the renderer.
