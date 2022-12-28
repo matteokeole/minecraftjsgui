@@ -1,4 +1,4 @@
-import {ImageButton} from "gui";
+import {Group, ImageButton} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
@@ -23,51 +23,29 @@ try {
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
 	await guiRenderer.loadTextures(...guiTextures);
 
-	const btn1 = new ImageButton({
-		align: ["left", "top"],
-		margin: new Vector2(10, 10),
-		size: new Vector2(20, 20),
-		image: guiRenderer.getTexture("gui/widgets.png"),
-		uv: new Vector2(0, 106),
-		onMouseEnter: function() {
-			const newUV = new Vector2(this.getUV().x, 126);
-			this.setUV(newUV);
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
-		onMouseLeave: function() {
-			const newUV = new Vector2(this.getUV().x, 106);
-			this.setUV(newUV);
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
+	const group = new Group({
+		align: ["center", "top"],
+		margin: new Vector2(0, 0),
+		size: new Vector2(100, 100),
+		children: [
+			new ImageButton({
+				align: ["left", "top"],
+				margin: new Vector2(0, 0),
+				size: new Vector2(20, 20),
+				image: guiRenderer.getTexture("gui/widgets.png"),
+				uv: new Vector2(0, 186),
+			}),
+			new ImageButton({
+				align: ["right", "bottom"],
+				margin: new Vector2(0, 0),
+				size: new Vector2(20, 20),
+				image: guiRenderer.getTexture("gui/widgets.png"),
+				uv: new Vector2(0, 186),
+			}),
+		],
 	});
 
-	const btn2 = new ImageButton({
-		align: ["left", "top"],
-		margin: new Vector2(32, 10),
-		size: new Vector2(20, 20),
-		image: guiRenderer.getTexture("gui/widgets.png"),
-		uv: new Vector2(0, 146),
-		onMouseEnter: function() {
-			const newUV = new Vector2(this.getUV().x, 166);
-			this.setUV(newUV);
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
-		onMouseLeave: function() {
-			const newUV = new Vector2(this.getUV().x, 146);
-			this.setUV(newUV);
-
-			this.pushToRenderStack();
-			guiRenderer.render();
-		},
-	});
-
-	const btn3 = new ImageButton({
+	const button = new ImageButton({
 		align: ["left", "top"],
 		margin: new Vector2(54, 10),
 		size: new Vector2(20, 20),
@@ -75,7 +53,7 @@ try {
 		uv: new Vector2(0, 186),
 	});
 
-	guiRenderer.add(btn1, btn2, btn3);
+	guiRenderer.add(group, button);
 	guiRenderer.compute();
 	guiRenderer.render();
 
