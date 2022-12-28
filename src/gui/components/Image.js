@@ -6,9 +6,10 @@ import Component from "./Component.js";
  * 
  * @constructor
  * @extends Component
- * @param {object} options
- * @param {TextureWrapper} options.image
- * @param {Vector2} options.uv
+ * @param {{
+ *    image: TextureWrapper,
+ *    uv: Vector2
+ * }}
  */
 export default function Image({image, uv}) {
 	Component.apply(this, arguments);
