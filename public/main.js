@@ -3,10 +3,14 @@ import {Vector2} from "math";
 import Instance from "instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
 
+import {NoWebGL2Error} from "errors";
+
 export const instance = new Instance();
 export let guiRenderer;
 
 try {
+	throw NoWebGL2Error();
+
 	instance.build();
 	await instance.initialize();
 
