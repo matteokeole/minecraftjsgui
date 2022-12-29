@@ -75,6 +75,16 @@ Vector2.prototype.dot = function(v) {
 	return this.x * v.x + this.y * v.y;
 };
 
+/**
+ * NOTE: Only for 32-bit signed integers.
+ */
+Vector2.prototype.floor = function() {
+	return new Vector2(
+		this.x | 0,
+		this.y | 0,
+	);
+};
+
 Vector2.prototype.invert = function() {
 	return this.multiplyScalar(-1);
 };

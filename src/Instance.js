@@ -134,12 +134,11 @@ export default function Instance() {
 	this.maxScale = 4;
 
 	/**
-	 * Current position of the pointer.
-	 * Used for GUI event listeners.
+	 * Current position of the pointer, used for GUI event listeners.
 	 * 
-	 * @type {Vector2}
+	 * @type {?Vector2}
 	 */
-	this.pointerPosition = new Vector2(0, 0);
+	let pointerPosition;
 
 	/**
 	 * @todo Finish implementing
@@ -384,27 +383,27 @@ export default function Instance() {
 	 * @param {{x: Number, y: Number}}
 	 */
 	function mouseMoveListener({clientX: x, clientY: y}) {
-		this.pointerPosition = new Vector2(x, y).divideScalar(this.currentScale);
+		pointerPosition = new Vector2(x, y).divideScalar(this.currentScale);
 		let i, listener;
 
 		for (i = 0; i < mouseEnterListenerCount; i++) {
 			listener = mouseEnterListeners[i];
 
-			if (!intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
+			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 			if (listener.component.isHovered()) continue;
 
 			listener.component.setIsHovered(true);
-			listener(this.pointerPosition);
+			listener(pointerPosition);
 		}
 
 		for (i = 0; i < mouseLeaveListenerCount; i++) {
 			listener = mouseLeaveListeners[i];
 
-			if (intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
+			if (intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 			if (!listener.component.isHovered()) continue;
 
 			listener.component.setIsHovered(false);
-			listener(this.pointerPosition);
+			listener(pointerPosition);
 		}
 	}
 
@@ -415,9 +414,9 @@ export default function Instance() {
 		for (let i = 0, listener; i < mouseDownListenerCount; i++) {
 			listener = mouseDownListeners[i];
 
-			if (!intersects(this.pointerPosition, listener.component.getPosition(), listener.component.getSize())) return;
+			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) return;
 
-			listener(this.pointerPosition);
+			listener(pointerPosition);
 		}
 	}
 

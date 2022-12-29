@@ -1,4 +1,4 @@
-import {ImageButton} from "gui";
+import {Group, ImageButton} from "gui";
 import {Vector2} from "math";
 import Instance from "instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
@@ -23,67 +23,97 @@ try {
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
 	await guiRenderer.loadTextures(...guiTextures);
 
-	const btn1 = new ImageButton({
+	/* const group = new Group({
+		align: ["center", "top"],
+		margin: new Vector2(0, 0),
+		size: new Vector2(100, 100),
+		children: [
+			new ImageButton({
+				align: ["left", "top"],
+				margin: new Vector2(0, 0),
+				size: new Vector2(20, 20),
+				image: guiRenderer.getTexture("gui/widgets.png"),
+				uv: new Vector2(0, 186),
+			}),
+			new ImageButton({
+				align: ["right", "bottom"],
+				margin: new Vector2(0, 0),
+				size: new Vector2(20, 20),
+				image: guiRenderer.getTexture("gui/widgets.png"),
+				uv: new Vector2(0, 186),
+			}),
+		],
+	}); */
+
+	const button1 = new ImageButton({
 		align: ["left", "top"],
 		margin: new Vector2(10, 10),
 		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
+		image: guiRenderer.getTexture("gui/widgets.png"),
 		uv: new Vector2(0, 106),
 		onMouseEnter: function() {
-			this.setUV(uv => {
-				uv.y = 126;
-				return uv;
-			});
+			const uv = new Vector2(0, 126);
 
+			this.setUV(uv);
+
+			// Register to the render stack
 			this.pushToRenderStack();
+
+			// Render
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.setUV(uv => {
-				uv.y = 106;
-				return uv;
-			});
+			const uv = new Vector2(0, 106);
 
+			this.setUV(uv);
+
+			// Register to the render stack
 			this.pushToRenderStack();
+
+			// Render
 			guiRenderer.render();
 		},
 	});
 
-	const btn2 = new ImageButton({
+	const button2 = new ImageButton({
 		align: ["left", "top"],
 		margin: new Vector2(32, 10),
 		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
+		image: guiRenderer.getTexture("gui/widgets.png"),
 		uv: new Vector2(0, 146),
 		onMouseEnter: function() {
-			this.setUV(uv => {
-				uv.y = 166;
-				return uv;
-			});
+			const uv = new Vector2(0, 166);
 
+			this.setUV(uv);
+
+			// Register to the render stack
 			this.pushToRenderStack();
+
+			// Render
 			guiRenderer.render();
 		},
 		onMouseLeave: function() {
-			this.setUV(uv => {
-				uv.y = 146;
-				return uv;
-			});
+			const uv = new Vector2(0, 146);
 
+			this.setUV(uv);
+
+			// Register to the render stack
 			this.pushToRenderStack();
+
+			// Render
 			guiRenderer.render();
 		},
 	});
 
-	const btn3 = new ImageButton({
+	const button3 = new ImageButton({
 		align: ["left", "top"],
-		margin: new Vector2(54, 10),
+		margin: new Vector2(53, 10),
 		size: new Vector2(20, 20),
-		image: guiRenderer.textures["gui/widgets.png"],
+		image: guiRenderer.getTexture("gui/widgets.png"),
 		uv: new Vector2(0, 186),
 	});
 
-	guiRenderer.add(btn1, btn2, btn3);
+	guiRenderer.add(button1, button2, button3);
 	guiRenderer.compute();
 	guiRenderer.render();
 

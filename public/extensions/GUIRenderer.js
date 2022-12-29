@@ -2,6 +2,7 @@ import {Matrix3, Vector2} from "math";
 import Renderer from "renderer";
 import Instance from "../../src/Instance.js";
 import Component from "../../src/gui/components/Component.js";
+import {Group} from "gui";
 
 /**
  * GUI renderer singleton.
@@ -103,6 +104,38 @@ export default function GUIRenderer(instance) {
 
 		for (let i = 0; i < length; i++) {
 			component = components[i];
+
+			if (component instanceof Group) {
+				const children = component.getChildren();
+				for (let j = 0; j < children.length; j++) {
+					component = children[j];
+					component.pushToRenderStack = pushToRenderStack;
+					component.pushToRenderStack();
+
+					if (component.onMouseEnter) {
+						component.onMouseEnter.component = component;
+
+						this.instance.addMouseEnterListener(component.onMouseEnter);
+					}
+
+					if (component.onMouseLeave) {
+						component.onMouseLeave.component = component;
+
+						this.instance.addMouseLeaveListener(component.onMouseLeave);
+					}
+
+					if (component.onMouseDown) {
+						component.onMouseDown.component = component;
+
+						this.instance.addMouseDownListener(component.onMouseDown);
+					}
+
+					this.components.add(component);
+				}
+
+				continue;
+			}
+
 			component.pushToRenderStack = pushToRenderStack;
 			component.pushToRenderStack();
 
@@ -124,7 +157,7 @@ export default function GUIRenderer(instance) {
 				this.instance.addMouseDownListener(component.onMouseDown);
 			}
 
-			this.components.add(components[i]);
+			this.components.add(component);
 		}
 	};
 

@@ -92,6 +92,17 @@ Vector3.prototype.dot = function(v) {
 	return this.x * v.x + this.y * v.y + this.z * v.z;
 };
 
+/**
+ * NOTE: Only for 32-bit signed integers.
+ */
+Vector3.prototype.floor = function() {
+	return new Vector3(
+		this.x | 0,
+		this.y | 0,
+		this.z | 0,
+	);
+};
+
 Vector3.prototype.invert = function() {
 	return this.multiplyScalar(-1);
 };
