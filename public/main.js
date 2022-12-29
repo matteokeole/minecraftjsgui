@@ -27,8 +27,8 @@ try {
 	const tree = [
 		new Group({
 			align: ["center", "center"],
-			margin: new Vector2(0, 6),
-			size: new Vector2(200, 100),
+			margin: new Vector2(0, 0),
+			size: new Vector2(200, 96),
 			children: [
 				new ImageButton({
 					align: ["left", "top"],

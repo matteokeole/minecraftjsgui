@@ -112,12 +112,12 @@ export default function GUIRenderer(instance) {
 			componentTree.push(component);
 
 			component instanceof Group ?
-				this.addNewToRenderStack(component) :
+				this.addToRenderStack(component) :
 				componentRenderStack.push(component);
 		}
 	};
 
-	this.addNewToRenderStack = function(parent) {
+	this.addToRenderStack = function(parent) {
 		// This methods only adds `Group` children
 		if (!(parent instanceof Group)) return;
 
@@ -129,7 +129,7 @@ export default function GUIRenderer(instance) {
 			component = children[i];
 
 			if (component instanceof Group) {
-				this.addNewToRenderStack(component);
+				this.addToRenderStack(component);
 
 				continue;
 			}
@@ -303,10 +303,20 @@ export default function GUIRenderer(instance) {
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
-		// Register all components
+		// Add all components to the render stack
 		const {length} = componentTree;
 
-		for (let i = 0; i < length; i++) componentTree[i].pushToRenderStack();
+		for (let i = 0, component; i < length; i++) {
+			component = componentTree[i];
+
+			if (component instanceof Group) {
+				this.addToRenderStack(component);
+
+				continue;
+			}
+
+			componentRenderStack.push(component);
+		}
 
 		this.computeTree();
 		this.render();
