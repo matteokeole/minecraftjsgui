@@ -1,15 +1,15 @@
 import {Vector2} from "math";
-import Group from "./Group.js";
-import Instance from "../../Instance.js";
 
 /**
  * A GUI component.
  * 
  * @constructor
- * @param {object} options
- * @param {String[2]} options.align
- * @param {Vector2} options.margin
- * @param {Vector2} options.size
+ * @abstract
+ * @param {{
+ *    align: String[2],
+ *    margin: Vector2,
+ *    size: Vector2,
+ * }}
  */
 export default function Component({align, margin, size}) {
 	/**
@@ -27,8 +27,7 @@ export default function Component({align, margin, size}) {
 	let isHovered = false;
 
 	/**
-	 * @todo Documentation
-	 * @todo Replace `{x, y}` objects by `Vector2` instances
+	 * @todo Review + documentation
 	 * 
 	 * Uses the component alignment and margin values to calculate its absolute position.
 	 * 

@@ -6,6 +6,7 @@ import Renderer from "./Renderer.js";
  * @todo Apply settings
  * @todo Implement render pipeline here
  * @todo JSDoc for private properties?
+ * @todo Viewport size Vector2?
  * 
  * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
