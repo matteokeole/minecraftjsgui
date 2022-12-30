@@ -1,4 +1,4 @@
-import {Vector2} from "math";
+import {Vector2} from "src/math";
 
 /**
  * A GUI component.

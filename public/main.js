@@ -1,7 +1,7 @@
-import {NoWebGL2Error} from "errors";
-import {Group, ImageButton} from "gui";
-import {Vector2} from "math";
-import Instance from "instance";
+import {NoWebGL2Error} from "src/errors";
+import {Group, ImageButton} from "src/gui";
+import {Vector2} from "src/math";
+import Instance from "src/instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
 
 export const instance = new Instance();

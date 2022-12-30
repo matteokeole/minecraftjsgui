@@ -127,9 +127,9 @@ instance.setPipeline(
 
 
 // Item slot tests
-import {Slot} from "gui";
-import {HelmetItem} from "items";
-import {Vector2} from "math";
+import {Slot} from "src/gui";
+import {HelmetItem} from "src/items";
+import {Vector2} from "src/math";
 
 const slot = new Slot({
 	position: new Vector2(0, 0),

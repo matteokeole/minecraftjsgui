@@ -1,4 +1,4 @@
-import {ShaderCompilationError} from "errors";
+import {ShaderCompilationError} from "src/errors";
 import TextureWrapper from "./TextureWrapper.js";
 
 /**

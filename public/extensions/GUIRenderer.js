@@ -1,8 +1,8 @@
-import {Matrix3, Vector2} from "math";
-import Renderer from "renderer";
+import {Matrix3, Vector2} from "src/math";
+import Renderer from "src/renderer";
 import Instance from "../../src/Instance.js";
 import Component from "../../src/gui/components/Component.js";
-import {Group} from "gui";
+import {Group} from "src/gui";
 
 /**
  * @todo Rename `componentRenderStack` to `renderStack`

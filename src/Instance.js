@@ -1,5 +1,5 @@
-import {NoWebGL2Error, ShaderCompilationError} from "errors";
-import {Vector2, clampDown, clampUp, intersects} from "math";
+import {NoWebGL2Error, ShaderCompilationError} from "src/errors";
+import {Vector2, clampDown, clampUp, intersects} from "src/math";
 import Renderer from "./Renderer.js";
 
 /**
