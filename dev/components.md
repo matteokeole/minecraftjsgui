@@ -26,6 +26,8 @@ Centered both horizontally and vertically because most `Button`s have a `Text` c
 
 ### Main menu tree
 
+This is an example of how the main menu component tree should look like.
+
 ```js
 [
 	new Image({
@@ -42,13 +44,13 @@ Centered both horizontally and vertically because most `Button`s have a `Text` c
 				alignment: ["center", "top"],
 				offset: new Vector2(0, 0),
 				width: 200,
-				text: "Singleplayer",
+				child: new Text("Singleplayer"),
 			}),
 			new Button({
 				alignment: ["center", "top"],
 				offset: new Vector2(0, 24),
 				width: 200,
-				text: "Multiplayer",
+				child: new Text("Multiplayer"),
 			}),
 			new ImageButton({
 				alignment: ["left", "bottom"],
@@ -61,13 +63,13 @@ Centered both horizontally and vertically because most `Button`s have a `Text` c
 				alignment: ["left", "bottom"],
 				offset: new Vector2(24, 0),
 				width: 96,
-				text: "Options...",
+				child: new Text("Options..."),
 			}),
 			new Button({
 				alignment: ["right", "bottom"],
 				offset: new Vector2(24, 0),
 				width: 96,
-				text: "Quit",
+				child: new Text("Quit"),
 			}),
 			new ImageButton({
 				alignment: ["right", "bottom"],
@@ -78,10 +80,9 @@ Centered both horizontally and vertically because most `Button`s have a `Text` c
 			}),
 		],
 	}),
-	new Text({
+	new Text("Copyright", {
 		alignment: ["left", "bottom"],
 		offset: new Vector2(0, 0),
-		text: "Copyright",
 	}),
 ]
 ```
