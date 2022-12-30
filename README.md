@@ -1,4 +1,4 @@
-###### WebGL2 2D GUI library with Minecraft-related base components.
+#### WebGL2 2D GUI library with Minecraft-related base components.
 
 This repository and [*minecraftjs*](https://github.com/matteokeole/minecraftjs), [*minecraftgui*](https://github.com/matteokeole/minecraftgui), [*canvasprinter*](https://github.com/matteokeole/canvasprinter) and [*mcrenderer*](https://github.com/matteokeole/mcrenderer) feature Minecraft GUI, text printing and 3D rendering demos and may be merged in the future.
 

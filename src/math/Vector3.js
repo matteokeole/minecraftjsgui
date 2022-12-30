@@ -39,6 +39,13 @@ Vector3.prototype.addScalar = function(n) {
 	);
 };
 
+Vector3.prototype.clone = function() {
+	return new Vector3(
+		this.x,
+		this.y,
+	);
+};
+
 /**
  * @param {Vector3} v
  */

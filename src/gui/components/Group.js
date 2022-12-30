@@ -11,28 +11,38 @@ import Component from "./Component.js";
 export default function Group({children}) {
 	Component.apply(this, arguments);
 
+	const align = this.getAlignment();
+	const margin = this.getMargin();
+	const size = this.getSize();
+
 	this.getChildren = () => children;
 
-	this.computePosition = instance => {
+	const childLength = children.length;
+
+	/**
+	 * @todo Documentation
+	 * @todo Replace `{x, y}` objects by `Vector2` instances
+	 * 
+	 * @param {Vector2} initialPosition
+	 * @param {Vector2} parentSize
+	 */
+	this.computePosition = function(initialPosition, parentSize) {
 		const
-			viewportWidth = instance.getViewportWidth(),
-			viewportHeight = instance.getViewportHeight(),
-			{currentScale} = instance,
-			[horizontal, vertical] = this.getAlignment(),
-			w = viewportWidth / currentScale - this.getSize(0),
-			h = viewportHeight / currentScale - this.getSize(1);
-		let p = this.getMargin();
+			[horizontal, vertical] = align,
+			w = parentSize.x - size.x,
+			h = parentSize.y - size.y;
+		initialPosition = initialPosition.add(margin);
 
-		if (horizontal === "right") p.x = w - p.x;
-		else if (horizontal === "center") p.x += w / 2;
+		if (horizontal === "right") initialPosition.x = w - margin.x;
+		else if (horizontal === "center") initialPosition.x += w / 2;
 
-		if (vertical === "bottom") p.y = h - p.y;
-		else if (vertical === "center") p.y += h / 2;
+		if (vertical === "bottom") initialPosition.y = h - margin.y;
+		else if (vertical === "center") initialPosition.y += h / 2;
 
-		this.setPosition(p.floor());
+		this.setPosition(initialPosition.floor());
+
+		const position = this.getPosition();
+
+		for (let i = 0; i < childLength; i++) children[i].computePosition(position.clone(), size);
 	};
-
-	const {length} = children;
-
-	for (let i = 0; i < length; i++) children[i].setGroup(this);
 }

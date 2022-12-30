@@ -13,13 +13,6 @@ import Instance from "../../Instance.js";
  */
 export default function Component({align, margin, size}) {
 	/**
-	 * Reference to the parent group.
-	 * 
-	 * @type {?Group}
-	 */
-	let group;
-
-	/**
 	 * Component offset from the top-left corner of the viewport.
 	 * 
 	 * @type {Vector2}
@@ -34,82 +27,51 @@ export default function Component({align, margin, size}) {
 	let isHovered = false;
 
 	/**
+	 * @todo Documentation
+	 * @todo Replace `{x, y}` objects by `Vector2` instances
+	 * 
 	 * Uses the component alignment and margin values to calculate its absolute position.
 	 * 
-	 * @param {Instance} instance
+	 * @param {Vector2} initialPosition
+	 * @param {Vector2} parentSize
 	 */
-	this.computePosition = function(instance) {
+	this.computePosition = function(initialPosition, parentSize) {
 		const
 			[horizontal, vertical] = align,
-			{x: mx, y: my} = margin,
-			{x: w, y: h} = size;
-		let p = new Vector2(0, 0), ow, oh, group;
-
-		if ((group = this.getGroup()) !== undefined) {
-			// Grouped component
-			const groupSize = group.getSize();
-
-			ow = groupSize.x;
-			oh = groupSize.y;
-
-			if (p = group.getPosition() instanceof Vector2) return;
-
-			group.computePosition(instance);
-			p = group.getPosition();
-		} else {
-			// Generic component
-			const viewportWidth = instance.getViewportWidth();
-			const viewportHeight = instance.getViewportHeight();
-			const {currentScale} = instance;
-
-			ow = viewportWidth / currentScale;
-			oh = viewportHeight / currentScale;
-
-			p.x = p.y = 0;
-		}
-
-		ow -= w;
-		oh -= h;
+			m = margin,
+			o = parentSize.substract(size);
 
 		switch (horizontal) {
 			case "left":
-				p.x += mx;
+				initialPosition.x += m.x;
 
 				break;
 			case "center":
-				p.x += ow / 2 + mx;
+				initialPosition.x += o.x / 2 + m.x;
 
 				break;
 			case "right":
-				p.x += ow - mx;
+				initialPosition.x += o.x - m.x;
 
 				break;
 		}
 
 		switch (vertical) {
 			case "top":
-				p.y += my;
+				initialPosition.y += m.y;
 
 				break;
 			case "center":
-				p.y += oh / 2 + my;
+				initialPosition.y += o.y / 2 + m.y;
 
 				break;
 			case "bottom":
-				p.y += oh - my;
+				initialPosition.y += o.y - m.y;
 
 				break;
 		}
 
-		position = p.floor();
-	};
-
-	this.getGroup = () => group;
-
-	this.setGroup = function(newGroup) {
-		if (!(newGroup instanceof Group)) throw TypeError("Tried to set a non-Group value as a parent element.");
-
-		group = newGroup;
+		position = initialPosition.floor();
 	};
 
 	this.getPosition = () => position;

@@ -5,6 +5,8 @@ import Component from "../../src/gui/components/Component.js";
 import {Group} from "gui";
 
 /**
+ * @todo Rename `componentRenderStack` to `renderStack`
+ * 
  * GUI renderer singleton.
  * 
  * @constructor
@@ -21,18 +23,18 @@ export default function GUIRenderer(instance) {
 	GUIRenderer._instance = this;
 
 	/**
+	 * Component tree.
+	 * 
+	 * @type {Component[]}
+	 */
+	const componentTree = [];
+
+	/**
 	 * List of components marked for redraw.
 	 * 
 	 * @type {Component[]}
 	 */
 	const componentRenderStack = [];
-
-	function pushToRenderStack() {
-		componentRenderStack.push(this);
-	};
-
-	/** @type {Set<Component>} */
-	this.components = new Set();
 
 	let canvas, gl;
 
@@ -92,46 +94,68 @@ export default function GUIRenderer(instance) {
 	};
 
 	/**
-	 * @todo Securize
+	 * @todo Better error handling
 	 * 
-	 * Adds the provided components to the component draw list.
+	 * Populates the component tree.
+	 * Replaces the `add` method.
 	 * 
-	 * @param {...Component} components
+	 * @throws {TypeError}
 	 */
-	this.add = function(...components) {
-		const {length} = components;
+	this.setComponentTree = function(tree) {
+		if (!(tree instanceof Array)) throw TypeError("The provided tree must be an instance of Array.");
+
+		const {length} = tree;
+
+		for (let i = 0, component; i < length; i++) {
+			component = tree[i];
+
+			componentTree.push(component);
+
+			component instanceof Group ?
+				this.addToRenderStack(component) :
+				componentRenderStack.push(component);
+		}
+	};
+
+	this.addToRenderStack = function(parent) {
+		// This methods only adds `Group` children
+		if (!(parent instanceof Group)) return;
+
+		const
+			children = parent.getChildren(),
+			{length} = children;
+
+		for (let i = 0, component; i < length; i++) {
+			component = children[i];
+
+			if (component instanceof Group) {
+				this.addToRenderStack(component);
+
+				continue;
+			}
+
+			componentRenderStack.push(component);
+		}
+	};
+
+	/**
+	 * Stores the provided components.
+	 * 
+	 * @param {...Component} comps
+	 * @deprecated
+	 */
+	this.add = function(...comps) {
+		const {length} = comps;
 		let component;
 
 		for (let i = 0; i < length; i++) {
-			component = components[i];
+			component = comps[i];
 
 			if (component instanceof Group) {
-				const children = component.getChildren();
-				for (let j = 0; j < children.length; j++) {
-					component = children[j];
-					component.pushToRenderStack = pushToRenderStack;
-					component.pushToRenderStack();
+				component.pushToRenderStack = pushGroupToRenderStack;
 
-					if (component.onMouseEnter) {
-						component.onMouseEnter.component = component;
-
-						this.instance.addMouseEnterListener(component.onMouseEnter);
-					}
-
-					if (component.onMouseLeave) {
-						component.onMouseLeave.component = component;
-
-						this.instance.addMouseLeaveListener(component.onMouseLeave);
-					}
-
-					if (component.onMouseDown) {
-						component.onMouseDown.component = component;
-
-						this.instance.addMouseDownListener(component.onMouseDown);
-					}
-
-					this.components.add(component);
-				}
+				componentTree.push(component);
+				this.add(...component.getChildren());
 
 				continue;
 			}
@@ -157,18 +181,26 @@ export default function GUIRenderer(instance) {
 				this.instance.addMouseDownListener(component.onMouseDown);
 			}
 
-			this.components.add(component);
+			componentTree.push(component);
 		}
 	};
 
-	this.compute = function() {
+	/**
+	 * @todo Set instance viewport size as a `Vector2`?
+	 * 
+	 * Calculates the absolute position for each component.
+	 */
+	this.computeTree = function() {
 		const
-			components = [...this.components],
-			{length} = components;
-		
-		for (let i = 0; i < length; i++) {
-			components[i].computePosition(this.instance);
-		}
+			{instance} = this,
+			{length} = componentTree,
+			initialPosition = new Vector2(0, 0),
+			viewport = new Vector2(
+				instance.getViewportWidth(),
+				instance.getViewportHeight(),
+			).divideScalar(instance.currentScale);
+
+		for (let i = 0; i < length; i++) componentTree[i].computePosition(initialPosition, viewport);
 	};
 
 	/**
@@ -271,16 +303,36 @@ export default function GUIRenderer(instance) {
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
-		// Register all components
-		const
-			components = [...this.components],
-			{length} = components;
+		// Add all components to the render stack
+		const {length} = componentTree;
 
-		for (let i = 0; i < length; i++) components[i].pushToRenderStack();
+		for (let i = 0, component; i < length; i++) {
+			component = componentTree[i];
 
-		this.compute();
+			if (component instanceof Group) {
+				this.addToRenderStack(component);
+
+				continue;
+			}
+
+			componentRenderStack.push(component);
+		}
+
+		this.computeTree();
 		this.render();
 	};
+
+	function pushToRenderStack() {
+		componentRenderStack.push(this);
+	};
+
+	function pushGroupToRenderStack() {
+		const
+			children = this.getChildren(),
+			{length} = children;
+
+		for (let i = 0; i < length; i++) children[i].pushToRenderStack();
+	}
 }
 
 GUIRenderer.prototype = Object.create(Renderer.prototype, {
