@@ -1,5 +1,5 @@
 import {NoWebGL2Error} from "src/errors";
-import {Group, ImageButton} from "src/gui";
+import {Group, Image, ImageButton} from "src/gui";
 import {Vector2} from "src/math";
 import Instance from "src/instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
@@ -25,7 +25,7 @@ try {
 	await guiRenderer.loadTextures(...guiTextures);
 
 	const tree = [
-		new Group({
+		/* new Group({
 			align: ["center", "center"],
 			margin: new Vector2(0, 0),
 			size: new Vector2(200, 96),
@@ -59,13 +59,13 @@ try {
 					uv: new Vector2(0, 186),
 				}),
 			],
-		}),
-		new ImageButton({
+		}), */
+		new Image({
 			align: ["right", "bottom"],
-			margin: new Vector2(10, 10),
+			margin: new Vector2(0, 0),
 			size: new Vector2(20, 20),
 			image: guiRenderer.getTexture("gui/widgets.png"),
-			uv: new Vector2(0, 186),
+			uv: new Vector2(0, 106),
 		}),
 	];
 

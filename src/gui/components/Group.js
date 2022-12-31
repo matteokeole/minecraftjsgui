@@ -2,6 +2,7 @@ import Component from "./Component.js";
 
 /**
  * @todo Documentation
+ * @todo Throw an error if a group child doesn't fit its parent?
  * @constructor
  * @extends Component
  * @param {{
@@ -17,11 +18,11 @@ export default function Group({children}) {
 
 	this.getChildren = () => children;
 
+	// Cache the child length
 	const childLength = children.length;
 
 	/**
-	 * @todo Documentation
-	 * @todo Replace `{x, y}` objects by `Vector2` instances
+	 * @todo Review + documentation
 	 * 
 	 * @param {Vector2} initialPosition
 	 * @param {Vector2} parentSize
@@ -29,15 +30,15 @@ export default function Group({children}) {
 	this.computePosition = function(initialPosition, parentSize) {
 		const
 			[horizontal, vertical] = align,
-			w = parentSize.x - size.x,
-			h = parentSize.y - size.y;
-		initialPosition = initialPosition.add(margin);
+			m = margin,
+			o = parentSize.substract(size);
+		initialPosition = initialPosition.add(m);
 
-		if (horizontal === "right") initialPosition.x = w - margin.x;
-		else if (horizontal === "center") initialPosition.x += w / 2;
+		if (horizontal === "right") initialPosition.x = o.x - m.x;
+		else if (horizontal === "center") initialPosition.x += o.x / 2;
 
-		if (vertical === "bottom") initialPosition.y = h - margin.y;
-		else if (vertical === "center") initialPosition.y += h / 2;
+		if (vertical === "bottom") initialPosition.y = o.y - m.y;
+		else if (vertical === "center") initialPosition.y += o.y / 2;
 
 		this.setPosition(initialPosition.floor());
 
