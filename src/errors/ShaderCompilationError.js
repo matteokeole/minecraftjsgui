@@ -1,5 +1,5 @@
 /**
- * Error subclass throwed when the linking of a WebGLProgram on a
+ * Error throwed when the linking of a WebGLProgram on a
  * WebGLRenderingContext fails due to a WebGLShader compilation error.
  * 
  * @constructor
@@ -12,14 +12,9 @@ export function ShaderCompilationError(message, type) {
 
 	this.message = `${shaderTypes[type]} SHADER ${message}`;
 	this.stack = Error().stack;
-	this.display = function() {
-		const div = document.createElement("div");
-
-		div.classList.add("error");
-		div.append(this.message);
-
-		document.body.appendChild(div);
-	};
+	this.node = document.createElement("div");
+	this.node.classList.add("error");
+	this.node.append(this.message);
 }
 
 ShaderCompilationError.prototype = Error.prototype;

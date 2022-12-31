@@ -94,20 +94,11 @@ export default function Instance() {
 	/**
 	 * @todo Define null first?
 	 * 
-	 * Cached value of `window.innerWidth`.
+	 * Cached values of `window.innerWidth` and `window.innerHeight`.
 	 * 
-	 * @type {Number}
+	 * @type {Vector2}
 	 */
-	let viewportWidth = innerWidth;
-
-	/**
-	 * @todo Define null first?
-	 * 
-	 * Cached value of `window.innerHeight`.
-	 * 
-	 * @type {Number}
-	 */
-	let viewportHeight = innerHeight;
+	const viewportSize = new Vector2(innerWidth, innerHeight);
 
 	/**
 	 * Current GUI scale multiplier.
@@ -148,8 +139,8 @@ export default function Instance() {
 	 */
 	this.build = function() {
 		canvas = document.createElement("canvas");
-		canvas.width = viewportWidth;
-		canvas.height = viewportHeight;
+		canvas.width = viewportSize.x;
+		canvas.height = viewportSize.y;
 		gl = canvas.getContext("webgl2");
 
 		if (gl === null) throw NoWebGL2Error();
@@ -211,8 +202,6 @@ export default function Instance() {
 		rendererLength = renderers.length;
 
 		for (let i = 0; i < rendererLength; i++) {
-			renderers[i].instance = this;
-
 			this.renderers.push(renderers[i]);
 
 			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
@@ -235,15 +224,15 @@ export default function Instance() {
 			0,
 			0,
 			/** @todo Set viewport size as multiples of 2? */
-			canvas.width = viewportWidth = /* (width / 2 | 0) * 2 */ width * dpr | 0,
-			canvas.height = viewportHeight = /* (height / 2 | 0) * 2 */ height * dpr | 0,
+			canvas.width = viewportSize.x = /* (width / 2 | 0) * 2 */ width * dpr | 0,
+			canvas.height = viewportSize.y = /* (height / 2 | 0) * 2 */ height * dpr | 0,
 		);
 
 		// Calculate scale multiplier
 		let i = 1;
 		while (
-			viewportWidth > DEFAULT_WIDTH * i &&
-			viewportHeight > DEFAULT_HEIGHT * i
+			viewportSize.x > DEFAULT_WIDTH * i &&
+			viewportSize.y > DEFAULT_HEIGHT * i
 		) i++;
 
 		const currentScale = clampUp(
@@ -464,7 +453,5 @@ export default function Instance() {
 		}
 	}
 
-	this.getViewportWidth = () => viewportWidth;
-
-	this.getViewportHeight = () => viewportHeight;
+	this.getViewportSize = () => viewportSize;
 }

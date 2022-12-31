@@ -1,5 +1,5 @@
 import {NoWebGL2Error} from "src/errors";
-import {Group, Image, ImageButton} from "src/gui";
+import {Button, Component, Group, Image, ImageButton} from "src/gui";
 import {Vector2} from "src/math";
 import Instance from "src/instance";
 import GUIRenderer from "./extensions/GUIRenderer.js";
@@ -25,7 +25,7 @@ try {
 	await guiRenderer.loadTextures(...guiTextures);
 
 	const tree = [
-		/* new Group({
+		new Group({
 			align: ["center", "center"],
 			margin: new Vector2(0, 0),
 			size: new Vector2(200, 96),
@@ -37,12 +37,10 @@ try {
 					image: guiRenderer.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 186),
 				}),
-				new ImageButton({
+				new Button({
 					align: ["right", "top"],
 					margin: new Vector2(0, 0),
-					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
-					uv: new Vector2(0, 186),
+					size: new Vector2(200, 20),
 				}),
 				new ImageButton({
 					align: ["left", "bottom"],
@@ -59,7 +57,7 @@ try {
 					uv: new Vector2(0, 186),
 				}),
 			],
-		}), */
+		}),
 		new Image({
 			align: ["right", "bottom"],
 			margin: new Vector2(0, 0),
@@ -75,10 +73,8 @@ try {
 
 	instance.startLoop();
 } catch (error) {
-	// Make sure the renderers have been built before dispose
 	if (instance.hasBeenBuilt()) instance.dispose();
-
-	error.display?.();
+	if ("node" in error) document.body.appendChild(error.node);
 
 	console.error("An error occurred:", error);
 }

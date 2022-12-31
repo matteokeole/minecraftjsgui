@@ -1,4 +1,5 @@
-import {Vector2} from "src/math";
+import {NotImplementedError} from "src/errors";
+import {Matrix3, Vector2} from "src/math";
 
 /**
  * A GUI component.
@@ -90,4 +91,16 @@ export default function Component({align, margin, size}) {
 	this.isHovered = () => isHovered;
 
 	this.setIsHovered = value => void (isHovered = !!value);
+
+	this.getWorldMatrix = () => Matrix3.translate(position).scale(size);
+
+	/**
+	 * Must be overridden in an instance.
+	 */
+	this.getTextureMatrix = () => {throw NotImplementedError()};
+
+	/**
+	 * Must be overridden in an instance.
+	 */
+	this.getTextureWrapper = () => {throw NotImplementedError()};
 }
