@@ -337,6 +337,10 @@ export default function Instance() {
 	};
 
 	this.dispose = function() {
+		if (!(gl instanceof WebGL2RenderingContext)) {
+			return console.info("This exception occurred before building the instance.");
+		}
+
 		/** @todo Stop the game loop if it has started */
 
 		// Dispose child renderers
@@ -350,6 +354,8 @@ export default function Instance() {
 		// Remove the output canvas from the DOM
 		canvas.remove();
 		canvas = null;
+
+		return console.info("The instance was properly disposed after catching this exception.");
 	};
 
 	this.addMouseDownListener = function(listener) {

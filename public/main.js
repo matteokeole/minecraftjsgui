@@ -8,6 +8,9 @@ export const instance = new Instance();
 export let guiRenderer;
 
 try {
+	/** @todo Fix Error referencing to ShaderCompilationError */
+	// throw Error();
+
 	instance.build();
 	await instance.initialize();
 
@@ -73,8 +76,11 @@ try {
 
 	instance.startLoop();
 } catch (error) {
-	if (instance.hasBeenBuilt()) instance.dispose();
-	if ("node" in error) document.body.appendChild(error.node);
+	/** @todo First line blank on this log */
+	console.error(error);
 
-	console.error("An error occurred:", error);
+	instance.dispose();
+
+	// Append custom error node
+	if ("node" in error) document.body.appendChild(error.node);
 }
