@@ -67,7 +67,7 @@
 
 # 13
 
-- "You can sleep only at night" message
+- "You can only sleep at night" message
 - Hotbar item count
 - Left hand slot item count
 
