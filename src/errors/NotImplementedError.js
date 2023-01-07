@@ -1,15 +1,17 @@
 /**
- * Error throwed when calling non-implemented functions.
+ * Represents an error where a class method is yet to be implemented.
+ * This can act as an exception based TODO tag.
  * 
  * @constructor
  * @extends Error
  */
-export function NotImplementedError() {
-	if (!(this instanceof NotImplementedError)) return new NotImplementedError();
+export default function NotImplementedError() {
+	const instance = Error("This feature is not implemented yet.");
 
-	this.message = "This feature is not implemented yet.";
-	this.stack = Error().stack;
+	Object.setPrototypeOf(instance, this);
+
+	return instance;
 }
 
-NotImplementedError.prototype = Error.prototype;
+NotImplementedError.prototype = new Error;
 NotImplementedError.prototype.name = "NotImplementedError";

@@ -1,16 +1,12 @@
-import {NoWebGL2Error} from "src/errors";
-import {Button, Component, Group, Image, ImageButton} from "src/gui";
-import {Vector2} from "src/math";
+import {Button, Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
+import {Vector2} from "src/math";
 import GUIRenderer from "./extensions/GUIRenderer.js";
 
 export const instance = new Instance();
 export let guiRenderer;
 
 try {
-	/** @todo Fix Error referencing to ShaderCompilationError */
-	// throw Error();
-
 	instance.build();
 	await instance.initialize();
 
@@ -79,8 +75,9 @@ try {
 	/** @todo First line blank on this log */
 	console.error(error);
 
+	// Dispose the instance and remove its canvas from the DOM
 	instance.dispose();
 
-	// Append custom error node
+	// If the error has a DOM node, append it
 	if ("node" in error) document.body.appendChild(error.node);
 }

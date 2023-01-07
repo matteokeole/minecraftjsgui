@@ -1,23 +1,25 @@
 /**
- * Error throwed when the linking of a WebGLProgram on a
- * WebGLRenderingContext fails due to a WebGLShader compilation error.
+ * References an error when the binding of a `WebGLProgram` on a
+ * `WebGLRenderingContext` fails due to a `WebGLShader` compilation error.
  * 
  * @constructor
  * @extends Error
  * @param {String} message Shader info log
- * @param {Number} type Shader type (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
+ * @param {Number} type Shader type (`gl.VERTEX_SHADER` or `gl.FRAGMENT_SHADER`)
  */
-export function ShaderCompilationError(message, type) {
-	if (!(this instanceof ShaderCompilationError)) return new ShaderCompilationError(message, type);
+export default function ShaderCompilationError(message, type) {
+	const instance = Error(`${shaderTypes[type]} SHADER ${message}`);
 
-	this.message = `${shaderTypes[type]} SHADER ${message}`;
-	this.stack = Error().stack;
-	this.node = document.createElement("div");
-	this.node.classList.add("error");
-	this.node.append(this.message);
+	instance.node = document.createElement("div");
+	instance.node.classList.add("error");
+	instance.node.append(instance.message);
+
+	Object.setPrototypeOf(instance, this);
+
+	return instance;
 }
 
-ShaderCompilationError.prototype = Error.prototype;
+ShaderCompilationError.prototype = new Error;
 ShaderCompilationError.prototype.name = "ShaderCompilationError";
 
 const shaderTypes = {

@@ -97,10 +97,10 @@ export default function Component({align, margin, size}) {
 	/**
 	 * Must be overridden in an instance.
 	 */
-	this.getTextureMatrix = () => {throw NotImplementedError()};
+	this.getTextureMatrix = () => {throw new NotImplementedError()};
 
 	/**
 	 * Must be overridden in an instance.
 	 */
-	this.getTextureWrapper = () => {throw NotImplementedError()};
+	this.getTextureWrapper = () => {throw new NotImplementedError()};
 }
