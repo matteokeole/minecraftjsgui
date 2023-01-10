@@ -6,10 +6,6 @@ The code is written with vanilla JavaScript. No external dependency is required,
 
 The documentation uses the [JSDoc](https://jsdoc.app) syntax.
 
-## Testing
-
-There is a [test](https://github.com/matteokeole/minecraftjsgui/tree/test) branch for speed and performance benchmarks.
-
 ## Math API
 
 The project uses an internal [general-purpose math API](https://github.com/matteokeole/minecraftjsgui/tree/master/src/math) which features 2D/3D vector manipulation, 3x3/4x4 matrix manipulation and some utilities for clamping and intersection checking.
