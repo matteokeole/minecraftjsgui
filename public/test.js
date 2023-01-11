@@ -9,14 +9,14 @@ import sceneRenderer from "./scene-renderer.js";
 import skyboxRenderer from "./skybox-renderer.js";
 
 // Create an instance option
-const monochromeLogo = new Option({
+const monochromeLogo = new InstanceOption({
 	name: "monochrome-logo",
+	defaultValue: false,
 	validator: function(value) {
 		if (typeof value !== "boolean") return false;
 
 		return true;
 	},
-	defaultValue: false,
 });
 
 // Set instance options

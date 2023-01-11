@@ -1,0 +1,4 @@
+- Instanced drawing of component quads
+- Caching generated textures (Button and Text)
+- GUI upscaling in the instance
+- Pooling (to which extent?)

@@ -3,11 +3,23 @@ import Instance from "src/instance";
 import {Vector2} from "src/math";
 import GUIRenderer from "./extensions/GUIRenderer.js";
 
+import WebGLRenderer from "../src/WebGLRenderer.js";
+
 export const instance = new Instance();
 export let guiRenderer;
 
 try {
-	instance.build();
+	const renderer = new WebGLRenderer({
+		offscreen: false,
+		version: 2,
+	});
+
+	renderer.build();
+
+	const program = await renderer.loadProgram("main.vert", "main.frag");
+	renderer.linkProgram(program);
+
+	/* instance.build();
 	await instance.initialize();
 
 	instance.setupRenderers([
@@ -70,14 +82,11 @@ try {
 	guiRenderer.computeTree();
 	guiRenderer.render();
 
-	instance.startLoop();
+	instance.startLoop(); */
 } catch (error) {
-	/** @todo First line blank on this log */
 	console.error(error);
 
-	// Dispose the instance and remove its canvas from the DOM
 	instance.dispose();
 
-	// If the error has a DOM node, append it
 	if ("node" in error) document.body.appendChild(error.node);
 }
