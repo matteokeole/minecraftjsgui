@@ -43,6 +43,7 @@ Vector3.prototype.clone = function() {
 	return new Vector3(
 		this.x,
 		this.y,
+		this.z,
 	);
 };
 
