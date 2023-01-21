@@ -7,16 +7,16 @@ The job of the output renderer is to draw in the game loop the content textures 
 
 #### Custom renderers
 
-A custom renderer is a renderer that extends the `Renderer` towards a specific role in the rendering pipeline. Some examples:
-- The scene renderer uses 3D-related content to render the game scene.
-- The GUI renderer uses an architecture made of components.
+A custom renderer is a `Renderer` subclass which plays a specific role in the rendering pipeline. Some examples:
+- The scene renderer renders the game scene.
+- The GUI renderer renders the user interface.
 
 All custom renderers must be offscreen.
 Each custom renderer registered by the instance has access to its **content texture** (a `WebGLTexture` with the contents of its canvas) and can update it when a change must be visible for the user, for example a GUI hover effect on a button. The main renderer will use the new content texture on the frame following the update.
 
 ### Pipeline
 
-On every frame, the running instance draws the content texture of each renderer.
+On every frame, the running instance draws the content texture of each renderer. This result is stretched to fill the entire viewport.
 
 ### GUI notes
 
@@ -26,7 +26,12 @@ Here are some cases where a content texture update is needed:
 - On a resize event, after the render
 - When an event listener bound to a component requests a redraw of it (e.g. an hover effect updates the component UV, but to see the result a redraw must be requested)
 
-The GUI components are rendered using instanced drawing.
+Some components need a certain texture to be present in the `textures` folder:
+- `Button` instances rely on `widgets.png`
+- `Text` instances rely on `font.ascii` (at least)
+- `Image`/`ImageButton` instances rely on the texture provided when creating them.
+
+**Solution:** add an error texture used when a texture isn't available. This prevents the demo from crashing when it fails fetching a texture. But does this bring shader errors if the size of the error texture doesn't match that of the wanted texture, and thus invalidates the UV?
 
 ***
 
@@ -42,7 +47,7 @@ If a single component needs a redraw (e.g. an hover update), it registers itself
 
 ###### Constraints
 
-How to render `Button` instances, which need 2 draw calls for each side?
+How to render `Button` instances which need 2 draw calls for each side, or `Text` instances which require the text to be pre-generated as a texture?
 
 #### GUI containers
 
