@@ -1,20 +1,29 @@
 ### WebGLRenderer properties:
-- Has access to a canvas (`HTMLCanvasElement` or `OffscreenCanvas`)
-- Has access to a WebGL context
-- Can load/link a `WebGLProgram`
-- Can be disposed:
+- (public) canvas (`HTMLCanvasElement` or `OffscreenCanvas`)
+- (public) WebGL context
+- (public) loadProgram()/linkProgram()
+- (public) dispose():
 	1. Delete attributes, buffers, uniforms, VAOs and textures
 	2. Delete programs
 	3. Trigger context loss
-	4. Delete the context & canvas
+	4. Clear context and remove canvas DOM node
 
-### Use case
+```ts
+interface WebGLRenderer {
+	public canvas?: HTMLCanvasElement|OffscreenCanvas;
+	public gl?: WebGLRenderingContext|WebGL2RenderingContext;
+	public build(): void;
+	public loadProgram([string: vertexPath, string: fragmentPath]): Program;
+	public linkProgram(Program: program): boolean;
+	public dispose(): void;
+}
+```
 
 ```js
 import WebGLRenderer from "src/renderer";
 
 const renderer = new WebGLRenderer({
-	offscreen: true, // Determines the type of the canvas
+	offscreen: false, // Determines the type of the canvas
 	version: 2, // WebGL version
 });
 
@@ -31,11 +40,10 @@ const program = renderer.loadProgram(
 );
 
 try {
-	// `linkProgram` must have access to the individual shaders, in case of a compilation error
 	renderer.linkProgram(program);
 } catch (error) {
-	console.error(error);
+	console.error("Failed linking the program to the renderer", error);
 
-	renderer.canvas.remove();
+	renderer.dispose(); // This also removes the canvas from the DOM
 }
 ```
