@@ -16,7 +16,7 @@ export default function WebGLRenderer({offscreen, version}) {
 
 	/**
 	 * @public
-	 * @type {HTMLCanvas|OffscreenCanvas|null}
+	 * @type {HTMLCanvasElement|OffscreenCanvas|null}
 	 */
 	this.canvas = null;
 

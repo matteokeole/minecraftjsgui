@@ -1,5 +1,5 @@
 ### WebGLRenderer properties:
-- Has access to a canvas (`HTMLCanvas` or `OffscreenCanvas`)
+- Has access to a canvas (`HTMLCanvasElement` or `OffscreenCanvas`)
 - Has access to a WebGL context
 - Can load/link a `WebGLProgram`
 - Can be disposed:
