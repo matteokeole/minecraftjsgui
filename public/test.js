@@ -87,6 +87,65 @@ instance.setPipeline(
 
 
 
+/**
+ * Stateful layer draft
+ * 
+ * Goal: allow dynamic local variables to trigger visual changes,
+ * without redrawing non-updated components
+ * 
+ * Issues:
+ * - How to redraw Text components? Compute once static text and compute each time the dynamic part(s)? How to efficiently detect changes in a text?
+ */
+export default class OptionLayer extends Layer {
+	constructor() {
+		super();
+	}
+
+	initState(state) {
+		state.counter = 0;
+	}
+
+	initModifiers(modifiers) {
+		modifiers.increment = function(state) {
+			state.counter++;
+		};
+	}
+
+	build(state, modifiers) {
+		return new Group({
+			alignment: Alignment.center,
+			margin: new Vector2(0, 0),
+			size: new Vector2(200, 100),
+			children: [
+				new Button({
+					alignment: Alignment.centerTop,
+					margin: new Vector2(0, 0),
+					width: 200,
+					onClick: function() {
+						// State update
+						modifiers.increment();
+
+						// Visual update
+						this.child.pushToRenderStack();
+						this.layer.render(); // render() will only redraw the components registered in the render stack
+					},
+					child: new Text(`Increment counter (${state.counter})`, {
+						alignment: Alignment.center,
+						margin: new Vector2(0, 0),
+					}),
+				}),
+			],
+		});
+	}
+}
+
+
+
+
+
+
+
+
 
 
 
