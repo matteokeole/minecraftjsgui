@@ -105,13 +105,7 @@ export default class OptionLayer extends Layer {
 		state.counter = 0;
 	}
 
-	initModifiers(modifiers) {
-		modifiers.increment = function(state) {
-			state.counter++;
-		};
-	}
-
-	build(state, modifiers) {
+	build(state) {
 		return new Group({
 			alignment: Alignment.center,
 			margin: new Vector2(0, 0),
@@ -123,7 +117,7 @@ export default class OptionLayer extends Layer {
 					width: 200,
 					onClick: function() {
 						// State update
-						modifiers.increment();
+						state.counter++;
 
 						// Visual update
 						this.child.pushToRenderStack();
