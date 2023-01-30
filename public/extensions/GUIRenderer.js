@@ -105,7 +105,7 @@ export default function GUIRenderer(instance) {
 	 * @todo Review recursivity
 	 * 
 	 * Populates the component tree.
-	 * Replaces the `add` method.
+	 * Replacement for `GUIRenderer.add`.
 	 * 
 	 * @throws {TypeError}
 	 */

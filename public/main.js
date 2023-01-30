@@ -1,7 +1,7 @@
-import {Button, Group, Image, ImageButton} from "src/gui";
+// import {Button, Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
-import {Vector2} from "src/math";
-import GUIRenderer from "./extensions/GUIRenderer.js";
+// import {Vector2} from "src/math";
+// import GUIRenderer from "./extensions/GUIRenderer.js";
 
 import WebGLRenderer from "../src/WebGLRenderer.js";
 

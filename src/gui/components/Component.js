@@ -2,7 +2,7 @@ import {NotImplementedError} from "src/errors";
 import {Matrix3, Vector2} from "src/math";
 
 /**
- * A GUI component.
+ * @todo Summary
  * 
  * @constructor
  * @abstract
