@@ -1,12 +1,16 @@
 ###### From lower to higher
 
+To do:
+- Nether portal layer
+- End portal fixed texture
+
 # 1
 
 - Skybox (sun, sunrise, moon, stars)
 
 # 2
 
-- Scene (+ 2D particles)
+- Scene (world and 2D particles)
 
 # 3
 

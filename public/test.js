@@ -105,7 +105,7 @@ export default class OptionLayer extends Layer {
 		state.counter = 0;
 	}
 
-	build(state) {
+	build(state, renderer) {
 		return new Group({
 			alignment: Alignment.center,
 			margin: new Vector2(0, 0),
@@ -120,10 +120,11 @@ export default class OptionLayer extends Layer {
 						state.counter++;
 
 						// Visual update
-						this.child.pushToRenderStack();
-						this.layer.render(); // render() will only redraw the components registered in the render stack
+						// This only redraws the components registered in the render queue
+						renderer.renderQueue.append(this);
+						renderer.render();
 					},
-					child: new Text(`Increment counter (${state.counter})`, {
+					child: new Text(state => `Increment counter (${state.counter})`, {
 						alignment: Alignment.center,
 						margin: new Vector2(0, 0),
 					}),
