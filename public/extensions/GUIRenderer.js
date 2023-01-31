@@ -1,8 +1,8 @@
-import {Matrix3, Vector2} from "math";
-import Renderer from "renderer";
-import Instance from "../../src/Instance.js";
+import {Matrix3, Vector2} from "src/math";
+import Renderer from "src/renderer";
 import Component from "../../src/gui/components/Component.js";
-import {Group} from "gui";
+import {Button, Group} from "src/gui";
+import BufferRenderer from "src/buffer-renderer";
 
 /**
  * @todo Rename `componentRenderStack` to `renderStack`
@@ -36,13 +36,16 @@ export default function GUIRenderer(instance) {
 	 */
 	const componentRenderStack = [];
 
+	/** @type {BufferRenderer} */
+	let bufferRenderer;
+
 	let canvas, gl;
 
 	this.init = async function() {
 		canvas = this.getCanvas();
 		gl = this.getContext();
 
-		const {currentScale} = this.instance;
+		const {currentScale} = instance;
 
 		// Load component program
 		const [program, vertexShader, fragmentShader] = await this.createProgram([
@@ -91,13 +94,18 @@ export default function GUIRenderer(instance) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
 		gl.vertexAttribPointer(gl.attribute.textureIndex, 1, gl.FLOAT, false, 0, 0);
 		gl.vertexAttribDivisor(gl.attribute.textureIndex, 1);
+
+		// Buffer renderer initialization
+		bufferRenderer = new BufferRenderer(instance);
+		await bufferRenderer.prepare();
 	};
 
 	/**
 	 * @todo Better error handling
+	 * @todo Review recursivity
 	 * 
 	 * Populates the component tree.
-	 * Replaces the `add` method.
+	 * Replacement for `GUIRenderer.add`.
 	 * 
 	 * @throws {TypeError}
 	 */
@@ -114,6 +122,10 @@ export default function GUIRenderer(instance) {
 			component instanceof Group ?
 				this.addToRenderStack(component) :
 				componentRenderStack.push(component);
+
+			if (component instanceof Button) {
+				component.generateCachedTexture(bufferRenderer);
+			}
 		}
 	};
 
@@ -139,14 +151,27 @@ export default function GUIRenderer(instance) {
 	};
 
 	/**
+	 * @deprecated
+	 * 
 	 * Stores the provided components.
 	 * 
 	 * @param {...Component} comps
-	 * @deprecated
 	 */
 	this.add = function(...comps) {
 		const {length} = comps;
 		let component;
+
+		function pushToRenderStack() {
+			componentRenderStack.push(this);
+		};
+
+		function pushGroupToRenderStack() {
+			const
+				children = this.getChildren(),
+				{length} = children;
+
+			for (let i = 0; i < length; i++) children[i].pushToRenderStack();
+		}
 
 		for (let i = 0; i < length; i++) {
 			component = comps[i];
@@ -166,19 +191,19 @@ export default function GUIRenderer(instance) {
 			if (component.onMouseEnter) {
 				component.onMouseEnter.component = component;
 
-				this.instance.addMouseEnterListener(component.onMouseEnter);
+				instance.addMouseEnterListener(component.onMouseEnter);
 			}
 
 			if (component.onMouseLeave) {
 				component.onMouseLeave.component = component;
 
-				this.instance.addMouseLeaveListener(component.onMouseLeave);
+				instance.addMouseLeaveListener(component.onMouseLeave);
 			}
 
 			if (component.onMouseDown) {
 				component.onMouseDown.component = component;
 
-				this.instance.addMouseDownListener(component.onMouseDown);
+				instance.addMouseDownListener(component.onMouseDown);
 			}
 
 			componentTree.push(component);
@@ -192,13 +217,9 @@ export default function GUIRenderer(instance) {
 	 */
 	this.computeTree = function() {
 		const
-			{instance} = this,
 			{length} = componentTree,
 			initialPosition = new Vector2(0, 0),
-			viewport = new Vector2(
-				instance.getViewportWidth(),
-				instance.getViewportHeight(),
-			).divideScalar(instance.currentScale);
+			viewport = instance.getViewportSize().divideScalar(instance.currentScale);
 
 		for (let i = 0; i < length; i++) componentTree[i].computePosition(initialPosition, viewport);
 	};
@@ -209,13 +230,14 @@ export default function GUIRenderer(instance) {
 	this.render = function() {
 		const
 			{length} = componentRenderStack,
-			worldMatrixData = new Float32Array(length * 9),
+			bufferLength = length * 9,
+			worldMatrixData = new Float32Array(bufferLength),
 			worldMatrices = [],
-			textureMatrixData = new Float32Array(length * 9),
+			textureMatrixData = new Float32Array(bufferLength),
 			textureMatrices = [];
 
 		// Register component world/texture matrices
-		for (let i = 0; i < length; i++) {
+		for (let i = 0, component; i < length; i++) {
 			worldMatrices.push(new Float32Array(
 				worldMatrixData.buffer,
 				i * 36,
@@ -228,13 +250,9 @@ export default function GUIRenderer(instance) {
 				9,
 			));
 
-			const component = componentRenderStack[i];
-			const worldMatrix = Matrix3
-				.translate(component.getPosition())
-				.scale(component.getSize());
-			const textureMatrix = Matrix3
-				.translate(component.getUV().divide(component.getImageSize()))
-				.scale(component.getSize().divide(component.getImageSize()));
+			component = componentRenderStack[i];
+			const worldMatrix = component.getWorldMatrix();
+			const textureMatrix = component.getTextureMatrix();
 
 			for (let j = 0; j < 9; j++) {
 				worldMatrices[i][j] = worldMatrix[j];
@@ -274,7 +292,7 @@ export default function GUIRenderer(instance) {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
 		const textureIndices = new Float32Array(length);
-		for (let i = 0; i < length; i++) textureIndices[i] = componentRenderStack[i].getImageIndex();
+		for (let i = 0; i < length; i++) textureIndices[i] = componentRenderStack[i].getTextureWrapper().index;
 		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
 		// Clear the render stack
@@ -282,23 +300,20 @@ export default function GUIRenderer(instance) {
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, length);
 
-		this.instance.updateRendererTexture(0, canvas);
+		instance.updateRendererTexture(0, canvas);
 	};
 
 	/**
 	 * @todo Pass the resize data (w/h (+ dpr?)) from the instance
+	 * @param {Vector2} viewport
 	 */
-	this.resize = function() {
-		const {currentScale} = this.instance;
-		const viewportWidth = this.instance.getViewportWidth();
-		const viewportHeight = this.instance.getViewportHeight();
+	this.resize = function(viewport) {
+		const {currentScale} = instance;
 
-		canvas.width = viewportWidth;
-		canvas.height = viewportHeight;
-		gl.viewport(0, 0, canvas.width, canvas.height);
+		gl.viewport(0, 0, canvas.width = viewport.x, canvas.height = viewport.y);
 
 		const projectionMatrix = Matrix3
-			.projection(new Vector2(canvas.width, canvas.height))
+			.projection(viewport)
 			.scale(new Vector2(currentScale, currentScale));
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
@@ -321,18 +336,6 @@ export default function GUIRenderer(instance) {
 		this.computeTree();
 		this.render();
 	};
-
-	function pushToRenderStack() {
-		componentRenderStack.push(this);
-	};
-
-	function pushGroupToRenderStack() {
-		const
-			children = this.getChildren(),
-			{length} = children;
-
-		for (let i = 0; i < length; i++) children[i].pushToRenderStack();
-	}
 }
 
 GUIRenderer.prototype = Object.create(Renderer.prototype, {

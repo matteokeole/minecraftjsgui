@@ -1,15 +1,16 @@
-import {Vector2} from "math";
-import Group from "./Group.js";
-import Instance from "../../Instance.js";
+import {NotImplementedError} from "src/errors";
+import {Matrix3, Vector2} from "src/math";
 
 /**
- * A GUI component.
+ * @todo Summary
  * 
  * @constructor
- * @param {object} options
- * @param {String[2]} options.align
- * @param {Vector2} options.margin
- * @param {Vector2} options.size
+ * @abstract
+ * @param {{
+ *    align: String[2],
+ *    margin: Vector2,
+ *    size: Vector2,
+ * }}
  */
 export default function Component({align, margin, size}) {
 	/**
@@ -27,8 +28,7 @@ export default function Component({align, margin, size}) {
 	let isHovered = false;
 
 	/**
-	 * @todo Documentation
-	 * @todo Replace `{x, y}` objects by `Vector2` instances
+	 * @todo Review + documentation
 	 * 
 	 * Uses the component alignment and margin values to calculate its absolute position.
 	 * 
@@ -91,4 +91,20 @@ export default function Component({align, margin, size}) {
 	this.isHovered = () => isHovered;
 
 	this.setIsHovered = value => void (isHovered = !!value);
+
+	this.getWorldMatrix = () => Matrix3.translate(position).scale(size);
+
+	/**
+	 * Must be overridden in an instance.
+	 * 
+	 * @returns {Matrix3}
+	 */
+	this.getTextureMatrix = () => {throw new NotImplementedError()};
+
+	/**
+	 * Must be overridden in an instance.
+	 * 
+	 * @returns {TextureWrapper}
+	 */
+	this.getTextureWrapper = () => {throw new NotImplementedError()};
 }

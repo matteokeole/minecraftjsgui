@@ -1,29 +1,26 @@
 /**
- * Error subclass throwed when WebGL2 is not detected on the user's
- * browser (`getContext("webgl2")` returns `null`).
+ * Represents an error where a `WebGL2RenderingContext` could not be obtained
+ * via an `HTMLCanvasElement` or `OffscreenCanvas`.
  * 
  * @constructor
  * @extends Error
  */
-export function NoWebGL2Error() {
-	if (!(this instanceof NoWebGL2Error)) return new NoWebGL2Error();
+export default function NoWebGL2Error() {
+	const
+		instance = Error("It seems that your browser doesn't support WebGL2."),
+		img = document.createElement("img");
 
-	this.message = "It seems that your browser doesn't support WebGL2.";
-	this.stack = Error().stack;
-	this.display = function() {
-		const
-			div = document.createElement("div"),
-			img = document.createElement("img");
+	img.src = "assets/images/webgl.png";
+	img.alt = '';
 
-		img.src = "assets/images/webgl.png";
-		img.alt = '';
+	instance.node = document.createElement("div");
+	instance.node.classList.add("error");
+	instance.node.append(img, instance.message);
 
-		div.classList.add("error");
-		div.append(img, this.message);
+	Object.setPrototypeOf(instance, this);
 
-		document.body.appendChild(div);
-	};
+	return instance;
 }
 
-NoWebGL2Error.prototype = Error.prototype;
+NoWebGL2Error.prototype = new Error;
 NoWebGL2Error.prototype.name = "NoWebGL2Error";

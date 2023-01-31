@@ -1,24 +1,30 @@
-import {NoWebGL2Error} from "errors";
-import {Group, ImageButton} from "gui";
-import {Vector2} from "math";
-import Instance from "instance";
+import {Button, Group, Image, ImageButton} from "src/gui";
+import Instance from "src/instance";
+import {Vector2} from "src/math";
 import GUIRenderer from "./extensions/GUIRenderer.js";
+
+import WebGLRenderer from "../src/WebGLRenderer.js";
 
 export const instance = new Instance();
 export let guiRenderer;
 
 try {
+	const renderer = new WebGLRenderer({
+		offscreen: false,
+		version: 2,
+	});
+
+	renderer.build();
+
+	const program = await renderer.loadProgram("assets/shaders/main.vert", "assets/shaders/main.frag");
+	renderer.linkProgram(program);
+
 	instance.build();
 	await instance.initialize();
 
-	instance.setupRenderers([
+	await instance.setupRenderers([
 		guiRenderer = new GUIRenderer(instance),
 	]);
-
-	guiRenderer.build();
-	guiRenderer.enable();
-
-	await guiRenderer.init();
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
@@ -37,13 +43,11 @@ try {
 					image: guiRenderer.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 186),
 				}),
-				new ImageButton({
+				/* new Button({
 					align: ["right", "top"],
 					margin: new Vector2(0, 0),
-					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
-					uv: new Vector2(0, 186),
-				}),
+					size: new Vector2(200, 20),
+				}), */
 				new ImageButton({
 					align: ["left", "bottom"],
 					margin: new Vector2(0, 0),
@@ -60,12 +64,12 @@ try {
 				}),
 			],
 		}),
-		new ImageButton({
-			align: ["right", "bottom"],
-			margin: new Vector2(10, 10),
+		new Image({
+			align: ["center", "center"],
+			margin: new Vector2(0, 0),
 			size: new Vector2(20, 20),
 			image: guiRenderer.getTexture("gui/widgets.png"),
-			uv: new Vector2(0, 186),
+			uv: new Vector2(0, 106),
 		}),
 	];
 
@@ -75,10 +79,9 @@ try {
 
 	instance.startLoop();
 } catch (error) {
-	// Make sure the renderers have been built before dispose
-	if (instance.hasBeenBuilt()) instance.dispose();
+	console.error(error);
 
-	error.display?.();
+	instance.dispose();
 
-	console.error("An error occurred:", error);
+	if ("node" in error) document.body.appendChild(error.node);
 }

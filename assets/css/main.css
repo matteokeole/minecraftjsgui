@@ -1,3 +1,4 @@
+@import url(canvas.css);
 @import url(error.css);
 
 :root {
@@ -15,11 +16,4 @@ body {
 
 body:has(canvas) {
 	background-color: #000;
-}
-
-canvas {
-	display: block;
-	width: 100vw;
-	height: 100vh;
-	position: absolute;
 }

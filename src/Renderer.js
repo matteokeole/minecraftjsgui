@@ -1,4 +1,4 @@
-import {ShaderCompilationError} from "errors";
+import {ShaderCompilationError} from "src/errors";
 import TextureWrapper from "./TextureWrapper.js";
 
 /**
@@ -50,10 +50,9 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Initializes the canvas element and its WebGL context.
 	 */
 	this.build = function() {
-		const viewportWidth = instance.getViewportWidth();
-		const viewportHeight = instance.getViewportHeight();
+		const viewportSize = instance.getViewportSize();
 
-		canvas = new OffscreenCanvas(viewportWidth, viewportHeight);
+		canvas = new OffscreenCanvas(viewportSize.x, viewportSize.y);
 		gl = canvas.getContext("webgl2");
 
 		Object.assign(gl, {

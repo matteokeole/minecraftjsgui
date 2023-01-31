@@ -9,14 +9,14 @@ import sceneRenderer from "./scene-renderer.js";
 import skyboxRenderer from "./skybox-renderer.js";
 
 // Create an instance option
-const monochromeLogo = new Option({
+const monochromeLogo = new InstanceOption({
 	name: "monochrome-logo",
+	defaultValue: false,
 	validator: function(value) {
 		if (typeof value !== "boolean") return false;
 
 		return true;
 	},
-	defaultValue: false,
 });
 
 // Set instance options
@@ -87,6 +87,60 @@ instance.setPipeline(
 
 
 
+/**
+ * Stateful layer draft
+ * 
+ * Goal: allow dynamic local variables to trigger visual changes,
+ * without redrawing non-updated components
+ * 
+ * Issues:
+ * - How to redraw Text components? Compute once static text and compute each time the dynamic part(s)? How to efficiently detect changes in a text?
+ */
+export default class OptionLayer extends Layer {
+	constructor() {
+		super();
+	}
+
+	initState(state) {
+		state.counter = 0;
+	}
+
+	build(state, renderer) {
+		return new Group({
+			alignment: Alignment.center,
+			margin: new Vector2(0, 0),
+			size: new Vector2(200, 100),
+			children: [
+				new Button({
+					alignment: Alignment.centerTop,
+					margin: new Vector2(0, 0),
+					width: 200,
+					onClick: function() {
+						// State update
+						state.counter++;
+
+						// Visual update
+						// This only redraws the components registered in the render queue
+						renderer.renderQueue.append(this);
+						renderer.render();
+					},
+					child: new Text(state => `Increment counter (${state.counter})`, {
+						alignment: Alignment.center,
+						margin: new Vector2(0, 0),
+					}),
+				}),
+			],
+		});
+	}
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -127,9 +181,9 @@ instance.setPipeline(
 
 
 // Item slot tests
-import {Slot} from "gui";
-import {HelmetItem} from "items";
-import {Vector2} from "math";
+import {Slot} from "src/gui";
+import {HelmetItem} from "src/items";
+import {Vector2} from "src/math";
 
 const slot = new Slot({
 	position: new Vector2(0, 0),

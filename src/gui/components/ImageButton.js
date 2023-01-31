@@ -1,4 +1,5 @@
 import Component from "./Component.js";
+import {Matrix3} from "src/math";
 
 /**
  * @constructor
@@ -30,4 +31,12 @@ export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMo
 
 	/** @type {Function} */
 	this.onMouseDown = onMouseDown?.bind(this);
+
+	/** @override */
+	this.getTextureMatrix = () => Matrix3
+		.translate(uv.divide(image.size))
+		.scale(this.getSize().divide(image.size));
+
+	/** @override */
+	this.getTextureWrapper = () => image;
 }
