@@ -21,7 +21,7 @@ export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMo
 
 	this.getUV = () => uv;
 
-	this.setUV = newUV => void (uv = newUV);
+	this.setUV = newUV => uv = newUV;
 
 	/** @type {Function} */
 	this.onMouseEnter = onMouseEnter?.bind(this);

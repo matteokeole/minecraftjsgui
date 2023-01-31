@@ -39,7 +39,7 @@ export default function WebGLRenderer({offscreen, version}) {
 	};
 
 	/**
-	 * @todo Set viewport size as multiples of 2?
+	 * @todo Set viewport size as multiples of 2 to avoid subpixel defects?
 	 * 
 	 * @param {Number} width
 	 * @param {Number} height

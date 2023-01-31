@@ -307,16 +307,16 @@ export default function Instance() {
 
 		outputRenderer.linkProgram(program);
 
+		/** @todo Make useProgram helper in `WebGLRenderer`? */
 		gl.useProgram(program.program);
 
-		Object.assign(gl, {
-			attribute: {},
-			buffer: {},
-			uniform: {},
-		});
-
-		gl.attribute.position = 0;
-		gl.buffer.position = gl.createBuffer();
+		gl.attribute = {
+			position: 0,
+		};
+		gl.buffer = {
+			position: gl.createBuffer(),
+		};
+		gl.uniform = {};
 
 		gl.enableVertexAttribArray(gl.attribute.position);
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.position);

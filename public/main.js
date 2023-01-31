@@ -30,6 +30,9 @@ try {
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
 	await guiRenderer.loadTextures(...guiTextures);
 
+	/** @type {Number} */
+	let counter = 0;
+
 	const tree = [
 		new Group({
 			align: ["center", "center"],
@@ -41,13 +44,40 @@ try {
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
 					image: guiRenderer.getTexture("gui/widgets.png"),
-					uv: new Vector2(0, 186),
+					uv: new Vector2(0, 146),
+					onMouseEnter: function() {
+						const newUv = this.getUV();
+						newUv.y = 166;
+						this.setUV(newUv);
+
+						guiRenderer.componentRenderStack.push(this);
+						guiRenderer.render();
+					},
+					onMouseLeave: function() {
+						const newUv = this.getUV();
+						newUv.y = 146;
+						this.setUV(newUv);
+
+						guiRenderer.componentRenderStack.push(this);
+						guiRenderer.render();
+					},
+					onMouseDown: function() {
+						counter++;
+						console.log(counter);
+					},
 				}),
 				/* new Button({
 					align: ["right", "top"],
 					margin: new Vector2(0, 0),
 					size: new Vector2(200, 20),
 				}), */
+				new ImageButton({
+					align: ["right", "top"],
+					margin: new Vector2(0, 0),
+					size: new Vector2(20, 20),
+					image: guiRenderer.getTexture("gui/widgets.png"),
+					uv: new Vector2(0, 186),
+				}),
 				new ImageButton({
 					align: ["left", "bottom"],
 					margin: new Vector2(0, 0),
@@ -65,8 +95,8 @@ try {
 			],
 		}),
 		new Image({
-			align: ["center", "center"],
-			margin: new Vector2(0, 0),
+			align: ["right", "bottom"],
+			margin: new Vector2(10, 10),
 			size: new Vector2(20, 20),
 			image: guiRenderer.getTexture("gui/widgets.png"),
 			uv: new Vector2(0, 106),

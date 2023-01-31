@@ -36,6 +36,8 @@ export default function GUIRenderer(instance) {
 	 */
 	const componentRenderStack = [];
 
+	this.componentRenderStack = componentRenderStack;
+
 	/** @type {BufferRenderer} */
 	let bufferRenderer;
 
@@ -120,7 +122,7 @@ export default function GUIRenderer(instance) {
 			componentTree.push(component);
 
 			component instanceof Group ?
-				this.addToRenderStack(component) :
+				this.addChildrenToRenderStack(component) :
 				componentRenderStack.push(component);
 
 			if (component instanceof Button) {
@@ -129,7 +131,7 @@ export default function GUIRenderer(instance) {
 		}
 	};
 
-	this.addToRenderStack = function(parent) {
+	this.addChildrenToRenderStack = function(parent) {
 		// This methods only adds `Group` children
 		if (!(parent instanceof Group)) return;
 
@@ -141,9 +143,30 @@ export default function GUIRenderer(instance) {
 			component = children[i];
 
 			if (component instanceof Group) {
-				this.addToRenderStack(component);
+				this.addChildrenToRenderStack(component);
 
 				continue;
+			}
+
+			/** @todo Rework listener initialization */
+			{
+				if (component.onMouseEnter) {
+					component.onMouseEnter.component = component;
+
+					instance.addMouseEnterListener(component.onMouseEnter);
+				}
+
+				if (component.onMouseLeave) {
+					component.onMouseLeave.component = component;
+
+					instance.addMouseLeaveListener(component.onMouseLeave);
+				}
+
+				if (component.onMouseDown) {
+					component.onMouseDown.component = component;
+
+					instance.addMouseDownListener(component.onMouseDown);
+				}
 			}
 
 			componentRenderStack.push(component);
@@ -325,7 +348,7 @@ export default function GUIRenderer(instance) {
 			component = componentTree[i];
 
 			if (component instanceof Group) {
-				this.addToRenderStack(component);
+				this.addChildrenToRenderStack(component);
 
 				continue;
 			}
