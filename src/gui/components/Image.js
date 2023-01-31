@@ -25,4 +25,7 @@ export default function Image({image, uv}) {
 	this.getTextureMatrix = () => Matrix3
 		.translate(uv.divide(image.size))
 		.scale(this.getSize().divide(image.size));
+
+	/** @override */
+	this.getTextureWrapper = () => image;
 }

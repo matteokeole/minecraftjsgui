@@ -36,4 +36,7 @@ export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMo
 	this.getTextureMatrix = () => Matrix3
 		.translate(uv.divide(image.size))
 		.scale(this.getSize().divide(image.size));
+
+	/** @override */
+	this.getTextureWrapper = () => image;
 }

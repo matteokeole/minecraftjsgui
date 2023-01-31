@@ -1,6 +1,7 @@
-import {NoWebGL2Error, ShaderCompilationError} from "src/errors";
 import {Vector2, clampDown, clampUp, intersects} from "src/math";
+import Program from "./Program.js";
 import Renderer from "./Renderer.js";
+import WebGLRenderer from "./WebGLRenderer.js";
 
 /**
  * @todo Apply settings
@@ -57,11 +58,15 @@ export default function Instance() {
 	let mouseDownListeners = [];
 	let mouseDownListenerCount = 0;
 
-	/** @type {?HTMLCanvasElement} */
-	let canvas;
-
-	/** @type {?WebGL2RenderingContext} */
-	let gl;
+	/**
+	 * Output renderer.
+	 * 
+	 * @type {WebGLRenderer}
+	 */
+	const outputRenderer = new WebGLRenderer({
+		offscreen: false,
+		version: 2,
+	});
 
 	/**
 	 * Offscreen renderers.
@@ -133,17 +138,11 @@ export default function Instance() {
 	let pointerPosition;
 
 	/**
-	 * @todo Finish implementing
-	 * 
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
-		canvas = document.createElement("canvas");
-		canvas.width = viewportSize.x;
-		canvas.height = viewportSize.y;
-		gl = canvas.getContext("webgl2");
-
-		if (gl === null) throw NoWebGL2Error();
+		outputRenderer.build();
+		outputRenderer.setViewport(viewportSize.x, viewportSize.y, devicePixelRatio);
 
 		this.resizeObserver = new ResizeObserver(([entry]) => {
 			// Avoid the first resize
@@ -169,23 +168,23 @@ export default function Instance() {
 			}, RESIZE_DELAY);
 		});
 
-		document.body.appendChild(canvas);
+		document.body.appendChild(outputRenderer.canvas);
 
 		hasBeenBuilt = true;
 
 		try {
-			this.resizeObserver.observe(canvas, {
+			this.resizeObserver.observe(outputRenderer.canvas, {
 				box: "device-pixel-content-box",
 			});
 		} catch (error) {
 			// "device-pixel-content-box" isn't defined, try with "content-box"
-			this.resizeObserver.observe(canvas, {
+			this.resizeObserver.observe(outputRenderer.canvas, {
 				box: "content-box",
 			});
 		}
 
-		canvas.addEventListener("mousemove", mouseMoveListener.bind(this));
-		canvas.addEventListener("mousedown", mouseDownListener.bind(this));
+		outputRenderer.canvas.addEventListener("mousemove", mouseMoveListener.bind(this));
+		outputRenderer.canvas.addEventListener("mousedown", mouseDownListener.bind(this));
 	};
 
 	this.hasBeenBuilt = () => hasBeenBuilt;
@@ -195,14 +194,21 @@ export default function Instance() {
 	 * 
 	 * @param {Renderer[]} renderers
 	 */
-	this.setupRenderers = function(renderers) {
+	this.setupRenderers = async function(renderers) {
+		const {gl} = outputRenderer;
 		const {rendererTextures} = this;
-		let texture;
+		let renderer, texture;
 
 		rendererLength = renderers.length;
 
 		for (let i = 0; i < rendererLength; i++) {
-			this.renderers.push(renderers[i]);
+			renderer = renderers[i];
+
+			renderer.build();
+			renderer.enable();
+			await renderer.init();
+
+			this.renderers.push(renderer);
 
 			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
@@ -220,13 +226,11 @@ export default function Instance() {
 	 * @param {Number} dpr
 	 */
 	this.resize = function(width, height, dpr) {
-		gl.viewport(
-			0,
-			0,
-			/** @todo Set viewport size as multiples of 2? */
-			canvas.width = viewportSize.x = /* (width / 2 | 0) * 2 */ width * dpr | 0,
-			canvas.height = viewportSize.y = /* (height / 2 | 0) * 2 */ height * dpr | 0,
-		);
+		/** @type {Vector2} */
+		let newViewport = outputRenderer.setViewport(width, height, dpr);
+		viewportSize.x = newViewport.x;
+		viewportSize.y = newViewport.y;
+		newViewport = null;
 
 		// Calculate scale multiplier
 		let i = 1;
@@ -242,7 +246,7 @@ export default function Instance() {
 
 		this.currentScale = currentScale;
 
-		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize();
+		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize(viewportSize);
 	};
 
 	/**
@@ -253,6 +257,7 @@ export default function Instance() {
 	 */
 	this.updateRendererTexture = function(index, canvas) {
 		const {rendererTextures} = this;
+		const {gl} = outputRenderer;
 
 		gl.bindTexture(gl.TEXTURE_2D, rendererTextures[index]);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
@@ -288,18 +293,21 @@ export default function Instance() {
 	 * @async
 	 */
 	this.initialize = async function() {
+		const {gl} = outputRenderer;
+
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		const [program, vertexShader, fragmentShader] = await createProgram(this.shaderPath, [
-			"main.vert",
-			"main.frag",
-		]);
+		/** @type {Program} */
+		const program = await outputRenderer.loadProgram(
+			`${this.shaderPath}main.vert`,
+			`${this.shaderPath}main.frag`,
+		);
 
-		linkProgram(program, vertexShader, fragmentShader);
+		outputRenderer.linkProgram(program);
 
-		gl.useProgram(program);
+		gl.useProgram(program.program);
 
 		Object.assign(gl, {
 			attribute: {},
@@ -327,6 +335,7 @@ export default function Instance() {
 	 */
 	this.render = function() {
 		const {rendererTextures} = this;
+		const {gl} = outputRenderer;
 
 		for (let i = 0; i < rendererLength; i++) {
 			if (this.renderers[i].disabled) continue;
@@ -337,6 +346,8 @@ export default function Instance() {
 	};
 
 	this.dispose = function() {
+		const {gl} = outputRenderer;
+
 		if (!(gl instanceof WebGL2RenderingContext)) {
 			return console.info("This exception occurred before building the instance.");
 		}
@@ -346,14 +357,10 @@ export default function Instance() {
 		// Dispose child renderers
 		for (let i = 0; i < rendererLength; i++) this.renderers[i].dispose();
 
-		/** @todo Dispose the output context */
-
 		// Remove the resize observer
-		this.resizeObserver.unobserve(canvas);
+		this.resizeObserver.unobserve(outputRenderer.canvas);
 
-		// Remove the output canvas from the DOM
-		canvas.remove();
-		canvas = null;
+		outputRenderer.dispose();
 
 		return console.info("The instance was properly disposed after catching this exception.");
 	};
@@ -413,49 +420,6 @@ export default function Instance() {
 			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) return;
 
 			listener(pointerPosition);
-		}
-	}
-
-	/** @todo Remove duplicate util */
-	async function createProgram(basePath, [vertexPath, fragmentPath]) {
-		const
-			program = gl.createProgram(),
-			vertexShader = await createShader(basePath, vertexPath, gl.VERTEX_SHADER),
-			fragmentShader = await createShader(basePath, fragmentPath, gl.FRAGMENT_SHADER);
-
-		gl.attachShader(program, vertexShader);
-		gl.attachShader(program, fragmentShader);
-		gl.linkProgram(program);
-
-		return [program, vertexShader, fragmentShader];
-	}
-
-	/** @todo Remove duplicate util */
-	async function createShader(base, path, type) {
-		const
-			shader = gl.createShader(type),
-			source = await (await fetch(`${base}${path}`)).text();
-
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-
-		return shader;
-	}
-
-	/** @todo Remove duplicate util */
-	function linkProgram(program, vertexShader, fragmentShader) {
-		gl.linkProgram(program);
-
-		if (gl.getProgramParameter(program, gl.LINK_STATUS)) return;
-
-		let log;
-
-		if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
-			throw ShaderCompilationError(log, gl.VERTEX_SHADER);
-		}
-
-		if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
-			throw ShaderCompilationError(log, gl.FRAGMENT_SHADER);
 		}
 	}
 

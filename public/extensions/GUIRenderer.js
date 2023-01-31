@@ -224,10 +224,6 @@ export default function GUIRenderer(instance) {
 		for (let i = 0; i < length; i++) componentTree[i].computePosition(initialPosition, viewport);
 	};
 
-	this.prepare = function() {
-		//
-	};
-
 	/**
 	 * Renders the GUI and updates the scene renderer GUI texture.
 	 */
@@ -309,16 +305,15 @@ export default function GUIRenderer(instance) {
 
 	/**
 	 * @todo Pass the resize data (w/h (+ dpr?)) from the instance
+	 * @param {Vector2} viewport
 	 */
-	this.resize = function() {
-		const
-			viewportSize = instance.getViewportSize(),
-			{currentScale} = instance;
+	this.resize = function(viewport) {
+		const {currentScale} = instance;
 
-		gl.viewport(0, 0, canvas.width = viewportSize.x, canvas.height = viewportSize.y);
+		gl.viewport(0, 0, canvas.width = viewport.x, canvas.height = viewport.y);
 
 		const projectionMatrix = Matrix3
-			.projection(viewportSize)
+			.projection(viewport)
 			.scale(new Vector2(currentScale, currentScale));
 
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));

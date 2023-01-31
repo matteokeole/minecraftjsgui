@@ -96,11 +96,15 @@ export default function Component({align, margin, size}) {
 
 	/**
 	 * Must be overridden in an instance.
+	 * 
+	 * @returns {Matrix3}
 	 */
 	this.getTextureMatrix = () => {throw new NotImplementedError()};
 
 	/**
 	 * Must be overridden in an instance.
+	 * 
+	 * @returns {TextureWrapper}
 	 */
 	this.getTextureWrapper = () => {throw new NotImplementedError()};
 }

@@ -1,4 +1,5 @@
 import {NoWebGL2Error, ShaderCompilationError} from "src/errors";
+import {Vector2} from "src/math";
 import Program from "./Program.js";
 
 /**
@@ -28,9 +29,7 @@ export default function WebGLRenderer({offscreen, version}) {
 
 	this.build = function() {
 		const
-			canvas = offscreen ?
-				new OffscreenCanvas(0, 0) :
-				document.createElement("canvas"),
+			canvas = offscreen ? new OffscreenCanvas(0, 0) : document.createElement("canvas"),
 			gl = canvas.getContext(version === 2 ? "webgl2" : "webgl");
 
 		if (gl === null) throw new NoWebGL2Error();
@@ -39,14 +38,35 @@ export default function WebGLRenderer({offscreen, version}) {
 		this.gl = gl;
 	};
 
+	/**
+	 * @todo Set viewport size as multiples of 2?
+	 * 
+	 * @param {Number} width
+	 * @param {Number} height
+	 * @param {Number} dpr
+	 * @returns {Vector2}
+	 */
+	this.setViewport = function(w, h, dpr) {
+		const width = w * dpr | 0;
+		const height = h * dpr | 0;
+
+		this.gl.viewport(
+			0,
+			0,
+			this.canvas.width = width,
+			this.canvas.height = height,
+		);
+
+		return new Vector2(width, height);
+	};
+
 	this.loadProgram = async function(vertexPath, fragmentPath) {
 		const
 			{gl} = this,
 			createShader = async function(path, type) {
 				const
-					base = "assets/shaders/",
 					shader = gl.createShader(type),
-					source = await (await fetch(`${base}${path}`)).text();
+					source = await (await fetch(path)).text();
 
 				gl.shaderSource(shader, source);
 				gl.compileShader(shader);
