@@ -16,7 +16,7 @@ These properties or their use may differ depending on the component family.
 
 - `texture: WebGLTexture|null = null`  
 The texture used to render this component. **This must be present when rendering the component**, otherwise the renderer will throw an error.  
-Some visual components require the texture to be provided on creation (e.g. `Image`, `ImageButton`), while others generate a dynamic texture based on their data, like `Button` (width) and `Text` (text and font used). The original image must be loaded before creating the component.  
+Some visual components require the texture to be provided on creation (e.g. `Image`, `ImageButton`), while others generate a dynamic texture based on their data, like `Button` (width) and `Text` (text and font used). The original image must be loaded before creating the component.
 
 ### Component types
 
@@ -39,3 +39,12 @@ import {Button} from "src/components";
 
 const button = new Button(...);
 ```
+
+### Comparison table
+
+| Component | Texture |
+| --- | --- |
+| `Button` | Generated from [gui/widgets.png](https://github.com/matteokeole/minecraftjsgui/blob/master/assets/textures/gui/widgets.png) |
+| `Image` | Provided on creation |
+| `ImageButton` | Provided on creation |
+| `Text` | Generated from [font/ascii.png](https://github.com/matteokeole/minecraftjsgui/blob/master/assets/textures/font/ascii.png) |

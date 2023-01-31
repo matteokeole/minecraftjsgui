@@ -65,6 +65,7 @@ export default function WebGLRenderer({offscreen, version}) {
 
 	/**
 	 * Links a loaded program to the WebGL context.
+	 * Returns `true` if the linking ended successfully, `false` otherwise.
 	 * 
 	 * @param {Program} program
 	 * @returns {Boolean}
@@ -75,7 +76,7 @@ export default function WebGLRenderer({offscreen, version}) {
 
 		gl.linkProgram(program);
 
-		if (gl.getProgramParameter(program, gl.LINK_STATUS)) return false;
+		if (gl.getProgramParameter(program, gl.LINK_STATUS)) return true;
 
 		let log;
 
@@ -87,7 +88,7 @@ export default function WebGLRenderer({offscreen, version}) {
 			throw new ShaderCompilationError(log, gl.FRAGMENT_SHADER);
 		}
 
-		return true;
+		return false;
 	};
 
 	this.dispose = function() {
