@@ -40,7 +40,7 @@ export default function Group({children}) {
 		if (vertical === "bottom") initialPosition.y = o.y - m.y;
 		else if (vertical === "center") initialPosition.y += o.y / 2;
 
-		this.setPosition(initialPosition.floor());
+		this.setPosition(initialPosition.floor32());
 
 		const position = this.getPosition();
 

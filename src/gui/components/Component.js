@@ -71,7 +71,7 @@ export default function Component({align, margin, size}) {
 				break;
 		}
 
-		position = initialPosition.floor();
+		position = initialPosition.floor32();
 	};
 
 	this.getPosition = () => position;
