@@ -39,25 +39,23 @@ export default function WebGLRenderer({offscreen, version}) {
 	};
 
 	/**
-	 * @todo Set viewport size as multiples of 2 to avoid subpixel defects?
+	 * @todo Set viewport size as multiples of 2 to avoid subpixel artifacts?
 	 * 
-	 * @param {Number} width
-	 * @param {Number} height
-	 * @param {Number} dpr
+	 * @param {Vector2} viewport
+	 * @param {Number} devicePixelRatio
 	 * @returns {Vector2}
 	 */
-	this.setViewport = function(w, h, dpr) {
-		const width = w * dpr | 0;
-		const height = h * dpr | 0;
+	this.setViewport = function(viewport, devicePixelRatio) {
+		viewport = viewport.multiplyScalar(devicePixelRatio).floor32();
 
 		this.gl.viewport(
 			0,
 			0,
-			this.canvas.width = width,
-			this.canvas.height = height,
+			this.canvas.width = viewport.x,
+			this.canvas.height = viewport.y,
 		);
 
-		return new Vector2(width, height);
+		return viewport;
 	};
 
 	this.loadProgram = async function(vertexPath, fragmentPath) {

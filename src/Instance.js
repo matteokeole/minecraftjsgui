@@ -59,8 +59,7 @@ export default function Instance() {
 	let mouseDownListenerCount = 0;
 
 	/**
-	 * Output renderer.
-	 * 
+	 * @private
 	 * @type {WebGLRenderer}
 	 */
 	const outputRenderer = new WebGLRenderer({
@@ -97,13 +96,11 @@ export default function Instance() {
 	this.texturePath = "assets/textures/";
 
 	/**
-	 * @todo Define null first?
-	 * 
 	 * Cached values of `window.innerWidth` and `window.innerHeight`.
 	 * 
 	 * @type {Vector2}
 	 */
-	const viewportSize = new Vector2(innerWidth, innerHeight);
+	const viewport = new Vector2(0, 0);
 
 	/**
 	 * Current GUI scale multiplier.
@@ -142,7 +139,9 @@ export default function Instance() {
 	 */
 	this.build = function() {
 		outputRenderer.build();
-		outputRenderer.setViewport(viewportSize.x, viewportSize.y, devicePixelRatio);
+		viewport.x = innerWidth;
+		viewport.y = innerHeight;
+		outputRenderer.setViewport(viewport, devicePixelRatio);
 
 		this.resizeObserver = new ResizeObserver(([entry]) => {
 			// Avoid the first resize
@@ -227,16 +226,16 @@ export default function Instance() {
 	 */
 	this.resize = function(width, height, dpr) {
 		/** @type {Vector2} */
-		let newViewport = outputRenderer.setViewport(width, height, dpr);
-		viewportSize.x = newViewport.x;
-		viewportSize.y = newViewport.y;
+		let newViewport = outputRenderer.setViewport(new Vector2(width, height), dpr);
+		viewport.x = newViewport.x;
+		viewport.y = newViewport.y;
 		newViewport = null;
 
 		// Calculate scale multiplier
 		let i = 1;
 		while (
-			viewportSize.x > DEFAULT_WIDTH * i &&
-			viewportSize.y > DEFAULT_HEIGHT * i
+			viewport.x > DEFAULT_WIDTH * i &&
+			viewport.y > DEFAULT_HEIGHT * i
 		) i++;
 
 		const currentScale = clampUp(
@@ -246,7 +245,7 @@ export default function Instance() {
 
 		this.currentScale = currentScale;
 
-		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize(viewportSize);
+		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize(viewport);
 	};
 
 	/**
@@ -423,5 +422,5 @@ export default function Instance() {
 		}
 	}
 
-	this.getViewportSize = () => viewportSize;
+	this.getViewport = () => viewport;
 }

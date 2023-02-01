@@ -50,9 +50,9 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Initializes the canvas element and its WebGL context.
 	 */
 	this.build = function() {
-		const viewportSize = instance.getViewportSize();
+		const viewport = instance.getViewport();
 
-		canvas = new OffscreenCanvas(viewportSize.x, viewportSize.y);
+		canvas = new OffscreenCanvas(viewport.x, viewport.y);
 		gl = canvas.getContext("webgl2");
 
 		Object.assign(gl, {

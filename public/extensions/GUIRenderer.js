@@ -242,7 +242,7 @@ export default function GUIRenderer(instance) {
 		const
 			{length} = componentTree,
 			initialPosition = new Vector2(0, 0),
-			viewport = instance.getViewportSize().divideScalar(instance.currentScale);
+			viewport = instance.getViewport().divideScalar(instance.currentScale);
 
 		for (let i = 0; i < length; i++) componentTree[i].computePosition(initialPosition, viewport);
 	};
