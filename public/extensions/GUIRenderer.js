@@ -371,11 +371,8 @@ GUIRenderer.prototype = Object.create(Renderer.prototype, {
 
 
 export class _GUIRenderer extends WebGLRenderer {
-	constructor() {
-		super({
-			offscreen: true,
-			version: 2,
-		});
+	constructor({offscreen, version}) {
+		super({offscreen, version});
 
 		/**
 		 * GUI layer stack. The last layer the current view.

@@ -12,7 +12,7 @@ try {
 		version: 2,
 	});
 
-	console.log(renderer);
+	// console.log(renderer);
 
 	renderer.build();
 
@@ -23,7 +23,7 @@ try {
 	);
 	renderer.linkProgram(program);
 
-	console.log(renderer);
+	// console.log(renderer);
 
 	document.body.appendChild(renderer.canvas);
 
