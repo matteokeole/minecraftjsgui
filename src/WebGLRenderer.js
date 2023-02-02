@@ -27,6 +27,12 @@ export default function WebGLRenderer({offscreen, version}) {
 	 */
 	this.gl = null;
 
+	/**
+	 * @public
+	 * @type {WebGLTexture[]}
+	 */
+	this.textures = [];
+
 	this.build = function() {
 		const
 			canvas = offscreen ? new OffscreenCanvas(0, 0) : document.createElement("canvas"),

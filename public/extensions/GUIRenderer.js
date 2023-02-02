@@ -3,11 +3,10 @@ import Renderer from "src/renderer";
 import Component from "../../src/gui/components/Component.js";
 import {Button, Group} from "src/gui";
 import BufferRenderer from "src/buffer-renderer";
+import WebGLRenderer from "../../src/WebGLRenderer.js";
 
 /**
- * @todo Rename `componentRenderStack` to `renderStack`
- * 
- * GUI renderer singleton.
+ * GUI renderer.
  * 
  * @constructor
  * @extends Renderer
@@ -34,9 +33,9 @@ export default function GUIRenderer(instance) {
 	 * 
 	 * @type {Component[]}
 	 */
-	const componentRenderStack = [];
+	const renderQueue = [];
 
-	this.componentRenderStack = componentRenderStack;
+	this.renderQueue = renderQueue;
 
 	/** @type {BufferRenderer} */
 	let bufferRenderer;
@@ -123,7 +122,7 @@ export default function GUIRenderer(instance) {
 
 			component instanceof Group ?
 				this.addChildrenToRenderStack(component) :
-				componentRenderStack.push(component);
+				renderQueue.push(component);
 
 			if (component instanceof Button) {
 				component.generateCachedTexture(bufferRenderer);
@@ -169,7 +168,7 @@ export default function GUIRenderer(instance) {
 				}
 			}
 
-			componentRenderStack.push(component);
+			renderQueue.push(component);
 		}
 	};
 
@@ -185,7 +184,7 @@ export default function GUIRenderer(instance) {
 		let component;
 
 		function pushToRenderStack() {
-			componentRenderStack.push(this);
+			renderQueue.push(this);
 		};
 
 		function pushGroupToRenderStack() {
@@ -252,7 +251,7 @@ export default function GUIRenderer(instance) {
 	 */
 	this.render = function() {
 		const
-			{length} = componentRenderStack,
+			{length} = renderQueue,
 			bufferLength = length * 9,
 			worldMatrixData = new Float32Array(bufferLength),
 			worldMatrices = [],
@@ -273,7 +272,7 @@ export default function GUIRenderer(instance) {
 				9,
 			));
 
-			component = componentRenderStack[i];
+			component = renderQueue[i];
 			const worldMatrix = component.getWorldMatrix();
 			const textureMatrix = component.getTextureMatrix();
 
@@ -315,11 +314,11 @@ export default function GUIRenderer(instance) {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
 		const textureIndices = new Float32Array(length);
-		for (let i = 0; i < length; i++) textureIndices[i] = componentRenderStack[i].getTextureWrapper().index;
+		for (let i = 0; i < length; i++) textureIndices[i] = renderQueue[i].getTextureWrapper().index;
 		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
 		// Clear the render stack
-		componentRenderStack.length = 0;
+		renderQueue.length = 0;
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, length);
 
@@ -353,7 +352,7 @@ export default function GUIRenderer(instance) {
 				continue;
 			}
 
-			componentRenderStack.push(component);
+			renderQueue.push(component);
 		}
 
 		this.computeTree();
@@ -366,3 +365,34 @@ GUIRenderer.prototype = Object.create(Renderer.prototype, {
 		value: GUIRenderer,
 	},
 });
+
+
+
+
+
+export class _GUIRenderer extends WebGLRenderer {
+	constructor() {
+		super({
+			offscreen: true,
+			version: 2,
+		});
+
+		/**
+		 * GUI layer stack. The last layer the current view.
+		 * 
+		 * @type {Layer[]}
+		 */
+		this.layerStack = [];
+
+		/**
+		 * Components marked for the next render.
+		 * 
+		 * @type {Component[]}
+		 */
+		this.renderQueue = [];
+	}
+
+	async build() {
+		let {canvas, gl} = this;
+	}
+}

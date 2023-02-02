@@ -1,28 +1,39 @@
 import {Button, Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
 import {Vector2} from "src/math";
-import GUIRenderer from "./extensions/GUIRenderer.js";
-
-import WebGLRenderer from "../src/WebGLRenderer.js";
+import {default as GUIRenderer, _GUIRenderer} from "./extensions/GUIRenderer.js";
 
 export const instance = new Instance();
 export let guiRenderer;
 
 try {
-	const renderer = new WebGLRenderer({
+	const renderer = new _GUIRenderer({
 		offscreen: false,
 		version: 2,
 	});
 
+	console.log(renderer);
+
 	renderer.build();
 
-	const program = await renderer.loadProgram("assets/shaders/main.vert", "assets/shaders/main.frag");
+	/** @type {Program} */
+	const program = await renderer.loadProgram(
+		"assets/shaders/component.vert",
+		"assets/shaders/component.frag",
+	);
 	renderer.linkProgram(program);
 
-	instance.build();
-	await instance.initialize();
+	console.log(renderer);
 
-	await instance.setupRenderers([
+	document.body.appendChild(renderer.canvas);
+
+	// const program = await renderer.loadProgram("assets/shaders/main.vert", "assets/shaders/main.frag");
+	// renderer.linkProgram(program);
+
+	// instance.build();
+	// await instance.initialize();
+
+	/* await instance.setupRenderers([
 		guiRenderer = new GUIRenderer(instance),
 	]);
 
@@ -30,7 +41,6 @@ try {
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
 	await guiRenderer.loadTextures(...guiTextures);
 
-	/** @type {Number} */
 	let counter = 0;
 
 	const tree = [
@@ -50,7 +60,7 @@ try {
 						newUv.y = 166;
 						this.setUV(newUv);
 
-						guiRenderer.componentRenderStack.push(this);
+						guiRenderer.renderQueue.push(this);
 						guiRenderer.render();
 					},
 					onMouseLeave: function() {
@@ -58,7 +68,7 @@ try {
 						newUv.y = 146;
 						this.setUV(newUv);
 
-						guiRenderer.componentRenderStack.push(this);
+						guiRenderer.renderQueue.push(this);
 						guiRenderer.render();
 					},
 					onMouseDown: function() {
@@ -66,11 +76,11 @@ try {
 						console.log(counter);
 					},
 				}),
-				/* new Button({
-					align: ["right", "top"],
-					margin: new Vector2(0, 0),
-					size: new Vector2(200, 20),
-				}), */
+				// new Button({
+				// 	align: ["right", "top"],
+				// 	margin: new Vector2(0, 0),
+				// 	size: new Vector2(200, 20),
+				// }),
 				new ImageButton({
 					align: ["right", "top"],
 					margin: new Vector2(0, 0),
@@ -107,7 +117,7 @@ try {
 	guiRenderer.computeTree();
 	guiRenderer.render();
 
-	instance.startLoop();
+	instance.startLoop(); */
 } catch (error) {
 	console.error(error);
 

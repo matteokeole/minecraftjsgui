@@ -190,3 +190,13 @@ const slot = new Slot({
 	permanent: true,
 	validator: item => item instanceof HelmetItem,
 });
+
+
+
+
+
+
+
+
+
+const renderer = await OffscreenWebGLRenderer.fromShaders("main.vert", "main.frag");
