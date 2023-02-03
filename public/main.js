@@ -1,4 +1,4 @@
-import {Button, Group, Image, ImageButton} from "src/gui";
+import {Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
 import {Vector2} from "src/math";
 import {default as GUIRenderer, _GUIRenderer} from "./extensions/GUIRenderer.js";
@@ -7,35 +7,12 @@ export const instance = new Instance();
 export let guiRenderer;
 
 try {
-	const renderer = new _GUIRenderer({
-		offscreen: false,
-		version: 2,
-	});
+	instance.build();
+	await instance.initialize();
 
-	// console.log(renderer);
+	guiRenderer = new GUIRenderer(instance);
 
-	renderer.build();
-
-	/** @type {Program} */
-	const program = await renderer.loadProgram(
-		"assets/shaders/component.vert",
-		"assets/shaders/component.frag",
-	);
-	renderer.linkProgram(program);
-
-	// console.log(renderer);
-
-	document.body.appendChild(renderer.canvas);
-
-	// const program = await renderer.loadProgram("assets/shaders/main.vert", "assets/shaders/main.frag");
-	// renderer.linkProgram(program);
-
-	// instance.build();
-	// await instance.initialize();
-
-	/* await instance.setupRenderers([
-		guiRenderer = new GUIRenderer(instance),
-	]);
+	await instance.setupRenderers([guiRenderer]);
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
@@ -76,11 +53,6 @@ try {
 						console.log(counter);
 					},
 				}),
-				// new Button({
-				// 	align: ["right", "top"],
-				// 	margin: new Vector2(0, 0),
-				// 	size: new Vector2(200, 20),
-				// }),
 				new ImageButton({
 					align: ["right", "top"],
 					margin: new Vector2(0, 0),
@@ -117,7 +89,7 @@ try {
 	guiRenderer.computeTree();
 	guiRenderer.render();
 
-	instance.startLoop(); */
+	instance.startLoop();
 } catch (error) {
 	console.error(error);
 

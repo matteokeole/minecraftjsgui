@@ -188,9 +188,8 @@ export default function GUIRenderer(instance) {
 		};
 
 		function pushGroupToRenderStack() {
-			const
-				children = this.getChildren(),
-				{length} = children;
+			const children = this.getChildren();
+			const {length} = children;
 
 			for (let i = 0; i < length; i++) children[i].pushToRenderStack();
 		}
@@ -251,15 +250,15 @@ export default function GUIRenderer(instance) {
 	 */
 	this.render = function() {
 		const
-			{length} = renderQueue,
-			bufferLength = length * 9,
+			queueLength = renderQueue.length,
+			bufferLength = queueLength * 9,
 			worldMatrixData = new Float32Array(bufferLength),
 			worldMatrices = [],
 			textureMatrixData = new Float32Array(bufferLength),
 			textureMatrices = [];
 
 		// Register component world/texture matrices
-		for (let i = 0, component; i < length; i++) {
+		for (let i = 0, component; i < queueLength; i++) {
 			worldMatrices.push(new Float32Array(
 				worldMatrixData.buffer,
 				i * 36,
@@ -313,14 +312,14 @@ export default function GUIRenderer(instance) {
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
-		const textureIndices = new Float32Array(length);
-		for (let i = 0; i < length; i++) textureIndices[i] = renderQueue[i].getTextureWrapper().index;
+		const textureIndices = new Float32Array(queueLength);
+		for (let i = 0; i < queueLength; i++) textureIndices[i] = renderQueue[i].getTextureWrapper().index;
 		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
 		// Clear the render queue
 		renderQueue.length = 0;
 
-		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, length);
+		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, queueLength);
 
 		instance.updateRendererTexture(0, canvas);
 	};

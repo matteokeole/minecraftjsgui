@@ -249,16 +249,15 @@ export default function Instance() {
 	};
 
 	/**
-	 * @todo `gl.RGB` or `gl.RGBA`?
+	 * @todo Which color format?
 	 * 
 	 * @param {Number} index
 	 * @param {OffscreenCanvas} canvas
 	 */
 	this.updateRendererTexture = function(index, canvas) {
-		const {rendererTextures} = this;
 		const {gl} = outputRenderer;
 
-		gl.bindTexture(gl.TEXTURE_2D, rendererTextures[index]);
+		gl.bindTexture(gl.TEXTURE_2D, this.rendererTextures[index]);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 	};
 
@@ -330,7 +329,7 @@ export default function Instance() {
 	};
 
 	/**
-	 * @todo Instanced drawing with multiple textures
+	 * @todo Use instanced drawing
 	 */
 	this.render = function() {
 		const {rendererTextures} = this;
@@ -347,9 +346,7 @@ export default function Instance() {
 	this.dispose = function() {
 		const {gl} = outputRenderer;
 
-		if (!(gl instanceof WebGL2RenderingContext)) {
-			return console.info("This exception occurred before building the instance.");
-		}
+		if (gl === null) return console.info("This exception occurred before building the instance.");
 
 		/** @todo Stop the game loop if it has started */
 
