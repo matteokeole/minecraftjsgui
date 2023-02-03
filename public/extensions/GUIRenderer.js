@@ -389,4 +389,25 @@ export class _GUIRenderer extends WebGLRenderer {
 	}
 
 	async build() {}
+
+	registerLayerStackInRenderQueue() {
+		for (let i = 0, l = layerStack.length, layer; i < l; i++) {
+			layer = layerStack[i];
+
+			this.registerComponentTreeInRenderQueue(layer.tree);
+		}
+	}
+
+	/** Note: recursive */
+	registerComponentTreeInRenderQueue(tree) {
+		for (let i = 0, l = tree.length, component; i < l; i++) {
+			component = tree[i];
+
+			if (component instanceof Group) continue;
+
+			this.renderQueue.push(component);
+
+			if (component.children?.length !== 0) this.registerComponentTreeInRenderQueue(component.children);
+		}
+	}
 }

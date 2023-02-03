@@ -13,6 +13,10 @@ The list of textures loaded with this renderer's context, not shareable with oth
 
 ### Dispose
 
+The `dispose` method is called:
+- when exiting the game
+- when a fatal error occurs. The canvases must be removed to show the custom error.
+
 1. Delete attributes, buffers, uniforms, VAOs and textures
 2. Delete programs
 3. Trigger context loss
