@@ -317,7 +317,7 @@ export default function GUIRenderer(instance) {
 		for (let i = 0; i < length; i++) textureIndices[i] = renderQueue[i].getTextureWrapper().index;
 		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
-		// Clear the render stack
+		// Clear the render queue
 		renderQueue.length = 0;
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, length);
@@ -389,7 +389,5 @@ export class _GUIRenderer extends WebGLRenderer {
 		this.renderQueue = [];
 	}
 
-	async build() {
-		let {canvas, gl} = this;
-	}
+	async build() {}
 }
