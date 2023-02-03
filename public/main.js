@@ -1,7 +1,7 @@
 import {Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
 import {Vector2} from "src/math";
-import {default as GUIRenderer, _GUIRenderer} from "./extensions/GUIRenderer.js";
+import GUIRenderer from "./extensions/GUIRenderer.js";
 
 export const instance = new Instance();
 export let guiRenderer;

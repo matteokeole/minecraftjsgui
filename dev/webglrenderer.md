@@ -1,6 +1,6 @@
 ## WebGLRenderer
 
-Structure grouping a DOM/offscreen canvas, GLSL shaders and WebGL textures to make general-purpose rendering.
+Class grouping a DOM/offscreen canvas, GLSL shaders and WebGL textures to make general-purpose rendering.
 
 ### Properties
 

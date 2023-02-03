@@ -199,4 +199,125 @@ const slot = new Slot({
 
 
 
-const renderer = await OffscreenWebGLRenderer.fromShaders("main.vert", "main.frag");
+/**
+ * `WebGLRenderer` class draft
+ * 
+ * Constraints:
+ * - DOM | Offscreen
+ * - WebGL1 | WebGL2
+ */
+import WebGLRenderer from "../src/WebGLRenderer.js";
+
+/**
+ * Solution A: Param object
+ * 
+ * - Asserts required for validating params
+ * - Good for presets
+ */
+const renderer1 = new WebGLRenderer({
+	offscreen: false,
+	version: 1,
+});
+
+const preset = {
+	offscreen: true,
+	version: 2,
+};
+const renderer2 = new WebGLRenderer(preset);
+
+/**
+ * Solution B: Factories
+ * 
+ * - No `new` keyword
+ * - Aesthetic: nice for offscreen/dom factories, but IMO less for v1/v2 factories
+ * - Blocks the use of factories for other things like `fromShaders` factory
+ * - Too verbose
+ */
+WebGLRenderer.offscreen();
+WebGLRenderer.dom();
+WebGL2Renderer.offscreen();
+WebGL2Renderer.dom();
+DOMWebGLRenderer.v1();
+DOMWebGLRenderer.v2();
+OffscreenWebGLRenderer.v1();
+OffscreenWebGLRenderer.v2();
+
+/**
+ * Solution C: Presets
+ * 
+ * - Allows to create easily many renderers sharing the same options
+ * - Asserts required for validating params
+ * - Aesthetic
+ */
+const customRendererPreset = new WebGLRendererPreset()
+	.setOffscreen(true)
+	.setVersion(1);
+
+const renderer1 = new WebGLRenderer(customRendererPreset);
+const renderer2 = new WebGLRenderer(customRendererPreset);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export class _GUIRenderer extends WebGLRenderer {
+	constructor() {
+		super({
+			offscreen: true,
+			version: 2,
+		});
+
+		/**
+		 * GUI layer stack. The last layer the current view.
+		 * 
+		 * @type {Layer[]}
+		 */
+		this.layerStack = [];
+
+		/**
+		 * Components marked for the next render.
+		 * 
+		 * @type {Component[]}
+		 */
+		this.renderQueue = [];
+	}
+
+	async build() {}
+
+	registerLayerStackInRenderQueue() {
+		for (let i = 0, l = layerStack.length, layer; i < l; i++) {
+			layer = layerStack[i];
+
+			this.registerComponentTreeInRenderQueue(layer.tree);
+		}
+	}
+
+	/** Note: recursive */
+	registerComponentTreeInRenderQueue(tree) {
+		for (let i = 0, l = tree.length, component; i < l; i++) {
+			component = tree[i];
+
+			if (component instanceof Group) continue;
+
+			this.renderQueue.push(component);
+
+			if (component.children?.length !== 0) this.registerComponentTreeInRenderQueue(component.children);
+		}
+	}
+}
