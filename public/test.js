@@ -284,7 +284,7 @@ export class _GUIRenderer extends WebGLRenderer {
 		});
 
 		/**
-		 * GUI layer stack. The last layer the current view.
+		 * GUI layer stack. The last layer is the current one.
 		 * 
 		 * @type {Layer[]}
 		 */
@@ -321,3 +321,40 @@ export class _GUIRenderer extends WebGLRenderer {
 		}
 	}
 }
+
+
+
+/**
+ * GUI layer draft.
+ */
+export class Layer {
+	constructor() {
+		this.state = {};
+
+		this.children = [];
+	}
+}
+
+
+
+const layer = new Layer({
+	initState: function(state) {
+		state.counter = 1;
+
+		return state;
+	},
+	buildTree: function(state) {
+		return [
+			new Button({
+				onClick: function() {
+					state.counter++;
+
+					renderer.render();
+				},
+			}),
+			new Image({
+				image: "gui/widgets.png",
+			}),
+		];
+	},
+});
