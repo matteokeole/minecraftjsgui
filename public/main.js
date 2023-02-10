@@ -2,9 +2,14 @@ import {Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
 import {Vector2} from "src/math";
 import GUIRenderer from "./extensions/GUIRenderer.js";
+import {OrthographicCamera} from "src/cameras";
 
 export const instance = new Instance();
+
+/** @type {GUIRenderer} */
 export let guiRenderer;
+
+const guiCamera = new OrthographicCamera();
 
 try {
 	instance.build();
@@ -87,7 +92,7 @@ try {
 
 	guiRenderer.setComponentTree(tree);
 	guiRenderer.computeTree();
-	guiRenderer.render();
+	guiRenderer.render(guiRenderer.getComponentTree(), guiCamera);
 
 	instance.startLoop();
 } catch (error) {

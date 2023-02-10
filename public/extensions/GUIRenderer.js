@@ -35,6 +35,8 @@ export default function GUIRenderer(instance) {
 	 */
 	const renderQueue = [];
 
+	this.getComponentTree = () => componentTree;
+
 	this.renderQueue = renderQueue;
 
 	/** @type {BufferRenderer} */
