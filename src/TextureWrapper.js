@@ -3,7 +3,6 @@ import {Vector2} from "src/math";
 /**
  * Wrapper for `WebGLTexture` objects.
  * 
- * @constructor
  * @param {HTMLImageElement} image
  * @param {WebGLTexture} source
  * @param {Number} index

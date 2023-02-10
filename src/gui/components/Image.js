@@ -5,7 +5,6 @@ import {Matrix3} from "src/math";
  * Image component.
  * Stores a pre-loaded `WebGLTexture` and renders a rectangular part of it.
  * 
- * @constructor
  * @extends Component
  * @param {{
  *    image: TextureWrapper,

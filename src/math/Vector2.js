@@ -1,7 +1,6 @@
 /**
  * Bi-dimensional vector class.
  * 
- * @constructor
  * @param {Number} x
  * @param {Number} y
  * @throws {TypeError}

@@ -1,7 +1,6 @@
 /**
  * Tri-dimensional vector class.
  * 
- * @constructor
  * @param {Number} x
  * @param {Number} y
  * @param {Number} z

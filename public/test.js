@@ -97,10 +97,6 @@ instance.setPipeline(
  * - How to redraw Text components? Compute once static text and compute each time the dynamic part(s)? How to efficiently detect changes in a text?
  */
 export default class OptionLayer extends Layer {
-	constructor() {
-		super();
-	}
-
 	initState(state) {
 		state.counter = 0;
 	}
@@ -327,11 +323,22 @@ export class _GUIRenderer extends WebGLRenderer {
 /**
  * GUI layer draft.
  */
-export class Layer {
-	constructor() {
-		this.state = {};
+class MainMenuLayer extends Layer {
+	/** @override */
+	initState() {
+		this.counter = 0;
+	}
 
-		this.children = [];
+	/** @override */
+	build() {
+		return [
+			new Button({
+				onClick: () => {},
+			}),
+			new Image({
+				image: "gui/widgets.png",
+			}),
+		];
 	}
 }
 

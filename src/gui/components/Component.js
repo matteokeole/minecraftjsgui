@@ -4,7 +4,6 @@ import {Matrix3, Vector2} from "src/math";
 /**
  * @todo Summary
  * 
- * @constructor
  * @abstract
  * @param {{
  *    align: String[2],

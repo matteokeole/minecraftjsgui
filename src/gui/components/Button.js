@@ -4,7 +4,6 @@ import {Matrix3, Vector2} from "src/math";
 /**
  * @todo Documentation
  * 
- * @constructor
  * @extends Component
  */
 export default function Button() {
@@ -15,6 +14,7 @@ export default function Button() {
 	/** @todo Make dynamic */
 	const uv = new Vector2(0, 0);
 
+	/** @todo */
 	this.generateCachedTexture = function(bufferRenderer) {
 		bufferRenderer.resizeToComponentSize(size);
 

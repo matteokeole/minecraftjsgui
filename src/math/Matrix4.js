@@ -3,7 +3,6 @@ import {Vector3} from "./Vector3.js";
 /**
  * 4x4 matrix class.
  * 
- * @constructor
  * @extends Array
  * @param {...Number} elements
  * @throws {TypeError}

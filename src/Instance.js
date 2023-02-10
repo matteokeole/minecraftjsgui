@@ -11,8 +11,6 @@ import WebGLRenderer from "./WebGLRenderer.js";
  * 
  * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
- * 
- * @constructor
  */
 export default function Instance() {
 	const DEFAULT_WIDTH = 320;
@@ -64,6 +62,7 @@ export default function Instance() {
 	 */
 	const outputRenderer = new WebGLRenderer({
 		offscreen: false,
+		generateMipmaps: false,
 		version: 2,
 	});
 
@@ -204,7 +203,7 @@ export default function Instance() {
 			renderer = renderers[i];
 
 			renderer.build();
-			renderer.enable();
+			renderer.setViewport(viewport, devicePixelRatio);
 			await renderer.init();
 
 			this.renderers.push(renderer);
@@ -245,7 +244,7 @@ export default function Instance() {
 
 		this.currentScale = currentScale;
 
-		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize(viewport);
+		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize(viewport, this);
 	};
 
 	/**
@@ -299,8 +298,9 @@ export default function Instance() {
 
 		/** @type {Program} */
 		const program = await outputRenderer.loadProgram(
-			`${this.shaderPath}main.vert`,
-			`${this.shaderPath}main.frag`,
+			"main.vert",
+			"main.frag",
+			this.shaderPath,
 		);
 
 		outputRenderer.linkProgram(program);

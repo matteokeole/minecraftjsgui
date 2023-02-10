@@ -2,7 +2,6 @@ import Component from "./Component.js";
 import {Matrix3} from "src/math";
 
 /**
- * @constructor
  * @extends Component
  * @param {{
  *    image: Texture,

@@ -4,7 +4,6 @@ import TextureWrapper from "./TextureWrapper.js";
 /**
  * Offscreen renderer.
  * 
- * @constructor
  * @param {Instance} instance
  * @param {{
  *    generateMipmaps: Boolean
@@ -17,34 +16,10 @@ export default function Renderer(instance, {generateMipmaps}) {
 	/** @type {?WebGL2RenderingContext} */
 	let gl;
 
-	/** @type {Boolean} */
-	let enabled = false;
-
 	/**
 	 * @type {Object<string, TextureWrapper>}
 	 */
 	const textures = {};
-
-	/** @type {Boolean} */
-	this.disabled = !enabled;
-
-	/**
-	 * Enables this renderer.
-	 */
-	this.enable = function() {
-		enabled = true;
-
-		this.disabled = false;
-	};
-
-	/**
-	 * Disables this renderer.
-	 */
-	this.disable = function() {
-		enabled = false;
-
-		this.disabled = true;
-	};
 
 	/**
 	 * Initializes the canvas element and its WebGL context.

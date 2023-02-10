@@ -1,77 +1,92 @@
 import {Matrix3, Vector2} from "src/math";
-import Renderer from "src/renderer";
-import Component from "../../src/gui/components/Component.js";
-import {Button, Group} from "src/gui";
+import {Button, Component, Group, Layer} from "src/gui";
 import BufferRenderer from "src/buffer-renderer";
 import WebGLRenderer from "../../src/WebGLRenderer.js";
 
 /**
- * GUI renderer.
- * 
- * @constructor
- * @extends Renderer
- * @param {Instance} instance
+ * @todo Don't generate mipmaps?
+ * @extends WebGLRenderer
  */
-export default function GUIRenderer(instance) {
-	if (GUIRenderer._instance) return GUIRenderer._instance;
+export default class GUIRenderer extends WebGLRenderer {
+	/** @type {Instance} */
+	#instance;
 
-	Renderer.call(this, instance, {
-		generateMipmaps: false,
-	});
-
-	GUIRenderer._instance = this;
+	/** @type {?BufferRenderer} */
+	#bufferRenderer;
 
 	/**
-	 * Component tree.
-	 * 
-	 * @type {Component[]}
+	 * @param {Instance} instance
+	 *    Reference to the current instance,
+	 *    used for uploading the new render onto the output texture,
+	 *    registering listeners, manipulating the GUI scale, etc.
 	 */
-	const componentTree = [];
+	constructor(instance) {
+		super({
+			offscreen: true,
+			generateMipmaps: false,
+			version: 2,
+		});
 
-	/**
-	 * List of components marked for redraw.
-	 * 
-	 * @type {Component[]}
-	 */
-	const renderQueue = [];
+		this.#instance = instance;
 
-	this.getComponentTree = () => componentTree;
+		/**
+		 * @public
+		 * @type {Component[]}
+		 */
+		this.componentTree = [];
 
-	this.renderQueue = renderQueue;
+		/**
+		 * List of components marked for redraw.
+		 * 
+		 * @public
+		 * @type {Component[]}
+		 */
+		this.renderQueue = [];
+	}
 
-	/** @type {BufferRenderer} */
-	let bufferRenderer;
+	async init() {
+		const {canvas, gl} = this;
+		const {shaderPath, currentScale} = this.#instance;
 
-	let canvas, gl;
-
-	this.init = async function() {
-		canvas = this.getCanvas();
-		gl = this.getContext();
-
-		const {currentScale} = instance;
-
-		// Load component program
-		const [program, vertexShader, fragmentShader] = await this.createProgram([
+		/** @type {Program} */
+		let program = await this.loadProgram(
 			"component.vert",
 			"component.frag",
-		]);
+			shaderPath,
+		);
 
-		this.linkProgram(program, vertexShader, fragmentShader);
+		this.linkProgram(program);
+
+		/**
+		 * Program shaders won't be used anymore,
+		 * remove access to them
+		 */
+		({program} = program);
 
 		gl.useProgram(program);
 
-		gl.attribute.position = 0;
-		gl.attribute.worldMatrix = 1;
-		gl.attribute.textureMatrix = 4;
-		gl.attribute.textureIndex = 7;
-		gl.uniform.projectionMatrix = gl.getUniformLocation(program, "u_projection");
-		gl.buffer.position = gl.createBuffer();
-		gl.buffer.worldMatrix = gl.createBuffer();
-		gl.buffer.textureMatrix = gl.createBuffer();
-		gl.buffer.textureIndex = gl.createBuffer();
+		gl.attribute = {
+			position: 0,
+			worldMatrix: 1,
+			textureMatrix: 4,
+			textureIndex: 7,
+		};
+		gl.uniform = {
+			projectionMatrix: gl.getUniformLocation(program, "u_projection"),
+		};
+		gl.buffer = {
+			position: gl.createBuffer(),
+			worldMatrix: gl.createBuffer(),
+			textureMatrix: gl.createBuffer(),
+			textureIndex: gl.createBuffer(),
+		};
+		gl.vao = {
+			main: gl.createVertexArray(),
+		};
 
 		gl.bindVertexArray(gl.vao.main);
 
+		/** @todo Set projection matrix in orthographic camera */
 		const projectionMatrix = Matrix3
 			.projection(new Vector2(canvas.width, canvas.height))
 			.scale(new Vector2(currentScale, currentScale));
@@ -99,9 +114,9 @@ export default function GUIRenderer(instance) {
 		gl.vertexAttribDivisor(gl.attribute.textureIndex, 1);
 
 		// Buffer renderer initialization
-		bufferRenderer = new BufferRenderer(instance);
-		await bufferRenderer.prepare();
-	};
+		this.#bufferRenderer = new BufferRenderer(this.#instance);
+		await this.#bufferRenderer.prepare();
+	}
 
 	/**
 	 * @todo Better error handling
@@ -112,7 +127,7 @@ export default function GUIRenderer(instance) {
 	 * 
 	 * @throws {TypeError}
 	 */
-	this.setComponentTree = function(tree) {
+	setComponentTree(tree, instance) {
 		if (!(tree instanceof Array)) throw TypeError("The provided tree must be an instance of Array.");
 
 		const {length} = tree;
@@ -120,19 +135,19 @@ export default function GUIRenderer(instance) {
 		for (let i = 0, component; i < length; i++) {
 			component = tree[i];
 
-			componentTree.push(component);
+			this.componentTree.push(component);
 
-			component instanceof Group ?
-				this.addChildrenToRenderStack(component) :
-				renderQueue.push(component);
+			if (component instanceof Group) {
+				this.addChildrenToRenderStack(component, instance);
 
-			if (component instanceof Button) {
-				component.generateCachedTexture(bufferRenderer);
+				if (component instanceof Button) component.generateCachedTexture(bufferRenderer);
+			} else {
+				this.renderQueue.push(component);
 			}
 		}
-	};
+	}
 
-	this.addChildrenToRenderStack = function(parent) {
+	addChildrenToRenderStack(parent, instance) {
 		// This methods only adds `Group` children
 		if (!(parent instanceof Group)) return;
 
@@ -170,9 +185,9 @@ export default function GUIRenderer(instance) {
 				}
 			}
 
-			renderQueue.push(component);
+			this.renderQueue.push(component);
 		}
-	};
+	}
 
 	/**
 	 * @deprecated
@@ -181,7 +196,7 @@ export default function GUIRenderer(instance) {
 	 * 
 	 * @param {...Component} comps
 	 */
-	this.add = function(...comps) {
+	add(...comps) {
 		const {length} = comps;
 		let component;
 
@@ -231,28 +246,34 @@ export default function GUIRenderer(instance) {
 
 			componentTree.push(component);
 		}
-	};
+	}
 
 	/**
 	 * @todo Set instance viewport size as a `Vector2`?
 	 * 
 	 * Calculates the absolute position for each component.
 	 */
-	this.computeTree = function() {
+	computeTree(instance) {
 		const
-			{length} = componentTree,
+			{length} = this.componentTree,
 			initialPosition = new Vector2(0, 0),
 			viewport = instance.getViewport().divideScalar(instance.currentScale);
 
-		for (let i = 0; i < length; i++) componentTree[i].computePosition(initialPosition, viewport);
-	};
+		for (let i = 0; i < length; i++) this.componentTree[i].computePosition(initialPosition, viewport);
+	}
 
 	/**
-	 * Renders the GUI and updates the scene renderer GUI texture.
+	 * @todo Must override `WebGLRenderer.render`
+	 * 
+	 * Renders a GUI frame and updates the output texture.
+	 * The instance is required to update the output renderer texture.
+	 * 
+	 * @param {Instance} instance
 	 */
-	this.render = function() {
+	render(instance) {
 		const
-			queueLength = renderQueue.length,
+			{canvas, gl} = this,
+			queueLength = this.renderQueue.length,
 			bufferLength = queueLength * 9,
 			worldMatrixData = new Float32Array(bufferLength),
 			worldMatrices = [],
@@ -273,7 +294,7 @@ export default function GUIRenderer(instance) {
 				9,
 			));
 
-			component = renderQueue[i];
+			component = this.renderQueue[i];
 			const worldMatrix = component.getWorldMatrix();
 			const textureMatrix = component.getTextureMatrix();
 
@@ -315,26 +336,36 @@ export default function GUIRenderer(instance) {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
 		const textureIndices = new Float32Array(queueLength);
-		for (let i = 0; i < queueLength; i++) textureIndices[i] = renderQueue[i].getTextureWrapper().index;
+		for (let i = 0; i < queueLength; i++) textureIndices[i] = this.renderQueue[i].getTextureWrapper().index;
 		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
 		// Clear the render queue
-		renderQueue.length = 0;
+		this.renderQueue.length = 0;
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, queueLength);
 
 		instance.updateRendererTexture(0, canvas);
-	};
+	}
 
 	/**
 	 * @todo Pass the resize data (w/h (+ dpr?)) from the instance
+	 * @todo Must override `WebGLRenderer.resize`
+	 * 
 	 * @param {Vector2} viewport
+	 * @param {Instance} instance
 	 */
-	this.resize = function(viewport) {
+	resize(viewport, instance) {
+		const {canvas, gl} = this;
 		const {currentScale} = instance;
 
-		gl.viewport(0, 0, canvas.width = viewport.x, canvas.height = viewport.y);
+		gl.viewport(
+			0,
+			0,
+			canvas.width = viewport.x,
+			canvas.height = viewport.y,
+		);
 
+		/** @todo Replace by `OrthographicCamera.updateProjectionMatrix` */
 		const projectionMatrix = Matrix3
 			.projection(viewport)
 			.scale(new Vector2(currentScale, currentScale));
@@ -342,27 +373,21 @@ export default function GUIRenderer(instance) {
 	 	gl.uniformMatrix3fv(gl.uniform.projectionMatrix, false, new Float32Array(projectionMatrix));
 
 		// Add all components to the render stack
-		const {length} = componentTree;
+		const {length} = this.componentTree;
 
 		for (let i = 0, component; i < length; i++) {
-			component = componentTree[i];
+			component = this.componentTree[i];
 
 			if (component instanceof Group) {
-				this.addChildrenToRenderStack(component);
+				this.addChildrenToRenderStack(component, instance);
 
 				continue;
 			}
 
-			renderQueue.push(component);
+			this.renderQueue.push(component);
 		}
 
-		this.computeTree();
-		this.render();
-	};
+		this.computeTree(instance);
+		this.render(instance);
+	}
 }
-
-GUIRenderer.prototype = Object.create(Renderer.prototype, {
-	constructor: {
-		value: GUIRenderer,
-	},
-});

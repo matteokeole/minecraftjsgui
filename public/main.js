@@ -21,7 +21,7 @@ try {
 
 	// Load GUI textures
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
-	await guiRenderer.loadTextures(...guiTextures);
+	await guiRenderer.loadTextures(guiTextures, instance.texturePath);
 
 	let counter = 0;
 
@@ -35,7 +35,7 @@ try {
 					align: ["left", "top"],
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
+					image: guiRenderer.textures["gui/widgets.png"],
 					uv: new Vector2(0, 146),
 					onMouseEnter: function() {
 						const newUv = this.getUV();
@@ -43,7 +43,7 @@ try {
 						this.setUV(newUv);
 
 						guiRenderer.renderQueue.push(this);
-						guiRenderer.render();
+						guiRenderer.render(instance);
 					},
 					onMouseLeave: function() {
 						const newUv = this.getUV();
@@ -51,7 +51,7 @@ try {
 						this.setUV(newUv);
 
 						guiRenderer.renderQueue.push(this);
-						guiRenderer.render();
+						guiRenderer.render(instance);
 					},
 					onMouseDown: function() {
 						counter++;
@@ -62,21 +62,21 @@ try {
 					align: ["right", "top"],
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
+					image: guiRenderer.textures["gui/widgets.png"],
 					uv: new Vector2(0, 186),
 				}),
 				new ImageButton({
 					align: ["left", "bottom"],
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
+					image: guiRenderer.textures["gui/widgets.png"],
 					uv: new Vector2(0, 186),
 				}),
 				new ImageButton({
 					align: ["right", "bottom"],
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
+					image: guiRenderer.textures["gui/widgets.png"],
 					uv: new Vector2(0, 186),
 				}),
 			],
@@ -85,14 +85,14 @@ try {
 			align: ["right", "bottom"],
 			margin: new Vector2(10, 10),
 			size: new Vector2(20, 20),
-			image: guiRenderer.getTexture("gui/widgets.png"),
+			image: guiRenderer.textures["gui/widgets.png"],
 			uv: new Vector2(0, 106),
 		}),
 	];
 
-	guiRenderer.setComponentTree(tree);
-	guiRenderer.computeTree();
-	guiRenderer.render(guiRenderer.getComponentTree(), guiCamera);
+	guiRenderer.setComponentTree(tree, instance);
+	guiRenderer.computeTree(instance);
+	guiRenderer.render(instance);
 
 	instance.startLoop();
 } catch (error) {
