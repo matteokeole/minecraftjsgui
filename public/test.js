@@ -269,3 +269,75 @@ const layer = new Layer({
 		];
 	},
 });
+
+
+
+
+
+/**
+ * Constructor classes (for efficiency):
+ * - Math classes (Vector, Matrix)
+ * - Mesh and geometry classes (BoxGeometry, Light)
+ * - GUI component classes (Button)
+ * - All classes that are instanced a lot (not by a fixed number during the app lifespan)
+ */
+
+
+
+
+
+/**
+ * GUI use:
+ * A layer is not a scene, but a set of components that determines their Z index in the GUI.
+ * The scene is the set of currently rendered components (the "render queue" defined in the renderer).
+ * It can contain only a subset of components from a layer,
+ * and components stored inside different layers.
+ * 
+ * 3D world use:
+ * A view of the world to render, generally with textured meshes, lights, etc.
+ */
+class Scene {
+	constructor() {
+		/** @type {Set<Mesh>} */
+		this.meshes = new Set();
+	}
+
+	/**
+	 * @param {Mesh} mesh
+	 */
+	add(mesh) {
+		this.meshes.add(mesh);
+	}
+
+	/**
+	 * @param {Mesh} mesh
+	 */
+	remove(mesh) {
+		this.meshes.delete(mesh);
+	}
+}
+
+class Mesh {
+	constructor() {
+		/** @type {Vector3} */
+		this.position = new Vector3(0, 0, 0);
+
+		/** @type {Vector3} */
+		this.rotation = new Vector3(0, 0, 0);
+	}
+}
+
+class Component extends Mesh {
+	constructor() {
+		/**
+		 * GUI components only need a `Vector2`,
+		 * since the Z depends on the parent layer the component is in
+		 * 
+		 * @type {Vector2}
+		 */
+		this.position = new Vector2(0, 0);
+
+		/** @type {Number} */
+		this.rotation = 0;
+	}
+}
