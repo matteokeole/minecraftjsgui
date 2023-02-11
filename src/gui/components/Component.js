@@ -20,6 +20,8 @@ export default function Component({align, margin, size}) {
 	let position;
 
 	/**
+	 * @todo Remove from this class, should be in subclasses instead
+	 * 
 	 * Determines if the pointer hovers over the component.
 	 * 
 	 * @type {boolean}

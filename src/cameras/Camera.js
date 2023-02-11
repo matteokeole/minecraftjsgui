@@ -1,5 +1,5 @@
 import {NotImplementedError} from "src/errors";
-import {Matrix4, Vector3} from "src/math";
+import {Matrix3, Vector3} from "src/math";
 
 export default class Camera {
 	constructor() {
@@ -9,8 +9,8 @@ export default class Camera {
 		/** @type {Vector3} */
 		this.rotation = new Vector3(0, 0, 0);
 
-		/** @type {Matrix4} */
-		this.projectionMatrix = Matrix4.identity();
+		/** @type {Matrix3} */
+		this.projectionMatrix = Matrix3.identity();
 	}
 
 	updateProjectionMatrix() {

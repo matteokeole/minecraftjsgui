@@ -1,15 +1,19 @@
-import {Matrix4} from "src/math";
 import Camera from "./Camera.js";
+import {Matrix3} from "src/math";
 
 export default class OrthographicCamera extends Camera {
-	constructor() {
+	/**
+	 * @param {Vector2} viewport
+	 */
+	constructor(viewport) {
 		super();
 
-		/** @override */
-		this.projectionMatrix = Matrix4.orthographic();
+		/** @type {Vector2} */
+		this.viewport = viewport;
 	}
 
-	/** @todo */
 	/** @override */
-	updateProjectionMatrix() {}
+	updateProjectionMatrix() {
+		this.projectionMatrix = Matrix3.projection(this.viewport);
+	}
 }

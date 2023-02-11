@@ -265,6 +265,11 @@ export default class GUIRenderer extends WebGLRenderer {
 	/**
 	 * @todo Must override `WebGLRenderer.render`
 	 * 
+	 * `scene` could be the render stack which extends a `Scene`,
+	 * and `camera` could be an `OrthographicCamera` instance.
+	 * If the camera isn't linked to the GUI renderer, which module
+	 * should update its projection matrix?
+	 * 
 	 * Renders a GUI frame and updates the output texture.
 	 * The instance is required to update the output renderer texture.
 	 * 
@@ -344,6 +349,7 @@ export default class GUIRenderer extends WebGLRenderer {
 
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, queueLength);
 
+		/** @todo Rework */
 		instance.updateRendererTexture(0, canvas);
 	}
 

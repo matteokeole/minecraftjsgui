@@ -1,15 +1,13 @@
 import {Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
 import {Vector2} from "src/math";
+// import {OrthographicCamera} from "src/cameras";
 import GUIRenderer from "./extensions/GUIRenderer.js";
-import {OrthographicCamera} from "src/cameras";
 
 export const instance = new Instance();
 
 /** @type {GUIRenderer} */
 export let guiRenderer;
-
-const guiCamera = new OrthographicCamera();
 
 try {
 	instance.build();
@@ -24,6 +22,8 @@ try {
 	await guiRenderer.loadTextures(guiTextures, instance.texturePath);
 
 	let counter = 0;
+
+	const renderGUI = () => guiRenderer.render(instance);
 
 	const tree = [
 		new Group({
@@ -43,7 +43,7 @@ try {
 						this.setUV(newUv);
 
 						guiRenderer.renderQueue.push(this);
-						guiRenderer.render(instance);
+						renderGUI();
 					},
 					onMouseLeave: function() {
 						const newUv = this.getUV();
@@ -51,7 +51,7 @@ try {
 						this.setUV(newUv);
 
 						guiRenderer.renderQueue.push(this);
-						guiRenderer.render(instance);
+						renderGUI();
 					},
 					onMouseDown: function() {
 						counter++;
@@ -92,7 +92,7 @@ try {
 
 	guiRenderer.setComponentTree(tree, instance);
 	guiRenderer.computeTree(instance);
-	guiRenderer.render(instance);
+	renderGUI();
 
 	instance.startLoop();
 } catch (error) {

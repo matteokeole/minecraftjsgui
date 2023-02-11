@@ -42,7 +42,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	/**
 	 * Creates and returns a WebGLProgram from the provided sources.
 	 * 
-	 * @async
 	 * @param {String} vertexPath
 	 * @param {String} fragmentPath
 	 * @returns {Array}
@@ -63,7 +62,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	/**
 	 * Creates, compiles and returns a WebGLShader.
 	 * 
-	 * @async
 	 * @param {String} path File path
 	 * @param {Number} type Shader type
 	 * @returns {WebGLShader}
@@ -108,7 +106,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * Asynchronous texture loader.
 	 * Textures are loaded as 256x256 texture array layers.
 	 * 
-	 * @async
 	 * @param {...String} paths
 	 */
 	this.loadTextures = async function(...paths) {
@@ -150,7 +147,6 @@ export default function Renderer(instance, {generateMipmaps}) {
 	 * NOTE: Must be overridden in an instance.
 	 * 
 	 * @method
-	 * @async
 	 */
 	this.init = null;
 

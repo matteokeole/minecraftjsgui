@@ -287,7 +287,6 @@ export default function Instance() {
 
 	/**
 	 * @todo Use `Renderer` class to avoid duplicate methods (createProgram/createShader/linkProgram)?
-	 * @async
 	 */
 	this.initialize = async function() {
 		const {gl} = outputRenderer;

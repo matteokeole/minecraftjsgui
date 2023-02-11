@@ -1,5 +1,7 @@
 ## WebGLRenderer
 
+> How does this class accesses the base paths for textures and shaders?
+
 Class grouping a DOM/offscreen canvas, GLSL shaders and WebGL textures to make general-purpose rendering.
 
 ### Properties
@@ -13,6 +15,8 @@ The list of textures loaded with this renderer's context, not shareable with oth
 
 ### Dispose
 
+The `dispose` method is the opposite of `build`. It discards the context data, such as attributes, uniforms, buffers, textures and VAOs. The context and its canvas are also removed, with the latter being removed from the DOM (this allows the custom error to show underneath).
+
 The `dispose` method is called:
 - when exiting the game
 - when a fatal error occurs. The canvases must be removed to show the custom error.
@@ -25,29 +29,34 @@ The `dispose` method is called:
 ### Interface
 
 ```js
-function WebGLRenderer() {
+/**
+ * @param {Boolean} offscreen Determines the type of the canvas
+ * @param {Boolean} generateMipmaps Determines whether `loadTextures` generates mipmaps for each texture
+ * @param {Number} version WebGL version
+ */
+WebGLRenderer({offscreen, generateMipmaps, version}) {
 	/**
 	 * @public
 	 * @type {HTMLCanvasElement|OffscreenCanvas|null}
 	 */
-	this.canvas = null;
+	canvas = null;
 
 	/**
 	 * @public
 	 * @type {WebGLRenderingContext|WebGL2RenderingContext|null}
 	 */
-	this.gl = null;
+	gl = null;
 
 	/**
 	 * @public
 	 * @type {WebGLTexture[]}
 	 */
-	this.textures = [];
+	textures = [];
 
 	/**
 	 * @public
 	 */
-	this.build = function() {};
+	build();
 
 	/**
 	 * @public
@@ -55,19 +64,25 @@ function WebGLRenderer() {
 	 * @param {String} fragmentPath
 	 * @returns {Program}
 	 */
-	this.loadProgram = function(vertexPath, fragmentPath) {};
+	async loadProgram(vertexPath, fragmentPath);
 
 	/**
 	 * @public
 	 * @param {Program} program
 	 * @returns {Boolean}
 	 */
-	this.linkProgram = function(program) {};
+	linkProgram(program);
+
+	/**
+	 * @public
+	 * @param {String[]} sources
+	 */
+	async loadTextures(sources);
 
 	/**
 	 * @public
 	 */
-	this.dispose = function() {};
+	dispose();
 }
 ```
 
@@ -76,14 +91,11 @@ function WebGLRenderer() {
 ```js
 import WebGLRenderer from "src/renderer";
 
-const renderer = new WebGLRenderer({
-	/** @type {Boolean} */
-	offscreen: false, // Determines the type of the canvas
-	/** @type {Number} */
-	version: 2, // WebGL version
+const interfaceRenderer = new WebGLRenderer({
+	offscreen: true,
+	generateMipMaps: false,
+	version: 2,
 });
-
-document.body.appendChild(renderer.canvas);
 
 /**
  * This holds references for both the program and the shaders.
