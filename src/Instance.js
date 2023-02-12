@@ -1,13 +1,12 @@
 import {Vector2, clampDown, clampUp, intersects} from "src/math";
 import Program from "./Program.js";
-import Renderer from "./Renderer.js";
 import WebGLRenderer from "./WebGLRenderer.js";
+import RendererManager from "./RendererManager.js";
 
 /**
- * @todo Apply settings
+ * @todo Find a better name
  * @todo Implement render pipeline here
- * @todo JSDoc for private properties?
- * @todo Viewport size Vector2?
+ * @todo Apply settings
  * 
  * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
@@ -69,7 +68,7 @@ export default function Instance() {
 	/**
 	 * Offscreen renderers.
 	 * 
-	 * @type {Renderer[]}
+	 * @type {RendererManagers[]}
 	 */
 	this.renderers = [];
 
@@ -129,9 +128,9 @@ export default function Instance() {
 	/**
 	 * Current position of the pointer, used for GUI event listeners.
 	 * 
-	 * @type {?Vector2}
+	 * @type {Vector2}
 	 */
-	let pointerPosition;
+	let pointerPosition = new Vector2(0, 0);
 
 	/**
 	 * @throws {NoWebGL2Error}
@@ -188,31 +187,40 @@ export default function Instance() {
 	this.hasBeenBuilt = () => hasBeenBuilt;
 
 	/**
-	 * Setups the instance renderers.
+	 * Setups the instance renderer managers.
 	 * 
-	 * @param {Renderer[]} renderers
+	 * @param {RendererManager[]} rendererManagers
 	 */
-	this.setupRenderers = async function(renderers) {
-		const {gl} = outputRenderer;
+	this.setupRenderers = async function(rendererManagers) {
 		const {rendererTextures} = this;
-		let renderer, texture;
+		rendererLength = rendererManagers.length;
 
-		rendererLength = renderers.length;
-
-		for (let i = 0; i < rendererLength; i++) {
-			renderer = renderers[i];
+		for (let i = 0, rendererManager, renderer; i < rendererLength; i++) {
+			rendererManager = rendererManagers[i];
+			({renderer} = rendererManager);
 
 			renderer.build();
 			renderer.setViewport(viewport, devicePixelRatio);
-			await renderer.init();
+			await rendererManager.init();
 
-			this.renderers.push(renderer);
-
-			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
-
-			rendererTextures.push(texture);
+			this.renderers.push(rendererManager);
+			rendererTextures.push(this.createOutputTexture());
 		}
+	};
+
+	/**
+	 * Creates an output `WebGLTexture` for a new renderer.
+	 * 
+	 * @returns {WebGLTexture}
+	 */
+	this.createOutputTexture = function() {
+		const {gl} = outputRenderer;
+		let texture = gl.createTexture();
+
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // No mipmaps
+
+		return texture;
 	};
 
 	/**
@@ -244,7 +252,7 @@ export default function Instance() {
 
 		this.currentScale = currentScale;
 
-		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize(viewport, this);
+		for (let i = 0; i < rendererLength; i++) this.renderers[i].resize(viewport);
 	};
 
 	/**

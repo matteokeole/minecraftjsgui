@@ -59,6 +59,13 @@ export default class WebGLRenderer {
 		if (gl === null) throw new NoWebGL2Error();
 
 		this.canvas = canvas;
+
+		gl.attribute = {};
+		gl.buffer = {};
+		gl.texture = {};
+		gl.uniform = {};
+		gl.vao = {};
+
 		this.gl = gl;
 	}
 
@@ -176,14 +183,23 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * @param {Scene} scene
+	 * @param {Mesh[]} scene
 	 * @param {Camera} camera
 	 */
 	render(scene, camera) {
 		throw new NotImplementedError();
 	}
 
+	/**
+	 * @todo Unbind and delete all linked objects (buffers, textures, etc)
+	 * @see {@link https://registry.khronos.org/webgl/extensions/WEBGL_lose_context}
+	 */
 	dispose() {
+		// this.gl.deleteTexture(texture);
+		// this.gl.deleteBuffer(buffer);
+		// this.gl.deleteVertexArray(vao);
+		// this.gl.deleteShader(shader);
+		// this.gl.deleteProgram(program);
 		this.gl.getExtension("WEBGL_lose_context").loseContext();
 
 		this.gl = null;
