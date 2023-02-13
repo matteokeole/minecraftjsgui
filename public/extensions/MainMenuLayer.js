@@ -3,19 +3,18 @@ import {Vector2} from "src/math";
 import {gui} from "../main.js";
 import OptionsLayer from "./OptionsLayer.js";
 
+/**
+ * @extends Layer
+ */
 export default class MainMenuLayer extends Layer {
-	constructor() {
-		super();
-	}
-
-	/** @override */
-	initState() {}
-
 	/** @override */
 	build() {
+		/** @type {Boolean} */
+		let canPush = true;
+
 		return [
 			new ImageButton({
-				align: ["left", "top"],
+				align: ["center", "center"],
 				margin: new Vector2(0, 0),
 				size: new Vector2(20, 20),
 				image: gui.renderer.textures["gui/widgets.png"],
@@ -37,6 +36,9 @@ export default class MainMenuLayer extends Layer {
 					gui.render();
 				},
 				onMouseDown: function() {
+					if (!canPush) return;
+					canPush = false;
+
 					/**
 					 * This action will register the children of the new layer in the render queue,
 					 * but NOT the children of the already rendered layers.

@@ -89,8 +89,6 @@ try {
 	]; */
 
 	gui.push(new MainMenuLayer());
-
-	// gui.setComponentTree(tree, instance);
 	gui.computeTree();
 	gui.render();
 

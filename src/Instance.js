@@ -101,6 +101,11 @@ export default function Instance() {
 	const viewport = new Vector2(0, 0);
 
 	/**
+	 * @returns {Vector2}
+	 */
+	this.getViewport = () => viewport;
+
+	/**
 	 * Current GUI scale multiplier.
 	 * Determines the scale of the crosshair and most of the GUI components.
 	 * 
@@ -420,11 +425,9 @@ export default function Instance() {
 		for (let i = 0, listener; i < mouseDownListenerCount; i++) {
 			listener = mouseDownListeners[i];
 
-			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) return;
+			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 
 			listener(pointerPosition);
 		}
 	}
-
-	this.getViewport = () => viewport;
 }

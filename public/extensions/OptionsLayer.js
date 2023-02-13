@@ -2,20 +2,16 @@ import {ImageButton, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {gui} from "../main.js";
 
+/**
+ * @extends Layer
+ */
 export default class OptionsLayer extends Layer {
-	constructor() {
-		super();
-	}
-
-	/** @override */
-	initState() {}
-
 	/** @override */
 	build() {
 		return [
 			new ImageButton({
-				align: ["right", "top"],
-				margin: new Vector2(20, 0),
+				align: ["left", "top"],
+				margin: new Vector2(0, 20),
 				size: new Vector2(20, 20),
 				image: gui.renderer.textures["gui/widgets.png"],
 				uv: new Vector2(0, 146),

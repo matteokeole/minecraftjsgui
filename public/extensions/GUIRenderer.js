@@ -1,25 +1,10 @@
 import {Matrix3, Vector2} from "src/math";
-import {Button, Component, Group, Layer} from "src/gui";
-import BufferRenderer from "src/buffer-renderer";
 import WebGLRenderer from "../../src/WebGLRenderer.js";
 
 /**
- * @todo Don't generate mipmaps?
  * @extends WebGLRenderer
  */
 export default class GUIRenderer extends WebGLRenderer {
-	/** @type {Instance} */
-	#instance;
-
-	/** @type {?BufferRenderer} */
-	#bufferRenderer;
-
-	/**
-	 * @param {Instance} instance
-	 *    Reference to the current instance,
-	 *    used for uploading the new render onto the output texture,
-	 *    registering listeners, manipulating the GUI scale, etc.
-	 */
 	constructor() {
 		super({
 			offscreen: true,
@@ -28,8 +13,8 @@ export default class GUIRenderer extends WebGLRenderer {
 		});
 	}
 
-	async init(shaderPath, currentScale, projectionMatrix) {
-		const {canvas, gl} = this;
+	async init(shaderPath, projectionMatrix) {
+		const {gl} = this;
 
 		/** @type {Program} */
 		let program = await this.loadProgram(
@@ -87,73 +72,10 @@ export default class GUIRenderer extends WebGLRenderer {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
 		gl.vertexAttribPointer(gl.attribute.textureIndex, 1, gl.FLOAT, false, 0, 0);
 		gl.vertexAttribDivisor(gl.attribute.textureIndex, 1);
-
-		// Buffer renderer initialization
-		// this.#bufferRenderer = new BufferRenderer(this.#instance);
-		// await this.#bufferRenderer.prepare();
 	}
 
 	/**
-	 * @deprecated
-	 * 
-	 * Stores the provided components.
-	 * 
-	 * @param {...Component} comps
-	 */
-	add(...comps) {
-		const {length} = comps;
-		let component;
-
-		function pushToRenderStack() {
-			renderQueue.push(this);
-		};
-
-		function pushGroupToRenderStack() {
-			const children = this.getChildren();
-			const {length} = children;
-
-			for (let i = 0; i < length; i++) children[i].pushToRenderStack();
-		}
-
-		for (let i = 0; i < length; i++) {
-			component = comps[i];
-
-			if (component instanceof Group) {
-				component.pushToRenderStack = pushGroupToRenderStack;
-
-				componentTree.push(component);
-				this.add(...component.getChildren());
-
-				continue;
-			}
-
-			component.pushToRenderStack = pushToRenderStack;
-			component.pushToRenderStack();
-
-			if (component.onMouseEnter) {
-				component.onMouseEnter.component = component;
-
-				instance.addMouseEnterListener(component.onMouseEnter);
-			}
-
-			if (component.onMouseLeave) {
-				component.onMouseLeave.component = component;
-
-				instance.addMouseLeaveListener(component.onMouseLeave);
-			}
-
-			if (component.onMouseDown) {
-				component.onMouseDown.component = component;
-
-				instance.addMouseDownListener(component.onMouseDown);
-			}
-
-			componentTree.push(component);
-		}
-	}
-
-	/**
-	 * @todo Must override `WebGLRenderer.render`
+	 * @todo Use the camera parameter
 	 * 
 	 * `scene` could be the render stack which extends a `Scene`,
 	 * and `camera` could be an `OrthographicCamera` instance.
@@ -236,7 +158,6 @@ export default class GUIRenderer extends WebGLRenderer {
 	}
 
 	/**
-	 * @todo Pass the resize data (w/h (+ dpr?)) from the instance
 	 * @todo Must override `WebGLRenderer.resize`
 	 * 
 	 * @param {Vector2} viewport
