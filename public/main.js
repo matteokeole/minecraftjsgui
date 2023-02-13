@@ -3,12 +3,14 @@ import Instance from "src/instance";
 import {Vector2} from "src/math";
 import GUI from "./extensions/GUI.js";
 import GUIRenderer from "./extensions/GUIRenderer.js";
+import MainMenuLayer from "./extensions/MainMenuLayer.js";
+import OptionsLayer from "./extensions/OptionsLayer.js";
 
 /** @type {Instance} */
 const instance = new Instance();
 
 /** @type {GUI} */
-let gui;
+export let gui;
 
 try {
 	instance.build();
@@ -22,9 +24,9 @@ try {
 	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
 	await gui.renderer.loadTextures(guiTextures, instance.texturePath);
 
-	let counter = 0;
+	// let counter = 0;
 
-	const tree = [
+	/* const tree = [
 		new Group({
 			align: ["center", "center"],
 			margin: new Vector2(0, 0),
@@ -84,9 +86,11 @@ try {
 			image: gui.renderer.textures["gui/widgets.png"],
 			uv: new Vector2(0, 106),
 		}),
-	];
+	]; */
 
-	gui.setComponentTree(tree, instance);
+	gui.push(new MainMenuLayer());
+
+	// gui.setComponentTree(tree, instance);
 	gui.computeTree();
 	gui.render();
 

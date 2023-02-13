@@ -1,6 +1,6 @@
 import GUIRenderer from "./GUIRenderer.js";
 import {OrthographicCamera} from "src/cameras";
-import {Component, Group} from "src/gui";
+import {Component, Group, Layer} from "src/gui";
 import {Matrix3, Vector2} from "src/math";
 import RendererManager from "../../src/RendererManager.js";
 
@@ -25,6 +25,9 @@ export default class GUI extends RendererManager {
 		/** @type {Camera} */
 		this.camera = new OrthographicCamera(this.instance.getViewport());
 
+		/** @type {Layer[]} */
+		this.layerStack = [];
+
 		/** @type {Component[]} */
 		this.tree = [];
 
@@ -47,12 +50,13 @@ export default class GUI extends RendererManager {
 	 * @todo Better error handling
 	 * @todo Rework recursivity
 	 * 
-	 * Populates the component tree. Replacement for `GUIRenderer.add`.
+	 * Populates the component tree.
 	 * 
 	 * @param {Component[]} tree
+	 * @param {Boolean} [addListeners=false]
 	 * @throws {TypeError}
 	 */
-	setComponentTree(tree) {
+	setComponentTree(tree, addListeners = false) {
 		if (!(tree instanceof Array)) throw TypeError("The provided tree must be an instance of Array.");
 
 		for (let i = 0, l = tree.length, component; i < l; i++) {
@@ -61,17 +65,43 @@ export default class GUI extends RendererManager {
 			this.tree.push(component);
 
 			if (component instanceof Group) {
-				this.addChildrenToRenderStack(component);
+				this.addChildrenToRenderStack(component, addListeners);
 
-				// if (component instanceof Button) component.generateCachedTexture(bufferRenderer);
-			} else this.renderQueue.push(component);
+				continue;
+			}
+
+			this.renderQueue.push(component);
+
+			if (!addListeners) continue;
+
+			/**
+			 * @todo Bug: Listeners get added each time (even for a resize event)
+			 */
+			if (component.onMouseEnter) {
+				component.onMouseEnter.component = component;
+
+				this.instance.addMouseEnterListener(component.onMouseEnter);
+			}
+
+			if (component.onMouseLeave) {
+				component.onMouseLeave.component = component;
+
+				this.instance.addMouseLeaveListener(component.onMouseLeave);
+			}
+
+			if (component.onMouseDown) {
+				component.onMouseDown.component = component;
+
+				this.instance.addMouseDownListener(component.onMouseDown);
+			}
 		}
 	}
 
 	/**
 	 * @param {Component} parent
+	 * @param {Boolean} [addListeners=false]
 	 */
-	addChildrenToRenderStack(parent) {
+	addChildrenToRenderStack(parent, addListeners = false) {
 		// This methods only adds `Group` children
 		if (!(parent instanceof Group)) return;
 
@@ -82,35 +112,35 @@ export default class GUI extends RendererManager {
 			component = children[i];
 
 			if (component instanceof Group) {
-				this.addChildrenToRenderStack(component);
+				this.addChildrenToRenderStack(component, addListeners);
 
 				continue;
 			}
 
+			this.renderQueue.push(component);
+
+			if (!addListeners) continue;
+
 			/**
-			 * @todo Listeners get added each time (even for a resize event)
+			 * @todo Bug: Listeners get added each time (even for a resize event)
 			 */
-			{
-				if (component.onMouseEnter) {
-					component.onMouseEnter.component = component;
+			if (component.onMouseEnter) {
+				component.onMouseEnter.component = component;
 
-					instance.addMouseEnterListener(component.onMouseEnter);
-				}
-
-				if (component.onMouseLeave) {
-					component.onMouseLeave.component = component;
-
-					instance.addMouseLeaveListener(component.onMouseLeave);
-				}
-
-				if (component.onMouseDown) {
-					component.onMouseDown.component = component;
-
-					instance.addMouseDownListener(component.onMouseDown);
-				}
+				this.instance.addMouseEnterListener(component.onMouseEnter);
 			}
 
-			this.renderQueue.push(component);
+			if (component.onMouseLeave) {
+				component.onMouseLeave.component = component;
+
+				this.instance.addMouseLeaveListener(component.onMouseLeave);
+			}
+
+			if (component.onMouseDown) {
+				component.onMouseDown.component = component;
+
+				this.instance.addMouseDownListener(component.onMouseDown);
+			}
 		}
 	}
 
@@ -129,6 +159,8 @@ export default class GUI extends RendererManager {
 	}
 
 	render() {
+		console.log("Render", this.layerStack);
+
 		this.renderer.render(this.renderQueue, this.camera);
 
 		// Clear the render queue
@@ -162,5 +194,38 @@ export default class GUI extends RendererManager {
 
 		this.computeTree();
 		this.render();
+	}
+
+	/**
+	 * @todo Add the registered components listeners
+	 * 
+	 * Adds a new layer on top of the layer stack.
+	 * NOTE: Calling this method will result in all the children of the new layer
+	 * being registered into the render queue.
+	 * The previous registered components won't be removed.
+	 * 
+	 * @param {Layer} layer
+	 */
+	push(layer) {
+		this.layerStack.push(layer);
+		this.setComponentTree(layer.build(), true);
+	}
+
+	/**
+	 * @todo Remove the discarded components listeners
+	 * 
+	 * Removes the last layer from the layer stack.
+	 * NOTE: Calling this method will result in all the children of all the stacked layers
+	 * being registered into the render queue.
+	 * The previous registered components will be removed,
+	 * so that they don't get rendered twice in a frame.
+	 */
+	pop() {
+		this.layerStack.pop();
+
+		// Clear the render queue
+		this.renderQueue.length = 0;
+
+		this.setComponentTree(this.tree, true);
 	}
 }
