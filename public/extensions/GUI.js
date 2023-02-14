@@ -129,6 +129,8 @@ export default class GUI extends RendererManager {
 	}
 
 	render() {
+		console.warn("render", this.renderQueue)
+
 		this.renderer.render(this.renderQueue, this.camera);
 
 		// Clear the render queue
@@ -183,9 +185,9 @@ export default class GUI extends RendererManager {
 	 */
 	push(layer) {
 		this.layerStack.push(layer);
-		this.layerCuts.push(this.tree.at(-1));
-
+		
 		this.addChildrenTorenderQueue(layer.build(), true);
+		this.layerCuts.push(this.tree.length - 1);
 	}
 
 	/**
@@ -210,13 +212,16 @@ export default class GUI extends RendererManager {
 
 		let i = tree.length;
 
-		while (i != lastCut) {
+		while (i > lastCut) {
 			tree.pop();
 			i--;
 		}
 
 		this.addChildrenTorenderQueue(this.tree, true);
 
-		console.log(this.tree)
+		// Clear rendered components
+		this.renderer.clear();
+
+		this.instance.updateRendererTexture(0, this.renderer.canvas);
 	}
 }

@@ -187,6 +187,12 @@ export default class WebGLRenderer {
 		throw new NotImplementedError();
 	}
 
+	clear() {
+		const {gl} = this;
+
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	}
+
 	/**
 	 * @todo Unbind and delete all linked objects (buffers, textures, etc)
 	 * @see {@link https://registry.khronos.org/webgl/extensions/WEBGL_lose_context}

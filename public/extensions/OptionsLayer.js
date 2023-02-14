@@ -36,9 +36,9 @@ export default class OptionsLayer extends Layer {
 					 * This action will register the children from all the stack layers.
 					 * All the previous layers will be rendered.
 					 */
-					// gui.pop();
-					// gui.computeTree();
-					// gui.render();
+					gui.pop();
+					gui.computeTree();
+					gui.render();
 				},
 			}),
 		];
