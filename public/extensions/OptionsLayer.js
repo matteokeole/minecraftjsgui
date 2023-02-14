@@ -10,14 +10,14 @@ export default class OptionsLayer extends Layer {
 	build() {
 		return [
 			new ImageButton({
-				align: ["left", "top"],
-				margin: new Vector2(0, 0),
+				align: ["center", "top"],
+				margin: new Vector2(0, 30),
 				size: new Vector2(20, 20),
 				image: gui.renderer.textures["gui/widgets.png"],
-				uv: new Vector2(0, 146),
+				uv: new Vector2(0, 106),
 				onMouseEnter: function() {
 					const newUv = this.getUV();
-					newUv.y = 166;
+					newUv.y = 126;
 					this.setUV(newUv);
 
 					gui.renderQueue.push(this);
@@ -25,7 +25,7 @@ export default class OptionsLayer extends Layer {
 				},
 				onMouseLeave: function() {
 					const newUv = this.getUV();
-					newUv.y = 146;
+					newUv.y = 106;
 					this.setUV(newUv);
 
 					gui.renderQueue.push(this);

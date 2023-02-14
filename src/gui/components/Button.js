@@ -17,8 +17,6 @@ export default function Button() {
 	/** @todo */
 	this.generateCachedTexture = function(bufferRenderer) {
 		bufferRenderer.resizeToComponentSize(size);
-
-		console.log("resized");
 	};
 
 	/** @override */

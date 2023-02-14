@@ -67,19 +67,20 @@ export default class GUI extends RendererManager {
 	 * 
 	 * @param {Component[]} children
 	 * @param {Boolean} [addListeners=false]
+	 * @param {Boolean} [addToTree=false]
 	 */
-	addChildrenTorenderQueue(children, addListeners = false) {
+	addChildrenToRenderQueue(children, addListeners = false, addToTree = false) {
 		for (let i = 0, l = children.length, component; i < l; i++) {
 			component = children[i];
 
 			if (component instanceof Group) {
-				this.addChildrenTorenderQueue(component.getChildren(), addListeners);
+				this.addChildrenToRenderQueue(component.getChildren(), addListeners, addToTree);
 
 				continue;
 			}
 
 			this.renderQueue.push(component);
-			this.tree.push(component);
+			addToTree && this.tree.push(component);
 
 			if (!addListeners) continue;
 
@@ -115,6 +116,23 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
+	 * Discards event listeners for the provided component.
+	 * 
+	 * @param {Component[]} components
+	 */
+	removeListeners(components) {
+		const {instance} = this;
+
+		for (let i = 0, l = components.length, component; i < l; i++) {
+			component = components[i];
+
+			component.onMouseDown && instance.removeMouseDownListener(component.onMouseDown);
+			component.onMouseEnter && instance.removeMouseEnterListener(component.onMouseEnter);
+			component.onMouseLeave && instance.removeMouseLeaveListener(component.onMouseLeave);
+		}
+	}
+
+	/**
 	 * @todo Set instance viewport size as a `Vector2`?
 	 * 
 	 * Calculates the absolute position for each component.
@@ -129,8 +147,6 @@ export default class GUI extends RendererManager {
 	}
 
 	render() {
-		console.warn("render", this.renderQueue)
-
 		this.renderer.render(this.renderQueue, this.camera);
 
 		// Clear the render queue
@@ -160,7 +176,7 @@ export default class GUI extends RendererManager {
 			component = this.tree[i];
 
 			if (component instanceof Group) {
-				this.addChildrenTorenderQueue(component.getChildren(), false);
+				this.addChildrenToRenderQueue(component.getChildren(), false, false);
 
 				continue;
 			}
@@ -185,8 +201,11 @@ export default class GUI extends RendererManager {
 	 */
 	push(layer) {
 		this.layerStack.push(layer);
-		
-		this.addChildrenTorenderQueue(layer.build(), true);
+
+		// Discard event listeners of previous layers
+		this.removeListeners(this.tree);
+
+		this.addChildrenToRenderQueue(layer.build(), true, true);
 		this.layerCuts.push(this.tree.length - 1);
 	}
 
@@ -202,24 +221,27 @@ export default class GUI extends RendererManager {
 	 */
 	pop() {
 		const layer = this.layerStack.pop();
-		const lastCut = this.layerCuts.pop();
-		const {tree} = this;
-
 		layer.dispose();
+
+		const lastCutLength = this.layerCuts.pop();
+
+		// Discard event listeners
+		const componentsToDiscard = [...this.tree].splice(lastCutLength);
+		this.removeListeners(componentsToDiscard);
+
+		/**
+		 * @todo Rework component removal
+		 * 
+		 * Remove popped layer children from the tree
+		 */
+		this.tree = this.tree.slice(0, this.tree.length - lastCutLength);
 
 		// Clear the render queue
 		this.renderQueue.length = 0;
 
-		let i = tree.length;
+		this.addChildrenToRenderQueue(this.tree, true, false);
 
-		while (i > lastCut) {
-			tree.pop();
-			i--;
-		}
-
-		this.addChildrenTorenderQueue(this.tree, true);
-
-		// Clear rendered components
+		// Clear already rendered components
 		this.renderer.clear();
 
 		this.instance.updateRendererTexture(0, this.renderer.canvas);

@@ -390,6 +390,21 @@ export default function Instance() {
 		mouseLeaveListenerCount++;
 	};
 
+	this.removeMouseDownListener = function(listener) {
+		mouseDownListeners.splice(mouseDownListeners.indexOf(listener), 1);
+		mouseDownListenerCount--;
+	};
+
+	this.removeMouseEnterListener = function(listener) {
+		mouseEnterListeners.splice(mouseEnterListeners.indexOf(listener), 1);
+		mouseEnterListenerCount--;
+	};
+
+	this.removeMouseLeaveListener = function(listener) {
+		mouseLeaveListeners.splice(mouseLeaveListeners.indexOf(listener), 1);
+		mouseLeaveListenerCount--;
+	};
+
 	/**
 	 * Manager for the `mouseenter` and `mouseleave` events.
 	 * 
