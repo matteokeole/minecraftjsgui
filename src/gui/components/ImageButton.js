@@ -14,6 +14,17 @@ import {Matrix3} from "src/math";
 export default function ImageButton({image, uv, onMouseEnter, onMouseLeave, onMouseDown}) {
 	Component.apply(this, arguments);
 
+	/**
+	 * Determines if the pointer hovers over the component.
+	 * 
+	 * @type {Boolean}
+	 */
+	let isHovered = false;
+
+	this.isHovered = () => isHovered;
+
+	this.setIsHovered = value => void (isHovered = !!value);
+
 	this.getImageSize = () => image.size;
 
 	this.getImageIndex = () => image.index;

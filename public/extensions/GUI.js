@@ -133,17 +133,17 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
-	 * @todo Set instance viewport size as a `Vector2`?
-	 * 
-	 * Calculates the absolute position for each component.
+	 * Computes the absolute position for each component of the render queue.
 	 */
 	computeTree() {
-		const
-			{renderQueue} = this,
-			initialPosition = new Vector2(0, 0),
-			viewport = this.instance.getViewport().divideScalar(this.instance.currentScale);
+		const {renderQueue} = this;
+		const parentSize = this.instance
+			.getViewport()
+			.divideScalar(this.instance.currentScale);
 
-		for (let i = 0, l = renderQueue.length; i < l; i++) renderQueue[i].computePosition(initialPosition, viewport);
+		for (let i = 0, l = renderQueue.length; i < l; i++) {
+			renderQueue[i].computePosition(new Vector2(0, 0), parentSize);
+		}
 	}
 
 	render() {
@@ -171,7 +171,7 @@ export default class GUI extends RendererManager {
 
 		this.renderer.resize(viewport, this.camera.projectionMatrix);
 
-		// Add all components to the render stack
+		// Add all components to the render queue
 		for (let i = 0, l = this.tree.length, component; i < l; i++) {
 			component = this.tree[i];
 
@@ -191,11 +191,16 @@ export default class GUI extends RendererManager {
 	/**
 	 * @todo Add the registered components listeners
 	 * @todo Remove the old components listeners
+	 * @todo Review documentation
 	 * 
 	 * Builds a new layer on top of the layer stack.
 	 * NOTE: Calling this method will result in all the children of the new layer
 	 * being registered into the render queue.
 	 * The previous registered components won't be removed.
+	 * 
+	 * Registers the children of the provided layer in the render queue,
+	 * but NOT the children of the already rendered layers.
+	 * The new components will be rendered on top of the previous ones.
 	 * 
 	 * @param {Layer} layer
 	 */

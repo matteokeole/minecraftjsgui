@@ -38,19 +38,9 @@ export default class MainMenuLayer extends Layer {
 							gui.render();
 						},
 						onMouseDown: function() {
-							/** @todo Rework */
-							const newUv = this.getUV();
-							newUv.y = 146;
-							this.setUV(newUv);
+							return;
 
-							/**
-							 * This action will register the children of the new layer in the render queue,
-							 * but NOT the children of the already rendered layers.
-							 * 
-							 * The new components will be rendered on top of the previous ones.
-							 */
 							gui.push(new OptionsLayer());
-							gui.renderQueue.push(this);
 							gui.computeTree();
 							gui.render();
 						},

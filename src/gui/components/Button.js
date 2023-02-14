@@ -9,6 +9,17 @@ import {Matrix3, Vector2} from "src/math";
 export default function Button() {
 	Component.apply(this, arguments);
 
+	/**
+	 * Determines if the pointer hovers over the component.
+	 * 
+	 * @type {Boolean}
+	 */
+	let isHovered = false;
+
+	this.isHovered = () => isHovered;
+
+	this.setIsHovered = value => void (isHovered = !!value);
+
 	const size = this.getSize();
 
 	/** @todo Make dynamic */

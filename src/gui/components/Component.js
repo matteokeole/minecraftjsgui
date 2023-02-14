@@ -2,9 +2,8 @@ import {NotImplementedError} from "src/errors";
 import {Matrix3, Vector2} from "src/math";
 
 /**
- * @todo Summary
+ * @todo Pass `align` as constant, e.g. `Component.alignLeftTop`
  * 
- * @abstract
  * @param {{
  *    align: String[2],
  *    margin: Vector2,
@@ -20,23 +19,15 @@ export default function Component({align, margin, size}) {
 	let position;
 
 	/**
-	 * @todo Remove from this class, should be in subclasses instead
-	 * 
-	 * Determines if the pointer hovers over the component.
-	 * 
-	 * @type {boolean}
-	 */
-	let isHovered = false;
-
-	/**
 	 * @todo Review + documentation
 	 * 
-	 * Uses the component alignment and margin values to calculate its absolute position.
+	 * COmputes the absolute position of the component
+	 * by using its alignment and margin.
 	 * 
-	 * @param {Vector2} initialPosition
+	 * @param {Vector2} initial
 	 * @param {Vector2} parentSize
 	 */
-	this.computePosition = function(initialPosition, parentSize) {
+	this.computePosition = function(initial, parentSize) {
 		const
 			[horizontal, vertical] = align,
 			m = margin,
@@ -44,35 +35,35 @@ export default function Component({align, margin, size}) {
 
 		switch (horizontal) {
 			case "left":
-				initialPosition.x += m.x;
+				initial.x += m.x;
 
 				break;
 			case "center":
-				initialPosition.x += o.x / 2 + m.x;
+				initial.x += o.x / 2 + m.x;
 
 				break;
 			case "right":
-				initialPosition.x += o.x - m.x;
+				initial.x += o.x - m.x;
 
 				break;
 		}
 
 		switch (vertical) {
 			case "top":
-				initialPosition.y += m.y;
+				initial.y += m.y;
 
 				break;
 			case "center":
-				initialPosition.y += o.y / 2 + m.y;
+				initial.y += o.y / 2 + m.y;
 
 				break;
 			case "bottom":
-				initialPosition.y += o.y - m.y;
+				initial.y += o.y - m.y;
 
 				break;
 		}
 
-		position = initialPosition.floor32();
+		position = initial.floor32();
 	};
 
 	this.getPosition = () => position;
@@ -89,23 +80,25 @@ export default function Component({align, margin, size}) {
 
 	this.getSize = () => size;
 
-	this.isHovered = () => isHovered;
-
-	this.setIsHovered = value => void (isHovered = !!value);
-
 	this.getWorldMatrix = () => Matrix3.translate(position).scale(size);
 
 	/**
 	 * Must be overridden in an instance.
 	 * 
 	 * @returns {Matrix3}
+	 * @throws {NotImplementedError}
 	 */
-	this.getTextureMatrix = () => {throw new NotImplementedError()};
+	this.getTextureMatrix = () => {
+		throw new NotImplementedError();
+	};
 
 	/**
 	 * Must be overridden in an instance.
 	 * 
 	 * @returns {TextureWrapper}
+	 * @throws {NotImplementedError}
 	 */
-	this.getTextureWrapper = () => {throw new NotImplementedError()};
+	this.getTextureWrapper = () => {
+		throw new NotImplementedError();
+	};
 }
