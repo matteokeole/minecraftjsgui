@@ -73,12 +73,9 @@ export default class WebGLRenderer {
 	 * @todo Set viewport size as multiples of 2 to avoid subpixel artifacts?
 	 * 
 	 * @param {Vector2} viewport
-	 * @param {Number} devicePixelRatio
 	 * @returns {Vector2}
 	 */
-	setViewport(viewport, devicePixelRatio) {
-		viewport = viewport.multiplyScalar(devicePixelRatio).floor32();
-
+	setViewport(viewport) {
 		this.gl.viewport(
 			0,
 			0,

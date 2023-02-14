@@ -98,7 +98,7 @@ export default function Instance() {
 	 * 
 	 * @type {Vector2}
 	 */
-	const viewport = new Vector2(0, 0);
+	let viewport = new Vector2(0, 0);
 
 	/**
 	 * @returns {Vector2}
@@ -142,9 +142,11 @@ export default function Instance() {
 	 */
 	this.build = function() {
 		outputRenderer.build();
-		viewport.x = innerWidth;
-		viewport.y = innerHeight;
-		outputRenderer.setViewport(viewport, devicePixelRatio);
+		const dpr = devicePixelRatio;
+		viewport.x = innerWidth * dpr;
+		viewport.y = innerHeight * dpr;
+		viewport = viewport.floor32();
+		outputRenderer.setViewport(viewport);
 
 		this.resizeObserver = new ResizeObserver(([entry]) => {
 			// Avoid the first resize
@@ -205,7 +207,7 @@ export default function Instance() {
 			({renderer} = rendererManager);
 
 			renderer.build();
-			renderer.setViewport(viewport, devicePixelRatio);
+			renderer.setViewport(viewport);
 			await rendererManager.init();
 
 			this.renderers.push(rendererManager);
@@ -238,7 +240,7 @@ export default function Instance() {
 	 */
 	this.resize = function(width, height, dpr) {
 		/** @type {Vector2} */
-		let newViewport = outputRenderer.setViewport(new Vector2(width, height), dpr);
+		let newViewport = outputRenderer.setViewport(new Vector2(width, height).multiplyScalar(dpr).floor32());
 		viewport.x = newViewport.x;
 		viewport.y = newViewport.y;
 		newViewport = null;
@@ -246,8 +248,8 @@ export default function Instance() {
 		// Calculate scale multiplier
 		let i = 1;
 		while (
-			viewport.x > DEFAULT_WIDTH * i &&
-			viewport.y > DEFAULT_HEIGHT * i
+			viewport.x > DEFAULT_WIDTH * dpr * i &&
+			viewport.y > DEFAULT_HEIGHT * dpr * i
 		) i++;
 
 		const currentScale = clampUp(

@@ -53,11 +53,10 @@ export default class GUI extends RendererManager {
 
 	async init() {
 		const {shaderPath, currentScale} = this.instance;
-		const projectionMatrix = Matrix3
-			.projection(new Vector2(this.renderer.canvas.width, this.renderer.canvas.height))
+		const viewport = this.instance.getViewport();
+		const projectionMatrix = this.camera.projectionMatrix = Matrix3
+			.projection(viewport)
 			.scale(new Vector2(currentScale, currentScale));
-
-		this.camera.projectionMatrix = projectionMatrix;
 
 		await this.renderer.init(shaderPath, projectionMatrix);
 	}
@@ -217,5 +216,7 @@ export default class GUI extends RendererManager {
 		}
 
 		this.addChildrenTorenderQueue(this.tree, true);
+
+		console.log(this.tree)
 	}
 }
