@@ -1,4 +1,4 @@
-import {Group, ImageButton, Layer} from "src/gui";
+import {Component, Group, ImageButton, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {gui} from "../main.js";
 import OptionsLayer from "./OptionsLayer.js";
@@ -11,12 +11,12 @@ export default class MainMenuLayer extends Layer {
 	build() {
 		return [
 			new Group({
-				align: ["center", "center"],
+				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
 				size: new Vector2(200, 96),
 				children: [
 					new ImageButton({
-						align: ["left", "top"],
+						align: Component.alignLeftTop,
 						margin: new Vector2(0, 0),
 						size: new Vector2(20, 20),
 						image: gui.renderer.textures["gui/widgets.png"],
@@ -46,21 +46,21 @@ export default class MainMenuLayer extends Layer {
 						},
 					}),
 					new ImageButton({
-						align: ["right", "top"],
+						align: Component.alignRightTop,
 						margin: new Vector2(0, 0),
 						size: new Vector2(20, 20),
 						image: gui.renderer.textures["gui/widgets.png"],
 						uv: new Vector2(0, 186),
 					}),
 					new ImageButton({
-						align: ["left", "bottom"],
+						align: Component.alignLeftBottom,
 						margin: new Vector2(0, 0),
 						size: new Vector2(20, 20),
 						image: gui.renderer.textures["gui/widgets.png"],
 						uv: new Vector2(0, 186),
 					}),
 					new ImageButton({
-						align: ["right", "bottom"],
+						align: Component.alignRightBottom,
 						margin: new Vector2(0, 0),
 						size: new Vector2(20, 20),
 						image: gui.renderer.textures["gui/widgets.png"],

@@ -1,4 +1,4 @@
-import {ImageButton, Layer} from "src/gui";
+import {Component, ImageButton, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {gui} from "../main.js";
 
@@ -10,7 +10,7 @@ export default class OptionsLayer extends Layer {
 	build() {
 		return [
 			new ImageButton({
-				align: ["center", "top"],
+				align: Component.alignCenterTop,
 				margin: new Vector2(0, 30),
 				size: new Vector2(20, 20),
 				image: gui.renderer.textures["gui/widgets.png"],

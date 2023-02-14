@@ -4,4 +4,3 @@
 - Disable alpha on instance canvas?
 - Review the CSS of main/error
 - Review the CSS of ShaderCompilationError
-- Change component `align` property by pre-defined constants, e.g. `Component.alignTopRight`

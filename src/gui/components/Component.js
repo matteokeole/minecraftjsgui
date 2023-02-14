@@ -2,8 +2,6 @@ import {NotImplementedError} from "src/errors";
 import {Matrix3, Vector2} from "src/math";
 
 /**
- * @todo Pass `align` as constant, e.g. `Component.alignLeftTop`
- * 
  * @param {{
  *    align: String[2],
  *    margin: Vector2,
@@ -19,7 +17,7 @@ export default function Component({align, margin, size}) {
 	let position;
 
 	/**
-	 * @todo Review + documentation
+	 * @todo Rework
 	 * 
 	 * COmputes the absolute position of the component
 	 * by using its alignment and margin.
@@ -29,35 +27,46 @@ export default function Component({align, margin, size}) {
 	 */
 	this.computePosition = function(initial, parentSize) {
 		const
-			[horizontal, vertical] = align,
 			m = margin,
 			o = parentSize.substract(size);
 
-		switch (horizontal) {
-			case "left":
+		switch (align) {
+			case Component.alignLeftTop:
+			case Component.alignLeftCenter:
+			case Component.alignLeftBottom:
 				initial.x += m.x;
 
 				break;
-			case "center":
+			case Component.alignCenterTop:
+			case Component.alignCenter:
+			case Component.alignCenterBottom:
 				initial.x += o.x / 2 + m.x;
 
 				break;
-			case "right":
+			case Component.alignRightTop:
+			case Component.alignRightCenter:
+			case Component.alignRightBottom:
 				initial.x += o.x - m.x;
 
 				break;
 		}
 
-		switch (vertical) {
-			case "top":
+		switch (align) {
+			case Component.alignLeftTop:
+			case Component.alignCenterTop:
+			case Component.alignRightTop:
 				initial.y += m.y;
 
 				break;
-			case "center":
+			case Component.alignLeftCenter:
+			case Component.alignCenter:
+			case Component.alignRightCenter:
 				initial.y += o.y / 2 + m.y;
 
 				break;
-			case "bottom":
+			case Component.alignLeftBottom:
+			case Component.alignCenterBottom:
+			case Component.alignRightBottom:
 				initial.y += o.y - m.y;
 
 				break;
@@ -102,3 +111,18 @@ export default function Component({align, margin, size}) {
 		throw new NotImplementedError();
 	};
 }
+
+/**
+ * Component alignment constants.
+ * 
+ * @type {Number}
+ */
+Component.alignLeftTop = 0;
+Component.alignCenterTop = 1;
+Component.alignRightTop = 2;
+Component.alignLeftCenter = 3;
+Component.alignCenter = 4;
+Component.alignRightCenter = 5;
+Component.alignLeftBottom = 6;
+Component.alignCenterBottom = 7;
+Component.alignRightBottom = 8;
