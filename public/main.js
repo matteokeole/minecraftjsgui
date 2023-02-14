@@ -1,10 +1,9 @@
-import {Group, Image, ImageButton} from "src/gui";
+// import {Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
-import {Vector2} from "src/math";
+// import {Vector2} from "src/math";
 import GUI from "./extensions/GUI.js";
 import GUIRenderer from "./extensions/GUIRenderer.js";
 import MainMenuLayer from "./extensions/MainMenuLayer.js";
-import OptionsLayer from "./extensions/OptionsLayer.js";
 
 /** @type {Instance} */
 const instance = new Instance();

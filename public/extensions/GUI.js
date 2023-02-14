@@ -46,6 +46,9 @@ export default class GUI extends RendererManager {
 		 * @type {Component[]}
 		 */
 		this.renderQueue = [];
+
+		/** @type {Number[]} */
+		this.layerCuts = [];
 	}
 
 	async init() {
@@ -181,6 +184,7 @@ export default class GUI extends RendererManager {
 	 */
 	push(layer) {
 		this.layerStack.push(layer);
+		this.layerCuts.push(this.tree.at(-1));
 
 		this.addChildrenTorenderQueue(layer.build(), true);
 	}
@@ -197,11 +201,20 @@ export default class GUI extends RendererManager {
 	 */
 	pop() {
 		const layer = this.layerStack.pop();
+		const lastCut = this.layerCuts.pop();
+		const {tree} = this;
 
 		layer.dispose();
 
 		// Clear the render queue
 		this.renderQueue.length = 0;
+
+		let i = tree.length;
+
+		while (i != lastCut) {
+			tree.pop();
+			i--;
+		}
 
 		this.addChildrenTorenderQueue(this.tree, true);
 	}

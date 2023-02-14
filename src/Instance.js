@@ -394,7 +394,7 @@ export default function Instance() {
 	 * @param {{x: Number, y: Number}}
 	 */
 	function mouseMoveListener({clientX: x, clientY: y}) {
-		pointerPosition = new Vector2(x, y).divideScalar(this.currentScale);
+		pointerPosition = new Vector2(x, y).multiplyScalar(devicePixelRatio).divideScalar(this.currentScale);
 		let i, listener;
 
 		for (i = 0; i < mouseEnterListenerCount; i++) {
