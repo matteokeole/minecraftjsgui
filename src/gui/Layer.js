@@ -6,10 +6,6 @@ export default class Layer {
 		this.state = {};
 	}
 
-	initState() {
-		throw new NotImplementedError();
-	}
-
 	/**
 	 * @returns {Component[]}
 	 */
@@ -18,6 +14,6 @@ export default class Layer {
 	}
 
 	dispose() {
-		this.state = null;
+		delete this.state;
 	}
 }

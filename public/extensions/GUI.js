@@ -189,8 +189,6 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
-	 * @todo Add the registered components listeners
-	 * @todo Remove the old components listeners
 	 * @todo Review documentation
 	 * 
 	 * Builds a new layer on top of the layer stack.
@@ -215,9 +213,6 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
-	 * @todo Remove the discarded components listeners
-	 * @todo Add the registered components listeners 
-	 * 
 	 * Disposes the last layer from the layer stack.
 	 * NOTE: Calling this method will result in all the children of all the stacked layers
 	 * being registered into the render queue.
@@ -230,16 +225,12 @@ export default class GUI extends RendererManager {
 
 		const lastCutLength = this.layerCuts.pop();
 
-		// Discard event listeners
+		/** @todo Rework event listener discard */
 		const componentsToDiscard = [...this.tree].splice(lastCutLength);
 		this.removeListeners(componentsToDiscard);
 
-		/**
-		 * @todo Rework component removal
-		 * 
-		 * Remove popped layer children from the tree
-		 */
-		this.tree = this.tree.slice(0, this.tree.length - lastCutLength);
+		/** @todo Rework component removal */
+		this.tree = this.tree.slice(0, lastCutLength);
 
 		// Clear the render queue
 		this.renderQueue.length = 0;

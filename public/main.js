@@ -1,7 +1,7 @@
 import Instance from "src/instance";
 import GUI from "./extensions/GUI.js";
 import GUIRenderer from "./extensions/GUIRenderer.js";
-import MainMenuLayer from "./extensions/MainMenuLayer.js";
+import MainMenuLayer from "./layers/MainMenuLayer.js";
 
 /** @type {GUI} */
 export let gui;
