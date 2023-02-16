@@ -2,7 +2,6 @@
  * References an error when the binding of a `WebGLProgram` on a
  * `WebGLRenderingContext` fails due to a `WebGLShader` compilation error.
  * 
- * @constructor
  * @extends Error
  * @param {String} message Shader info log
  * @param {Number} type Shader type (`gl.VERTEX_SHADER` or `gl.FRAGMENT_SHADER`)

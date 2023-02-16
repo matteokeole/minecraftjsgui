@@ -3,7 +3,6 @@ import Component from "./Component.js";
 /**
  * @todo Documentation
  * @todo Throw an error if a group child doesn't fit its parent?
- * @constructor
  * @extends Component
  * @param {{
  *    children: Component[]

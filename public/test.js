@@ -97,10 +97,6 @@ instance.setPipeline(
  * - How to redraw Text components? Compute once static text and compute each time the dynamic part(s)? How to efficiently detect changes in a text?
  */
 export default class OptionLayer extends Layer {
-	constructor() {
-		super();
-	}
-
 	initState(state) {
 		state.counter = 0;
 	}
@@ -180,13 +176,168 @@ export default class OptionLayer extends Layer {
 
 
 
-// Item slot tests
-import {Slot} from "src/gui";
-import {HelmetItem} from "src/items";
-import {Vector2} from "src/math";
+export class _GUIRenderer extends WebGLRenderer {
+	constructor() {
+		super({
+			offscreen: true,
+			version: 2,
+		});
 
-const slot = new Slot({
-	position: new Vector2(0, 0),
-	permanent: true,
-	validator: item => item instanceof HelmetItem,
+		/**
+		 * GUI layer stack. The last layer is the current one.
+		 * 
+		 * @type {Layer[]}
+		 */
+		this.layerStack = [];
+
+		/**
+		 * Components marked for the next render.
+		 * 
+		 * @type {Component[]}
+		 */
+		this.renderQueue = [];
+	}
+
+	async build() {}
+
+	registerLayerStackInRenderQueue() {
+		for (let i = 0, l = layerStack.length, layer; i < l; i++) {
+			layer = layerStack[i];
+
+			this.registerComponentTreeInRenderQueue(layer.tree);
+		}
+	}
+
+	/** Note: recursive */
+	registerComponentTreeInRenderQueue(tree) {
+		for (let i = 0, l = tree.length, component; i < l; i++) {
+			component = tree[i];
+
+			if (component instanceof Group) continue;
+
+			this.renderQueue.push(component);
+
+			if (component.children?.length !== 0) this.registerComponentTreeInRenderQueue(component.children);
+		}
+	}
+}
+
+
+
+/**
+ * GUI layer draft.
+ */
+class MainMenuLayer extends Layer {
+	/** @override */
+	initState() {
+		this.counter = 0;
+	}
+
+	/** @override */
+	build() {
+		return [
+			new Button({
+				onClick: () => {},
+			}),
+			new Image({
+				image: "gui/widgets.png",
+			}),
+		];
+	}
+}
+
+
+
+const layer = new Layer({
+	initState: function(state) {
+		state.counter = 1;
+
+		return state;
+	},
+	buildTree: function(state) {
+		return [
+			new Button({
+				onClick: function() {
+					state.counter++;
+
+					renderer.render();
+				},
+			}),
+			new Image({
+				image: "gui/widgets.png",
+			}),
+		];
+	},
 });
+
+
+
+
+
+/**
+ * Constructor classes (for efficiency):
+ * - Math classes (Vector, Matrix)
+ * - Mesh and geometry classes (BoxGeometry, Light)
+ * - GUI component classes (Button)
+ * - All classes that are instanced a lot (not by a fixed number during the app lifespan)
+ */
+
+
+
+
+
+/**
+ * GUI use:
+ * A layer is not a scene, but a set of components that determines their Z index in the GUI.
+ * The scene is the set of currently rendered components (the "render queue" defined in the renderer).
+ * It can contain only a subset of components from a layer,
+ * and components stored inside different layers.
+ * 
+ * 3D world use:
+ * A view of the world to render, generally with textured meshes, lights, etc.
+ */
+class Scene {
+	constructor() {
+		/** @type {Set<Mesh>} */
+		this.meshes = new Set();
+	}
+
+	/**
+	 * @param {Mesh} mesh
+	 */
+	add(mesh) {
+		this.meshes.add(mesh);
+	}
+
+	/**
+	 * @param {Mesh} mesh
+	 */
+	remove(mesh) {
+		this.meshes.delete(mesh);
+	}
+}
+
+class Mesh {
+	constructor() {
+		/** @type {Vector3} */
+		this.position = new Vector3(0, 0, 0);
+
+		/** @type {Vector3} */
+		this.rotation = new Vector3(0, 0, 0);
+	}
+}
+
+class Component extends Mesh {
+	constructor() {
+		/**
+		 * GUI components only need a `Vector2`,
+		 * since the Z depends on the parent layer the component is in
+		 * 
+		 * @type {Vector2}
+		 */
+		this.position = new Vector2(0, 0);
+
+		/** @type {Number} */
+		this.rotation = 0;
+	}
+}

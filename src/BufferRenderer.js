@@ -1,4 +1,4 @@
-import {ShaderCompilationError} from "src/errors";
+import {NotImplementedError, ShaderCompilationError} from "src/errors";
 
 /**
  * @todo Remove duplicate methods!
@@ -23,10 +23,12 @@ export default function BufferRenderer(instance) {
 	};
 
 	/**
+	 * @todo Implement
+	 * 
 	 * @param {Component} component
 	 */
 	this.cacheComponentTexture = function(component) {
-		//
+		throw new NotImplementedError();
 	};
 
 	this.resizeToComponentSize = size => void gl.viewport(0, 0, canvas.width = size.x, canvas.height = size.y);

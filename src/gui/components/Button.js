@@ -4,21 +4,30 @@ import {Matrix3, Vector2} from "src/math";
 /**
  * @todo Documentation
  * 
- * @constructor
  * @extends Component
  */
 export default function Button() {
 	Component.apply(this, arguments);
+
+	/**
+	 * Determines if the pointer hovers over the component.
+	 * 
+	 * @type {Boolean}
+	 */
+	let isHovered = false;
+
+	this.isHovered = () => isHovered;
+
+	this.setIsHovered = value => void (isHovered = !!value);
 
 	const size = this.getSize();
 
 	/** @todo Make dynamic */
 	const uv = new Vector2(0, 0);
 
+	/** @todo */
 	this.generateCachedTexture = function(bufferRenderer) {
 		bufferRenderer.resizeToComponentSize(size);
-
-		console.log("resized");
 	};
 
 	/** @override */

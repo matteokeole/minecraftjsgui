@@ -1,18 +1,15 @@
 import {Vector2, clampDown, clampUp, intersects} from "src/math";
 import Program from "./Program.js";
-import Renderer from "./Renderer.js";
 import WebGLRenderer from "./WebGLRenderer.js";
+import RendererManager from "./RendererManager.js";
 
 /**
- * @todo Apply settings
+ * @todo Find a better name
  * @todo Implement render pipeline here
- * @todo JSDoc for private properties?
- * @todo Viewport size Vector2?
+ * @todo Apply settings
  * 
  * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
- * 
- * @constructor
  */
 export default function Instance() {
 	const DEFAULT_WIDTH = 320;
@@ -64,13 +61,14 @@ export default function Instance() {
 	 */
 	const outputRenderer = new WebGLRenderer({
 		offscreen: false,
+		generateMipmaps: false,
 		version: 2,
 	});
 
 	/**
 	 * Offscreen renderers.
 	 * 
-	 * @type {Renderer[]}
+	 * @type {RendererManagers[]}
 	 */
 	this.renderers = [];
 
@@ -100,7 +98,12 @@ export default function Instance() {
 	 * 
 	 * @type {Vector2}
 	 */
-	const viewport = new Vector2(0, 0);
+	let viewport = new Vector2(0, 0);
+
+	/**
+	 * @returns {Vector2}
+	 */
+	this.getViewport = () => viewport;
 
 	/**
 	 * Current GUI scale multiplier.
@@ -130,18 +133,20 @@ export default function Instance() {
 	/**
 	 * Current position of the pointer, used for GUI event listeners.
 	 * 
-	 * @type {?Vector2}
+	 * @type {Vector2}
 	 */
-	let pointerPosition;
+	let pointerPosition = new Vector2(0, 0);
 
 	/**
 	 * @throws {NoWebGL2Error}
 	 */
 	this.build = function() {
 		outputRenderer.build();
-		viewport.x = innerWidth;
-		viewport.y = innerHeight;
-		outputRenderer.setViewport(viewport, devicePixelRatio);
+		const dpr = devicePixelRatio;
+		viewport.x = innerWidth * dpr;
+		viewport.y = innerHeight * dpr;
+		viewport = viewport.floor32();
+		outputRenderer.setViewport(viewport);
 
 		this.resizeObserver = new ResizeObserver(([entry]) => {
 			// Avoid the first resize
@@ -189,31 +194,40 @@ export default function Instance() {
 	this.hasBeenBuilt = () => hasBeenBuilt;
 
 	/**
-	 * Setups the instance renderers.
+	 * Setups the instance renderer managers.
 	 * 
-	 * @param {Renderer[]} renderers
+	 * @param {RendererManager[]} rendererManagers
 	 */
-	this.setupRenderers = async function(renderers) {
-		const {gl} = outputRenderer;
+	this.setupRenderers = async function(rendererManagers) {
 		const {rendererTextures} = this;
-		let renderer, texture;
+		rendererLength = rendererManagers.length;
 
-		rendererLength = renderers.length;
-
-		for (let i = 0; i < rendererLength; i++) {
-			renderer = renderers[i];
+		for (let i = 0, rendererManager, renderer; i < rendererLength; i++) {
+			rendererManager = rendererManagers[i];
+			({renderer} = rendererManager);
 
 			renderer.build();
-			renderer.enable();
-			await renderer.init();
+			renderer.setViewport(viewport);
+			await rendererManager.init();
 
-			this.renderers.push(renderer);
-
-			gl.bindTexture(gl.TEXTURE_2D, texture = gl.createTexture());
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // Don't generate mipmaps
-
-			rendererTextures.push(texture);
+			this.renderers.push(rendererManager);
+			rendererTextures.push(this.createOutputTexture());
 		}
+	};
+
+	/**
+	 * Creates an output `WebGLTexture` for a new renderer.
+	 * 
+	 * @returns {WebGLTexture}
+	 */
+	this.createOutputTexture = function() {
+		const {gl} = outputRenderer;
+		let texture = gl.createTexture();
+
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // No mipmaps
+
+		return texture;
 	};
 
 	/**
@@ -226,7 +240,7 @@ export default function Instance() {
 	 */
 	this.resize = function(width, height, dpr) {
 		/** @type {Vector2} */
-		let newViewport = outputRenderer.setViewport(new Vector2(width, height), dpr);
+		let newViewport = outputRenderer.setViewport(new Vector2(width, height).multiplyScalar(dpr).floor32());
 		viewport.x = newViewport.x;
 		viewport.y = newViewport.y;
 		newViewport = null;
@@ -234,8 +248,8 @@ export default function Instance() {
 		// Calculate scale multiplier
 		let i = 1;
 		while (
-			viewport.x > DEFAULT_WIDTH * i &&
-			viewport.y > DEFAULT_HEIGHT * i
+			viewport.x > DEFAULT_WIDTH * dpr * i &&
+			viewport.y > DEFAULT_HEIGHT * dpr * i
 		) i++;
 
 		const currentScale = clampUp(
@@ -249,16 +263,15 @@ export default function Instance() {
 	};
 
 	/**
-	 * @todo `gl.RGB` or `gl.RGBA`?
+	 * @todo Which color format?
 	 * 
 	 * @param {Number} index
 	 * @param {OffscreenCanvas} canvas
 	 */
 	this.updateRendererTexture = function(index, canvas) {
-		const {rendererTextures} = this;
 		const {gl} = outputRenderer;
 
-		gl.bindTexture(gl.TEXTURE_2D, rendererTextures[index]);
+		gl.bindTexture(gl.TEXTURE_2D, this.rendererTextures[index]);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 	};
 
@@ -289,7 +302,6 @@ export default function Instance() {
 
 	/**
 	 * @todo Use `Renderer` class to avoid duplicate methods (createProgram/createShader/linkProgram)?
-	 * @async
 	 */
 	this.initialize = async function() {
 		const {gl} = outputRenderer;
@@ -300,8 +312,9 @@ export default function Instance() {
 
 		/** @type {Program} */
 		const program = await outputRenderer.loadProgram(
-			`${this.shaderPath}main.vert`,
-			`${this.shaderPath}main.frag`,
+			"main.vert",
+			"main.frag",
+			this.shaderPath,
 		);
 
 		outputRenderer.linkProgram(program);
@@ -330,7 +343,7 @@ export default function Instance() {
 	};
 
 	/**
-	 * @todo Instanced drawing with multiple textures
+	 * @todo Use instanced drawing
 	 */
 	this.render = function() {
 		const {rendererTextures} = this;
@@ -347,9 +360,7 @@ export default function Instance() {
 	this.dispose = function() {
 		const {gl} = outputRenderer;
 
-		if (!(gl instanceof WebGL2RenderingContext)) {
-			return console.info("This exception occurred before building the instance.");
-		}
+		if (gl === null) return console.info("This exception occurred before building the instance.");
 
 		/** @todo Stop the game loop if it has started */
 
@@ -379,13 +390,28 @@ export default function Instance() {
 		mouseLeaveListenerCount++;
 	};
 
+	this.removeMouseDownListener = function(listener) {
+		mouseDownListeners.splice(mouseDownListeners.indexOf(listener), 1);
+		mouseDownListenerCount--;
+	};
+
+	this.removeMouseEnterListener = function(listener) {
+		mouseEnterListeners.splice(mouseEnterListeners.indexOf(listener), 1);
+		mouseEnterListenerCount--;
+	};
+
+	this.removeMouseLeaveListener = function(listener) {
+		mouseLeaveListeners.splice(mouseLeaveListeners.indexOf(listener), 1);
+		mouseLeaveListenerCount--;
+	};
+
 	/**
 	 * Manager for the `mouseenter` and `mouseleave` events.
 	 * 
 	 * @param {{x: Number, y: Number}}
 	 */
 	function mouseMoveListener({clientX: x, clientY: y}) {
-		pointerPosition = new Vector2(x, y).divideScalar(this.currentScale);
+		pointerPosition = new Vector2(x, y).multiplyScalar(devicePixelRatio).divideScalar(this.currentScale);
 		let i, listener;
 
 		for (i = 0; i < mouseEnterListenerCount; i++) {
@@ -416,11 +442,9 @@ export default function Instance() {
 		for (let i = 0, listener; i < mouseDownListenerCount; i++) {
 			listener = mouseDownListeners[i];
 
-			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) return;
+			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
 
 			listener(pointerPosition);
 		}
 	}
-
-	this.getViewport = () => viewport;
 }
