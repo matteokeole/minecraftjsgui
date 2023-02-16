@@ -1,4 +1,5 @@
 import {Matrix3, Vector2} from "src/math";
+import TextureWrapper from "../../src/TextureWrapper.js";
 import WebGLRenderer from "../../src/WebGLRenderer.js";
 
 /**
@@ -72,6 +73,32 @@ export default class GUIRenderer extends WebGLRenderer {
 		gl.bindBuffer(gl.ARRAY_BUFFER, gl.buffer.textureIndex);
 		gl.vertexAttribPointer(gl.attribute.textureIndex, 1, gl.FLOAT, false, 0, 0);
 		gl.vertexAttribDivisor(gl.attribute.textureIndex, 1);
+	}
+
+	/**
+	 * @param {String[]} paths
+	 * @param {String} basePath
+	 */
+	async loadTestTextures(paths, basePath) {
+		await this.loadTextures(paths, basePath);
+
+		const {gl} = this;
+		const textureLength = Object.keys(this.textures).length;
+		const dimension = 256;
+		const canvas = new OffscreenCanvas(dimension, dimension);
+		const ctx = canvas.getContext("2d");
+		const colors = ["blue", "orange", "yellow"];
+
+		for (let i = 0, l = colors.length, color; i < l; i++) {
+			color = colors[i];
+
+			ctx.fillStyle = color;
+			ctx.fillRect(0, 0, dimension, dimension);
+
+			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, textureLength + i, dimension, dimension, 1, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+
+			this.textures[color] = new TextureWrapper(canvas, textureLength + i);
+		}
 	}
 
 	/**

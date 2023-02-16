@@ -46,9 +46,9 @@ export default class WebGLRenderer {
 
 		/**
 		 * @public
-		 * @type {WebGLTexture[]}
+		 * @type {Object<String, TextureWrapper>}
 		 */
-		this.textures = [];
+		this.textures = {};
 	}
 
 	build() {
@@ -153,7 +153,7 @@ export default class WebGLRenderer {
 		const {length} = paths;
 
 		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
-		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 256, 256, length);
+		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 256, 256, length + 3);
 		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 		this.#generateMipmaps ?
 			gl.generateMipmap(gl.TEXTURE_2D_ARRAY) :
@@ -161,7 +161,7 @@ export default class WebGLRenderer {
 
 		const image = new Image();
 
-		for (let i = 0, path, source; i < length; i++) {
+		for (let i = 0, path; i < length; i++) {
 			path = paths[i];
 			image.src = `${basePath}${path}`;
 
@@ -174,9 +174,8 @@ export default class WebGLRenderer {
 
 			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 256, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-			this.textures[path] = new TextureWrapper(source, image, i);
+			this.textures[path] = new TextureWrapper(image, i);
 		}
-			
 	}
 
 	/**

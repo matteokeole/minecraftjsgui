@@ -16,8 +16,8 @@ try {
 	await instance.initialize();
 	await instance.setupRenderers([gui]);
 
-	// Load GUI textures
-	await gui.renderer.loadTextures(
+	// Load GUI textures and test color textures
+	await gui.renderer.loadTestTextures(
 		await (await fetch("assets/textures/textures.json")).json(),
 		instance.texturePath,
 	);

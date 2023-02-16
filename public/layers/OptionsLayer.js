@@ -1,4 +1,4 @@
-import {Component, ImageButton, Layer} from "src/gui";
+import {Component, Image, ImageButton, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {gui} from "../main.js";
 
@@ -40,6 +40,13 @@ export default class OptionsLayer extends Layer {
 					gui.computeTree();
 					gui.render();
 				},
+			}),
+			new Image({
+				align: Component.alignCenter,
+				margin: new Vector2(0, 0),
+				image: gui.renderer.textures["orange"],
+				size: new Vector2(200, 150),
+				uv: new Vector2(0, 0),
 			}),
 		];
 	}

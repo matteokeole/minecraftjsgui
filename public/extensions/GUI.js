@@ -48,7 +48,7 @@ export default class GUI extends RendererManager {
 		this.renderQueue = [];
 
 		/** @type {Number[]} */
-		this.layerCuts = [];
+		this.lastInsertionIndices = [];
 	}
 
 	async init() {
@@ -80,11 +80,8 @@ export default class GUI extends RendererManager {
 			}
 
 			this.renderQueue.push(component);
+			addListeners && this.addListeners(component);
 			addToTree && this.tree.push(component);
-
-			if (!addListeners) continue;
-
-			this.addListeners(component);
 		}
 	}
 
@@ -208,8 +205,8 @@ export default class GUI extends RendererManager {
 		// Discard event listeners of previous layers
 		this.removeListeners(this.tree);
 
+		this.lastInsertionIndices.push(this.tree.length);
 		this.addChildrenToRenderQueue(layer.build(), true, true);
-		this.layerCuts.push(this.tree.length - 1);
 	}
 
 	/**
@@ -223,14 +220,14 @@ export default class GUI extends RendererManager {
 		const layer = this.layerStack.pop();
 		layer.dispose();
 
-		const lastCutLength = this.layerCuts.pop();
+		const lastInsertion = this.lastInsertionIndices.pop();
 
 		/** @todo Rework event listener discard */
-		const componentsToDiscard = [...this.tree].splice(lastCutLength);
+		const componentsToDiscard = [...this.tree].splice(lastInsertion);
 		this.removeListeners(componentsToDiscard);
 
 		/** @todo Rework component removal */
-		this.tree = this.tree.slice(0, lastCutLength);
+		this.tree = this.tree.slice(0, lastInsertion);
 
 		// Clear the render queue
 		this.renderQueue.length = 0;
