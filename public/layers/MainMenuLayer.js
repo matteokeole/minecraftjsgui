@@ -3,9 +3,6 @@ import {Vector2} from "src/math";
 import {gui} from "../main.js";
 import OptionsLayer from "./OptionsLayer.js";
 
-/**
- * @extends Layer
- */
 export default class MainMenuLayer extends Layer {
 	/** @override */
 	build() {

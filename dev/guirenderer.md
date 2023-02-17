@@ -1,4 +1,4 @@
-## GUI renderer
+## GUIRenderer
 
 `WebGLRenderer` sub-class responsible of rendering the contents of the current GUI layer(s).
 
@@ -23,7 +23,7 @@ Because visual components are quads, they can be instanced with
 	```js
 	gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, x);
 	```
-	where `x` is the number of components to render. While `gl.TRIANGLES` requires 6 vertices, `gl.TRIANGLE_FAN` needs only 4.
+	where `x` is the number of components to render. While `gl.TRIANGLES` requires 6 vertices, `gl.TRIANGLE_FAN` only needs 4.
 - **Upscaling**  
 With a GUI scale greater than 1, downscaling the canvas allows a faster render time while keeping the quality of a full-size render. The result is scaled up when rendered by the instance.
 

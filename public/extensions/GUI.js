@@ -4,9 +4,6 @@ import {Component, Group, Layer} from "src/gui";
 import {Matrix3, Vector2} from "src/math";
 import RendererManager from "../../src/RendererManager.js";
 
-/**
- * @extends RendererManager
- */
 export default class GUI extends RendererManager {
 	/**
 	 * @param {Instance} instance

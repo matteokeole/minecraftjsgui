@@ -1,10 +1,7 @@
 import {Matrix3, Vector2} from "src/math";
 import TextureWrapper from "../../src/TextureWrapper.js";
-import WebGLRenderer from "../../src/WebGLRenderer.js";
+import WebGLRenderer from "src/renderer";
 
-/**
- * @extends WebGLRenderer
- */
 export default class GUIRenderer extends WebGLRenderer {
 	constructor() {
 		super({

@@ -2,9 +2,6 @@ import {Component, Image, ImageButton, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {gui} from "../main.js";
 
-/**
- * @extends Layer
- */
 export default class OptionsLayer extends Layer {
 	/** @override */
 	build() {
