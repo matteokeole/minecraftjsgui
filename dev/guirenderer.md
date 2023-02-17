@@ -98,4 +98,4 @@ gui.push(new OptionsLayer());
 gui.pop();
 ```
 
-> Some layers seem to have a dark transparent background behind their components.
+> Some layers have a dark transparent background behind their components.

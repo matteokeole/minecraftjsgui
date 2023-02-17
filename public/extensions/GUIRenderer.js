@@ -1,6 +1,6 @@
 import {Matrix3, Vector2} from "src/math";
-import TextureWrapper from "../../src/TextureWrapper.js";
 import WebGLRenderer from "src/renderer";
+import TextureWrapper from "../../src/TextureWrapper.js";
 
 export default class GUIRenderer extends WebGLRenderer {
 	/** @type {Object<String, Number>} */
@@ -23,6 +23,12 @@ export default class GUIRenderer extends WebGLRenderer {
 		});
 	}
 
+	/**
+	 * @todo Rework parameters
+	 * 
+	 * @param {String} shaderPath Instance shader path
+	 * @param {Matrix3} projectionMatrix
+	 */
 	async init(shaderPath, projectionMatrix) {
 		const {gl} = this;
 
@@ -113,12 +119,7 @@ export default class GUIRenderer extends WebGLRenderer {
 		}
 	}
 
-	/**
-	 * @todo Use the camera parameter
-	 * 
-	 * Renders a GUI frame and updates the output texture.
-	 * The instance is required to update the output renderer texture.
-	 */
+	/** @override */
 	render(scene, camera) {
 		const
 			{gl} = this,
@@ -199,14 +200,13 @@ export default class GUIRenderer extends WebGLRenderer {
 	}
 
 	/**
-	 * @todo Must override `WebGLRenderer.resize`
+	 * Resizes the renderer viewport and updates the projection matrix uniform.
 	 * 
 	 * @param {Vector2} viewport
 	 * @param {Matrix3} projectionMatrix
 	 */
 	resize(viewport, projectionMatrix) {
 		const {canvas, gl} = this;
-		const uniforms = this.#uniforms;
 
 		gl.viewport(
 			0,
@@ -214,7 +214,10 @@ export default class GUIRenderer extends WebGLRenderer {
 			canvas.width = viewport.x,
 			canvas.height = viewport.y,
 		);
-
-	 	gl.uniformMatrix3fv(uniforms.projectionMatrix, false, new Float32Array(projectionMatrix));
+	 	gl.uniformMatrix3fv(
+	 		this.#uniforms.projectionMatrix,
+	 		false,
+	 		new Float32Array(projectionMatrix),
+	 	);
 	}
 }
