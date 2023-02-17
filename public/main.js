@@ -3,6 +3,8 @@ import GUI from "./extensions/GUI.js";
 import GUIRenderer from "./extensions/GUIRenderer.js";
 import MainMenuLayer from "./layers/MainMenuLayer.js";
 
+/** @todo Fix undefined instance on catch */
+
 /** @type {GUI} */
 export let gui;
 
@@ -30,7 +32,7 @@ try {
 } catch (error) {
 	console.error(error);
 
-	instance.dispose();
+	instance.dispose?.();
 
 	if ("node" in error) document.body.appendChild(error.node);
 }

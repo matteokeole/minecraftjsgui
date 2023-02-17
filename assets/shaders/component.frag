@@ -3,7 +3,7 @@
 precision mediump float;
 precision mediump sampler2DArray;
 
-in float v_textureIndex;
+flat in uint v_textureIndex;
 in vec2 v_uv;
 
 uniform sampler2DArray u_textures;

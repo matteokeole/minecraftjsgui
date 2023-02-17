@@ -179,7 +179,7 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * @param {Mesh[]} scene
+	 * @param {Array} scene
 	 * @param {Camera} camera
 	 */
 	render(scene, camera) {
