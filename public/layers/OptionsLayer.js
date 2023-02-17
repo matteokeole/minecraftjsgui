@@ -5,10 +5,16 @@ import {gui} from "../main.js";
 export default class OptionsLayer extends Layer {
 	/** @override */
 	build() {
+		/** @type {Number} */
+		let counter = 0;
+
+		console.debug("Rebuilt OptionsLayer");
+		console.debug(`Counter = ${counter}`);
+
 		return [
 			new ImageButton({
 				align: Component.alignCenterTop,
-				margin: new Vector2(0, 30),
+				margin: new Vector2(-12, 30),
 				size: new Vector2(20, 20),
 				image: gui.renderer.textures["gui/widgets.png"],
 				uv: new Vector2(0, 106),
@@ -28,11 +34,31 @@ export default class OptionsLayer extends Layer {
 					gui.renderQueue.push(this);
 					gui.render();
 				},
+				onMouseDown: () => console.debug(`Counter = ${++counter}`),
+			}),
+			new ImageButton({
+				align: Component.alignCenterTop,
+				margin: new Vector2(12, 30),
+				size: new Vector2(20, 20),
+				image: gui.renderer.textures["gui/widgets.png"],
+				uv: new Vector2(0, 146),
+				onMouseEnter: function() {
+					const newUv = this.getUV();
+					newUv.y = 166;
+					this.setUV(newUv);
+
+					gui.renderQueue.push(this);
+					gui.render();
+				},
+				onMouseLeave: function() {
+					const newUv = this.getUV();
+					newUv.y = 146;
+					this.setUV(newUv);
+
+					gui.renderQueue.push(this);
+					gui.render();
+				},
 				onMouseDown: function() {
-					/**
-					 * This action will register the children from all the stack layers.
-					 * All the previous layers will be rendered.
-					 */
 					gui.pop();
 					gui.computeTree();
 					gui.render();

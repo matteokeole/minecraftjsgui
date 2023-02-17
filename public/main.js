@@ -32,7 +32,7 @@ try {
 } catch (error) {
 	console.error(error);
 
-	instance.dispose?.();
+	instance.dispose();
 
 	if ("node" in error) document.body.appendChild(error.node);
 }
