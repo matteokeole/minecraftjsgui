@@ -216,14 +216,14 @@ export default class GUI extends RendererManager {
 	 * The previous registered components will be removed,
 	 * so that they don't get rendered twice in the next frame.
 	 * 
-	 * NOTE: The only layer of the stack can't be popped.
+	 * NOTE: The first layer cannot be popped.
 	 */
 	pop() {
-		const layerStackLength = this.layerStack.length;
-		if (layerStackLength === 0 || layerStackLength === 1) return;
-		layerStackLength = null;
+		const {layerStack} = this;
 
-		const layer = this.layerStack.pop();
+		if (layerStack.length === 1) return;
+
+		const layer = layerStack.pop();
 		layer.dispose();
 
 		const lastInsertion = this.lastInsertionIndices.pop();
