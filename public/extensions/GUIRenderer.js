@@ -64,11 +64,11 @@ export default class GUIRenderer extends WebGLRenderer {
 			textureMatrix: gl.createBuffer(),
 			textureIndex: gl.createBuffer(),
 		};
-		const vaos = this.#vaos = {
+		this.#vaos = {
 			main: gl.createVertexArray(),
 		};
 
-		gl.bindVertexArray(vaos.main);
+		gl.bindVertexArray(this.#vaos.main);
 
 	 	gl.uniformMatrix3fv(uniforms.projectionMatrix, false, new Float32Array(projectionMatrix));
 
