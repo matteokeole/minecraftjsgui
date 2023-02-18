@@ -1,6 +1,8 @@
-import {Vector3} from "./Vector3.js";
+import Vector3 from "./Vector3.js";
 
 /**
+ * @todo Matrix inheritance
+ * 
  * 4x4 matrix class.
  * 
  * @extends Array

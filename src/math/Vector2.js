@@ -1,22 +1,26 @@
+import inherits from "../inherits.js";
+import Vector from "./Vector.js";
+
 /**
  * Bi-dimensional vector class.
  * 
+ * @extends Vector
  * @param {Number} x
  * @param {Number} y
- * @throws {TypeError}
  */
-export function Vector2(x, y) {
-	const {length} = arguments;
+export default function Vector2(x, y) {
+	Vector.call(this, 2, arguments.length);
 
-	if (length < 2) throw TypeError(`Failed to construct 'Vector2': 2 arguments required, but only ${length} present.`);
-
+	/** @type {Number} */
 	this.x = x;
+
+	/** @type {Number} */
 	this.y = y;
 }
 
-/**
- * @param {Vector2} v
- */
+inherits(Vector2, Vector);
+
+/** @override */
 Vector2.prototype.add = function(v) {
 	return new Vector2(
 		this.x + v.x,
@@ -24,9 +28,7 @@ Vector2.prototype.add = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- */
+/** @override */
 Vector2.prototype.addScalar = function(n) {
 	return new Vector2(
 		this.x + n,
@@ -34,6 +36,15 @@ Vector2.prototype.addScalar = function(n) {
 	);
 };
 
+/** @override */
+Vector2.prototype.ceil = function() {
+	return new Vector2(
+		Math.ceil(this.x),
+		Math.ceil(this.y),
+	);
+};
+
+/** @override */
 Vector2.prototype.clone = function() {
 	return new Vector2(
 		this.x,
@@ -41,9 +52,7 @@ Vector2.prototype.clone = function() {
 	);
 };
 
-/**
- * @param {Vector2} v
- */
+/** @override */
 Vector2.prototype.distanceTo = function(v) {
 	return Math.sqrt(
 		(v.x - this.x) ** 2 +
@@ -51,10 +60,7 @@ Vector2.prototype.distanceTo = function(v) {
 	);
 };
 
-/**
- * @param {Vector2} v
- * @throws {RangeError}
- */
+/** @override */
 Vector2.prototype.divide = function(v) {
 	if (v.x === 0 || v.y === 0) throw RangeError("Division by zero");
 
@@ -64,23 +70,12 @@ Vector2.prototype.divide = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- * @throws {RangeError}
- */
-Vector2.prototype.divideScalar = function(n) {
-	if (n === 0) throw RangeError("Division by zero");
-
-	return this.multiplyScalar(1 / n);
-};
-
-/**
- * @param {Vector2} v
- */
+/** @override */
 Vector2.prototype.dot = function(v) {
 	return this.x * v.x + this.y * v.y;
 };
 
+/** @override */
 Vector2.prototype.floor = function() {
 	return new Vector2(
 		Math.floor(this.x),
@@ -88,9 +83,7 @@ Vector2.prototype.floor = function() {
 	);
 };
 
-/**
- * Only for 32-bit signed integers.
- */
+/** @override */
 Vector2.prototype.floor32 = function() {
 	return new Vector2(
 		this.x | 0,
@@ -98,32 +91,12 @@ Vector2.prototype.floor32 = function() {
 	);
 };
 
-Vector2.prototype.invert = function() {
-	return this.multiplyScalar(-1);
-};
-
-Vector2.prototype.length = function() {
-	return Math.sqrt(this.lengthSquared());
-};
-
+/** @override */
 Vector2.prototype.lengthSquared = function() {
 	return this.x ** 2 + this.y ** 2;
 };
 
-/**
- * @param {Vector2} v
- * @param {Number} n
- */
-Vector2.prototype.lerp = function(v, n) {
-	const a = this.multiplyScalar(1 - n);
-	const b = v.multiplyScalar(n);
-
-	return a.add(b);
-};
-
-/**
- * @param {Vector2} v
- */
+/** @override */
 Vector2.prototype.multiply = function(v) {
 	return new Vector2(
 		this.x * v.x,
@@ -131,9 +104,7 @@ Vector2.prototype.multiply = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- */
+/** @override */
 Vector2.prototype.multiplyScalar = function(n) {
 	return new Vector2(
 		this.x * n,
@@ -141,24 +112,15 @@ Vector2.prototype.multiplyScalar = function(n) {
 	);
 };
 
-Vector2.prototype.normalize = function() {
-	const length = this.length();
-
-	if (length <= .00001) return new Vector2();
-
-	return this.divideScalar(length);
-};
-
-Vector2.prototype.randomize = function() {
+/** @override */
+Vector2.prototype.round = function() {
 	return new Vector2(
-		Math.random(),
-		Math.random(),
+		Math.round(this.x),
+		Math.round(this.y),
 	);
 };
 
-/**
- * @param {Vector2} v
- */
+/** @override */
 Vector2.prototype.substract = function(v) {
 	return new Vector2(
 		this.x - v.x,
@@ -166,13 +128,7 @@ Vector2.prototype.substract = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- */
-Vector2.prototype.substractScalar = function(n) {
-	return this.addScalar(-n);
-};
-
+/** @override */
 Vector2.prototype.toArray = function() {
 	return [
 		this.x,

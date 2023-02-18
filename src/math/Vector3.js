@@ -1,24 +1,30 @@
+import inherits from "../inherits.js";
+import Vector from "./Vector.js";
+
 /**
  * Tri-dimensional vector class.
  * 
+ * @extends Vector
  * @param {Number} x
  * @param {Number} y
  * @param {Number} z
- * @throws {TypeError}
  */
-export function Vector3(x, y, z) {
-	const {length} = arguments;
+export default function Vector3(x, y, z) {
+	Vector.call(this, 3, arguments.length);
 
-	if (length < 3) throw TypeError(`Failed to construct 'Vector3': 3 arguments required, but only ${length} present.`);
-
+	/** @type {Number} */
 	this.x = x;
+
+	/** @type {Number} */
 	this.y = y;
+
+	/** @type {Number} */
 	this.z = z;
 }
 
-/**
- * @param {Vector3} v
- */
+inherits(Vector3, Vector);
+
+/** @override */
 Vector3.prototype.add = function(v) {
 	return new Vector3(
 		this.x + v.x,
@@ -27,9 +33,7 @@ Vector3.prototype.add = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- */
+/** @override */
 Vector3.prototype.addScalar = function(n) {
 	return new Vector3(
 		this.x + n,
@@ -38,6 +42,16 @@ Vector3.prototype.addScalar = function(n) {
 	);
 };
 
+/** @override */
+Vector3.prototype.ceil = function() {
+	return new Vector3(
+		Math.ceil(this.x),
+		Math.ceil(this.y),
+		Math.ceil(this.z),
+	);
+};
+
+/** @override */
 Vector3.prototype.clone = function() {
 	return new Vector3(
 		this.x,
@@ -57,9 +71,7 @@ Vector3.prototype.cross = function(v) {
 	);
 };
 
-/**
- * @param {Vector3} v
- */
+/** @override */
 Vector3.prototype.distanceTo = function(v) {
 	return Math.sqrt(
 		(v.x - this.x) ** 2 +
@@ -68,10 +80,7 @@ Vector3.prototype.distanceTo = function(v) {
 	);
 };
 
-/**
- * @param {Vector3} v
- * @throws {RangeError}
- */
+/** @override */
 Vector3.prototype.divide = function(v) {
 	if (v.x === 0 || v.y === 0 || v.z === 0) throw RangeError("Division by zero");
 
@@ -82,23 +91,12 @@ Vector3.prototype.divide = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- * @throws {RangeError}
- */
-Vector3.prototype.divideScalar = function(n) {
-	if (n === 0) throw RangeError("Division by zero");
-
-	return this.multiplyScalar(1 / n);
-};
-
-/**
- * @param {Vector3} v
- */
+/** @override */
 Vector3.prototype.dot = function(v) {
 	return this.x * v.x + this.y * v.y + this.z * v.z;
 };
 
+/** @override */
 Vector3.prototype.floor = function() {
 	return new Vector3(
 		Math.floor(this.x),
@@ -107,9 +105,7 @@ Vector3.prototype.floor = function() {
 	);
 };
 
-/**
- * Only for 32-bit signed integers.
- */
+/** @override */
 Vector3.prototype.floor32 = function() {
 	return new Vector3(
 		this.x | 0,
@@ -118,32 +114,12 @@ Vector3.prototype.floor32 = function() {
 	);
 };
 
-Vector3.prototype.invert = function() {
-	return this.multiplyScalar(-1);
-};
-
-Vector3.prototype.length = function() {
-	return Math.sqrt(this.lengthSquared());
-};
-
+/** @override */
 Vector3.prototype.lengthSquared = function() {
 	return this.x ** 2 + this.y ** 2 + this.z ** 2;
 };
 
-/**
- * @param {Vector3} v
- * @param {Number} n
- */
-Vector3.prototype.lerp = function(v, n) {
-	const a = this.multiplyScalar(1 - n);
-	const b = v.multiplyScalar(n);
-
-	return a.add(b);
-};
-
-/**
- * @param {Vector3} v
- */
+/** @override */
 Vector3.prototype.multiply = function(v) {
 	return new Vector3(
 		this.x * v.x,
@@ -152,9 +128,7 @@ Vector3.prototype.multiply = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- */
+/** @override */
 Vector3.prototype.multiplyScalar = function(n) {
 	return new Vector3(
 		this.x * n,
@@ -163,25 +137,16 @@ Vector3.prototype.multiplyScalar = function(n) {
 	);
 };
 
-Vector3.prototype.normalize = function() {
-	const length = this.length();
-
-	if (length <= .00001) return new Vector3();
-
-	return this.divideScalar(length);
-};
-
-Vector3.prototype.randomize = function() {
+/** @override */
+Vector3.prototype.round = function() {
 	return new Vector3(
-		Math.random(),
-		Math.random(),
-		Math.random(),
+		Math.round(this.x),
+		Math.round(this.y),
+		Math.round(this.z),
 	);
 };
 
-/**
- * @param {Vector3} v
- */
+/** @override */
 Vector3.prototype.substract = function(v) {
 	return new Vector3(
 		this.x - v.x,
@@ -190,13 +155,12 @@ Vector3.prototype.substract = function(v) {
 	);
 };
 
-/**
- * @param {Number} n
- */
+/** @override */
 Vector3.prototype.substractScalar = function(n) {
 	return this.addScalar(-n);
 };
 
+/** @override */
 Vector3.prototype.toArray = function() {
 	return [
 		this.x,
