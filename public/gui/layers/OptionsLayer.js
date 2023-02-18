@@ -1,10 +1,11 @@
 import {Component, Image, ImageButton, Layer} from "src/gui";
+import inherits from "src/inherits";
 import {Vector2} from "src/math";
 import {gui} from "../../main.js";
 
-export default class OptionsLayer extends Layer {
+export default function OptionsLayer() {
 	/** @override */
-	build() {
+	this.build = function() {
 		/** @type {Number} */
 		let counter = 0;
 
@@ -74,5 +75,10 @@ export default class OptionsLayer extends Layer {
 				onMouseDown: () => gui.pop(),
 			}),
 		];
-	}
+	};
+
+	/** @override */
+	this.dispose = () => {};
 }
+
+inherits(OptionsLayer, Layer);

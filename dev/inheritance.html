@@ -1,117 +1,127 @@
 <!DOCTYPE html>
-<link rel="icon" href="data:">
-<script>
-	function debug(component) {
-		console.debug(component);
-		console.debug("Constructor name =", component.constructor.name);
-		console.debug("Instance of Component =", component instanceof Component);
-		console.debug("Instance of Button =", component instanceof Button);
-		console.log('');
-	}
 
-	function extension(child, parent) {
-		const prototype = Object.create(parent.prototype);
-		prototype.constructor = child;
+<html>
+	<head>
+		<link rel="icon" href="data:">
+		<script>
+			const inheritanceTest = false;
+			const benchmarkTest = false;
 
-		child.prototype = prototype;
-	}
+			function debug(component) {
+				console.debug(component);
+				console.debug("Constructor name =", component.constructor.name);
+				console.debug("Instance of Component =", component instanceof Component);
+				console.debug("Instance of Button =", component instanceof Button);
+				console.log('');
+			}
 
-	function Component({position, size}) {
-		this.position = position;
-		this.size = size;
-	}
+			function extension(child, parent) {
+				const prototype = Object.create(parent.prototype);
+				prototype.constructor = child;
 
-	function Button({onClick}) {
-		Component.apply(this, arguments);
+				child.prototype = prototype;
+			}
 
-		this.onClick = onClick;
-	}
-
-	extension(Button, Component);
-
-	/**
-	 * Inheritance tests: OK
-	 */
-	{
-		console.log("Component constructor name =", Component.prototype.constructor.name);
-		console.log("Button constructor name =", Button.prototype.constructor.name);
-
-		const component = new Component({
-			position: [12, 30],
-			size: [40, 40],
-		});
-
-		debug(component);
-
-		const button = new Button({
-			position: [7, 6],
-			size: [100, 20],
-			onClick: () => console.log("taptap"),
-		});
-
-		debug(button);
-	}
-
-	/**
-	 * Benchmark tests: OK
-	 * 
-	 * 1 000 000 instances (Chrome):
-	 * - Function constructors: ~6ms
-	 * - ES6 Classes: ~11ms
-	 * 
-	 * 100 000 000 instances (Chrome):
-	 * - Function constructors: ~130ms
-	 * - ES6 Classes: ~660ms
-	 */
-	{
-		class ComponentClass {
-			constructor({position, size}) {
+			function Component({position, size}) {
 				this.position = position;
 				this.size = size;
 			}
-		}
 
-		class ButtonClass extends ComponentClass {
-			constructor({position, size, onClick}) {
-				super({position, size});
+			function Button({onClick}) {
+				Component.apply(this, arguments);
 
 				this.onClick = onClick;
 			}
-		}
 
-		const instances = 1_000_000;
-		const test = 1;
+			extension(Button, Component);
 
-		if (test === 1) {
-			console.time("Function constructor");
-			for (let i = 0; i < instances; i++) {
+			/**
+			 * Inheritance tests: OK
+			 */
+			if (inheritanceTest) {
+				console.log("Component constructor name =", Component.prototype.constructor.name);
+				console.log("Button constructor name =", Button.prototype.constructor.name);
+
 				const component = new Component({
 					position: [12, 30],
 					size: [40, 40],
 				});
+
+				debug(component);
 
 				const button = new Button({
 					position: [7, 6],
 					size: [100, 20],
 					onClick: () => console.log("taptap"),
 				});
-			}
-			console.timeEnd("Function constructor");
-		} else if (test === 2) {
-			console.time("ES6 class");
-			for (let i = 0; i < instances; i++) {
-				const component = new ComponentClass({
-					position: [12, 30],
-					size: [40, 40],
-				});
 
-				const button = new ButtonClass({
-					position: [7, 6],
-					size: [100, 20],
-					onClick: () => console.log("taptap"),
-				});
+				debug(button);
 			}
-			console.timeEnd("ES6 class");
-		}
-	}
-</script>
+
+			/**
+			 * Benchmark tests: OK
+			 * 
+			 * 1 000 000 instances (Chrome):
+			 * - Function constructors: ~6ms
+			 * - ES6 Classes: ~11ms
+			 * 
+			 * 100 000 000 instances (Chrome):
+			 * - Function constructors: ~130ms
+			 * - ES6 Classes: ~660ms
+			 */
+			if (benchmarkTest) {
+				class ComponentClass {
+					constructor({position, size}) {
+						this.position = position;
+						this.size = size;
+					}
+				}
+
+				class ButtonClass extends ComponentClass {
+					constructor({position, size, onClick}) {
+						super({position, size});
+
+						this.onClick = onClick;
+					}
+				}
+
+				const instances = 1_000_000;
+				const test = 1;
+
+				if (test === 1) {
+					console.time("Function constructor");
+					for (let i = 0; i < instances; i++) {
+						const component = new Component({
+							position: [12, 30],
+							size: [40, 40],
+						});
+
+						const button = new Button({
+							position: [7, 6],
+							size: [100, 20],
+							onClick: () => console.log("taptap"),
+						});
+					}
+					console.timeEnd("Function constructor");
+				} else if (test === 2) {
+					console.time("ES6 class");
+					for (let i = 0; i < instances; i++) {
+						const component = new ComponentClass({
+							position: [12, 30],
+							size: [40, 40],
+						});
+
+						const button = new ButtonClass({
+							position: [7, 6],
+							size: [100, 20],
+							onClick: () => console.log("taptap"),
+						});
+					}
+					console.timeEnd("ES6 class");
+				}
+			}
+		</script>
+	</head>
+
+	<body></body>
+</html>
