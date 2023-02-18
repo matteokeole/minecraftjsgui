@@ -1,6 +1,6 @@
 ## WebGLRenderer
 
-> How does this class accesses the base paths for textures and shaders?
+> How does this class accesses the base paths for textures and shaders? Answer: With a manager that wraps the renderer along with a reference to the instance
 
 Class grouping a DOM/offscreen canvas, GLSL shaders and WebGL textures to make general-purpose rendering.
 

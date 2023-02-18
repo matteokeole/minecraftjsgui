@@ -4,9 +4,6 @@ import {Component, Group, Layer} from "src/gui";
 import {Matrix3, Vector2} from "src/math";
 import RendererManager from "../../src/RendererManager.js";
 
-/**
- * @extends RendererManager
- */
 export default class GUI extends RendererManager {
 	/**
 	 * @param {Instance} instance
@@ -186,15 +183,9 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
-	 * @todo Review documentation
-	 * 
 	 * Builds a new layer on top of the layer stack.
-	 * NOTE: Calling this method will result in all the children of the new layer
+	 * Calling this method will result in all the children of the new layer
 	 * being registered into the render queue.
-	 * The previous registered components won't be removed.
-	 * 
-	 * Registers the children of the provided layer in the render queue,
-	 * but NOT the children of the already rendered layers.
 	 * The new components will be rendered on top of the previous ones.
 	 * 
 	 * @param {Layer} layer
@@ -207,17 +198,23 @@ export default class GUI extends RendererManager {
 
 		this.lastInsertionIndices.push(this.tree.length);
 		this.addChildrenToRenderQueue(layer.build(), true, true);
+
+		this.computeTree();
+		this.render();
 	}
 
 	/**
 	 * Disposes the last layer from the layer stack.
-	 * NOTE: Calling this method will result in all the children of all the stacked layers
+	 * Calling this method will result in all the children of all the stacked layers
 	 * being registered into the render queue.
-	 * The previous registered components will be removed,
-	 * so that they don't get rendered twice in the next frame.
+	 * NOTE: The first layer cannot be popped.
 	 */
 	pop() {
-		const layer = this.layerStack.pop();
+		const {layerStack} = this;
+
+		if (layerStack.length === 1) return;
+
+		const layer = layerStack.pop();
 		layer.dispose();
 
 		const lastInsertion = this.lastInsertionIndices.pop();
@@ -234,8 +231,9 @@ export default class GUI extends RendererManager {
 
 		this.addChildrenToRenderQueue(this.tree, true, false);
 
-		// Clear already rendered components
-		this.renderer.clear();
+		this.computeTree();
+		this.renderer.clear(); // Clear already rendered components
+		this.render();
 
 		this.instance.updateRendererTexture(0, this.renderer.canvas);
 	}

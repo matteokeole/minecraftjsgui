@@ -3,11 +3,11 @@
 layout(location = 0) in vec2 a_position;
 layout(location = 1) in mat3 a_world;
 layout(location = 4) in mat3 a_texture;
-layout(location = 7) in float a_textureIndex;
+layout(location = 7) in uint a_textureIndex;
 
 uniform mat3 u_projection;
 
-out float v_textureIndex;
+flat out uint v_textureIndex;
 out vec2 v_uv;
 
 void main() {

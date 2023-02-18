@@ -52,21 +52,10 @@ export default class WebGLRenderer {
 	}
 
 	build() {
-		const
-			canvas = this.#offscreen ? new OffscreenCanvas(0, 0) : document.createElement("canvas"),
-			gl = canvas.getContext(this.#version === 2 ? "webgl2" : "webgl");
+		this.canvas = this.#offscreen ? new OffscreenCanvas(0, 0) : document.createElement("canvas");
+		this.gl = this.canvas.getContext(this.#version === 2 ? "webgl2" : "webgl");
 
-		if (gl === null) throw new NoWebGL2Error();
-
-		this.canvas = canvas;
-
-		gl.attribute = {};
-		gl.buffer = {};
-		gl.texture = {};
-		gl.uniform = {};
-		gl.vao = {};
-
-		this.gl = gl;
+		if (this.gl === null) throw new NoWebGL2Error();
 	}
 
 	/**
@@ -179,7 +168,9 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * @param {Mesh[]} scene
+	 * Renders a frame.
+	 * 
+	 * @param {Array} scene
 	 * @param {Camera} camera
 	 */
 	render(scene, camera) {

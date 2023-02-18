@@ -17,9 +17,9 @@ export default function Component({align, margin, size}) {
 	let position;
 
 	/**
-	 * @todo Rework
+	 * @todo Optimize
 	 * 
-	 * COmputes the absolute position of the component
+	 * Computes the absolute position of the component
 	 * by using its alignment and margin.
 	 * 
 	 * @param {Vector2} initial
@@ -77,11 +77,7 @@ export default function Component({align, margin, size}) {
 
 	this.getPosition = () => position;
 
-	this.setPosition = function(newPosition) {
-		if (!(newPosition instanceof Vector2)) throw TypeError("Tried to set a non-Vector2 value as a position vector.");
-
-		position = newPosition;
-	};
+	this.setPosition = newPosition => void (position = newPosition);
 
 	this.getAlignment = () => align;
 
@@ -92,20 +88,14 @@ export default function Component({align, margin, size}) {
 	this.getWorldMatrix = () => Matrix3.translate(position).scale(size);
 
 	/**
-	 * Must be overridden in an instance.
-	 * 
 	 * @returns {Matrix3}
-	 * @throws {NotImplementedError}
 	 */
 	this.getTextureMatrix = () => {
 		throw new NotImplementedError();
 	};
 
 	/**
-	 * Must be overridden in an instance.
-	 * 
 	 * @returns {TextureWrapper}
-	 * @throws {NotImplementedError}
 	 */
 	this.getTextureWrapper = () => {
 		throw new NotImplementedError();

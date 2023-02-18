@@ -1,7 +1,9 @@
 import Instance from "src/instance";
-import GUI from "./extensions/GUI.js";
-import GUIRenderer from "./extensions/GUIRenderer.js";
-import MainMenuLayer from "./layers/MainMenuLayer.js";
+import GUI from "./gui/GUI.js";
+import GUIRenderer from "./gui/GUIRenderer.js";
+import MainMenuLayer from "./gui/layers/MainMenuLayer.js";
+
+/** @todo Fix undefined instance on catch */
 
 /** @type {GUI} */
 export let gui;
@@ -23,8 +25,6 @@ try {
 	);
 
 	gui.push(new MainMenuLayer());
-	gui.computeTree();
-	gui.render();
 
 	instance.startLoop();
 } catch (error) {

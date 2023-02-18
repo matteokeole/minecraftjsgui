@@ -4,3 +4,4 @@
 - Disable alpha on instance canvas?
 - Review the CSS of main/error
 - Review the CSS of ShaderCompilationError
+- Function constructor extends test

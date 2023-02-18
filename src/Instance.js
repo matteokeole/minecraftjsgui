@@ -412,9 +412,9 @@ export default function Instance() {
 	 */
 	function mouseMoveListener({clientX: x, clientY: y}) {
 		pointerPosition = new Vector2(x, y).multiplyScalar(devicePixelRatio).divideScalar(this.currentScale);
-		let i, listener;
+		let i, l, listener;
 
-		for (i = 0; i < mouseEnterListenerCount; i++) {
+		for (i = 0, l = mouseEnterListenerCount; i < l; i++) {
 			listener = mouseEnterListeners[i];
 
 			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
@@ -424,7 +424,7 @@ export default function Instance() {
 			listener(pointerPosition);
 		}
 
-		for (i = 0; i < mouseLeaveListenerCount; i++) {
+		for (i = 0, l = mouseLeaveListenerCount; i < l; i++) {
 			listener = mouseLeaveListeners[i];
 
 			if (intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
@@ -439,7 +439,7 @@ export default function Instance() {
 	 * Manager for the `mousedown` event.
 	 */
 	function mouseDownListener() {
-		for (let i = 0, listener; i < mouseDownListenerCount; i++) {
+		for (let i = 0, l = mouseDownListenerCount, listener; i < l; i++) {
 			listener = mouseDownListeners[i];
 
 			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
