@@ -25,8 +25,6 @@ try {
 	);
 
 	gui.push(new MainMenuLayer());
-	gui.computeTree();
-	gui.render();
 
 	instance.startLoop();
 } catch (error) {

@@ -198,6 +198,9 @@ export default class GUI extends RendererManager {
 
 		this.lastInsertionIndices.push(this.tree.length);
 		this.addChildrenToRenderQueue(layer.build(), true, true);
+
+		this.computeTree();
+		this.render();
 	}
 
 	/**
@@ -228,8 +231,9 @@ export default class GUI extends RendererManager {
 
 		this.addChildrenToRenderQueue(this.tree, true, false);
 
-		// Clear already rendered components
-		this.renderer.clear();
+		this.computeTree();
+		this.renderer.clear(); // Clear already rendered components
+		this.render();
 
 		this.instance.updateRendererTexture(0, this.renderer.canvas);
 	}

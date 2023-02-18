@@ -34,13 +34,7 @@ export default class MainMenuLayer extends Layer {
 							gui.renderQueue.push(this);
 							gui.render();
 						},
-						onMouseDown: function() {
-							return;
-
-							gui.push(new OptionsLayer());
-							gui.computeTree();
-							gui.render();
-						},
+						onMouseDown: () => gui.push(new OptionsLayer()),
 					}),
 					new ImageButton({
 						align: Component.alignRightTop,
@@ -87,11 +81,7 @@ export default class MainMenuLayer extends Layer {
 					gui.renderQueue.push(this);
 					gui.render();
 				},
-				onMouseDown: function() {
-					gui.push(new OptionsLayer());
-					gui.computeTree();
-					gui.render();
-				},
+				onMouseDown: () => gui.push(new OptionsLayer()),
 			}),
 			new ImageButton({
 				align: Component.alignRightTop,
@@ -117,8 +107,8 @@ export default class MainMenuLayer extends Layer {
 			new Image({
 				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
-				image: gui.renderer.textures["blue"],
-				size: new Vector2(300, 250),
+				image: gui.renderer.textures["darkgrey"],
+				size: new Vector2(400, 320),
 				uv: new Vector2(0, 0),
 			}),
 		];
