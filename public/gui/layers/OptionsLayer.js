@@ -1,6 +1,6 @@
 import {Component, Image, ImageButton, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import {gui} from "../main.js";
+import {gui} from "../../main.js";
 
 export default class OptionsLayer extends Layer {
 	/** @override */
@@ -8,8 +8,7 @@ export default class OptionsLayer extends Layer {
 		/** @type {Number} */
 		let counter = 0;
 
-		console.debug("Rebuilt OptionsLayer");
-		console.debug(`Counter = ${counter}`);
+		console.debug(`Rebuilt OptionsLayer, counter = ${counter}`);
 
 		return [
 			new ImageButton({
