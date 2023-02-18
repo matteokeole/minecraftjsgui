@@ -6,6 +6,7 @@ precision mediump sampler2DArray;
 flat in uint v_textureIndex;
 in vec2 v_uv;
 
+/** @todo Rebuild the array with only the used textures? */
 uniform sampler2DArray u_textures;
 
 out vec4 FragColor;

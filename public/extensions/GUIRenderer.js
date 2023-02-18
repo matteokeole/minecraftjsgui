@@ -89,7 +89,7 @@ export default class GUIRenderer extends WebGLRenderer {
 		]), gl.STATIC_DRAW);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureIndex);
-		gl.vertexAttribPointer(attributes.textureIndex, 1, gl.UNSIGNED_BYTE, false, 0, 0);
+		gl.vertexAttribIPointer(attributes.textureIndex, 1, gl.UNSIGNED_BYTE, false, 0, 0);
 		gl.vertexAttribDivisor(attributes.textureIndex, 1);
 	}
 
