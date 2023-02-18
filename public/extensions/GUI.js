@@ -183,15 +183,9 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
-	 * @todo Review documentation
-	 * 
 	 * Builds a new layer on top of the layer stack.
-	 * NOTE: Calling this method will result in all the children of the new layer
+	 * Calling this method will result in all the children of the new layer
 	 * being registered into the render queue.
-	 * The previous registered components won't be removed.
-	 * 
-	 * Registers the children of the provided layer in the render queue,
-	 * but NOT the children of the already rendered layers.
 	 * The new components will be rendered on top of the previous ones.
 	 * 
 	 * @param {Layer} layer
@@ -208,11 +202,8 @@ export default class GUI extends RendererManager {
 
 	/**
 	 * Disposes the last layer from the layer stack.
-	 * NOTE: Calling this method will result in all the children of all the stacked layers
+	 * Calling this method will result in all the children of all the stacked layers
 	 * being registered into the render queue.
-	 * The previous registered components will be removed,
-	 * so that they don't get rendered twice in the next frame.
-	 * 
 	 * NOTE: The first layer cannot be popped.
 	 */
 	pop() {
