@@ -3,9 +3,10 @@
 precision mediump float;
 precision mediump sampler2DArray;
 
-in float v_textureIndex;
+flat in uint v_textureIndex;
 in vec2 v_uv;
 
+/** @todo Only upload the used textures instead of the whold array? */
 uniform sampler2DArray u_textures;
 
 out vec4 FragColor;

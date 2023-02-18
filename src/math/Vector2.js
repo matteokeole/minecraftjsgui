@@ -1,7 +1,6 @@
 /**
  * Bi-dimensional vector class.
  * 
- * @constructor
  * @param {Number} x
  * @param {Number} y
  * @throws {TypeError}
@@ -82,10 +81,17 @@ Vector2.prototype.dot = function(v) {
 	return this.x * v.x + this.y * v.y;
 };
 
-/**
- * NOTE: Only for 32-bit signed integers.
- */
 Vector2.prototype.floor = function() {
+	return new Vector2(
+		Math.floor(this.x),
+		Math.floor(this.y),
+	);
+};
+
+/**
+ * Only for 32-bit signed integers.
+ */
+Vector2.prototype.floor32 = function() {
 	return new Vector2(
 		this.x | 0,
 		this.y | 0,

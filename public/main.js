@@ -1,81 +1,30 @@
-import {Button, Group, Image, ImageButton} from "src/gui";
 import Instance from "src/instance";
-import {Vector2} from "src/math";
-import GUIRenderer from "./extensions/GUIRenderer.js";
+import GUI from "./gui/GUI.js";
+import GUIRenderer from "./gui/GUIRenderer.js";
+import MainMenuLayer from "./gui/layers/MainMenuLayer.js";
 
-import WebGLRenderer from "../src/WebGLRenderer.js";
+/** @todo Fix undefined instance on catch */
 
-export const instance = new Instance();
-export let guiRenderer;
+/** @type {GUI} */
+export let gui;
 
 try {
-	const renderer = new WebGLRenderer({
-		offscreen: false,
-		version: 2,
-	});
+	/** @type {Instance} */
+	const instance = new Instance();
 
-	renderer.build();
-
-	const program = await renderer.loadProgram("assets/shaders/main.vert", "assets/shaders/main.frag");
-	renderer.linkProgram(program);
+	gui = new GUI(instance, new GUIRenderer());
 
 	instance.build();
 	await instance.initialize();
+	await instance.setupRenderers([gui]);
 
-	await instance.setupRenderers([
-		guiRenderer = new GUIRenderer(instance),
-	]);
+	// Load GUI textures and test color textures
+	await gui.renderer.loadTestTextures(
+		await (await fetch("assets/textures/textures.json")).json(),
+		instance.texturePath,
+	);
 
-	// Load GUI textures
-	const guiTextures = await (await fetch("assets/textures/textures.json")).json();
-	await guiRenderer.loadTextures(...guiTextures);
-
-	const tree = [
-		new Group({
-			align: ["center", "center"],
-			margin: new Vector2(0, 0),
-			size: new Vector2(200, 96),
-			children: [
-				new ImageButton({
-					align: ["left", "top"],
-					margin: new Vector2(0, 0),
-					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
-					uv: new Vector2(0, 186),
-				}),
-				/* new Button({
-					align: ["right", "top"],
-					margin: new Vector2(0, 0),
-					size: new Vector2(200, 20),
-				}), */
-				new ImageButton({
-					align: ["left", "bottom"],
-					margin: new Vector2(0, 0),
-					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
-					uv: new Vector2(0, 186),
-				}),
-				new ImageButton({
-					align: ["right", "bottom"],
-					margin: new Vector2(0, 0),
-					size: new Vector2(20, 20),
-					image: guiRenderer.getTexture("gui/widgets.png"),
-					uv: new Vector2(0, 186),
-				}),
-			],
-		}),
-		new Image({
-			align: ["center", "center"],
-			margin: new Vector2(0, 0),
-			size: new Vector2(20, 20),
-			image: guiRenderer.getTexture("gui/widgets.png"),
-			uv: new Vector2(0, 106),
-		}),
-	];
-
-	guiRenderer.setComponentTree(tree);
-	guiRenderer.computeTree();
-	guiRenderer.render();
+	gui.push(new MainMenuLayer());
 
 	instance.startLoop();
 } catch (error) {

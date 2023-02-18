@@ -1,7 +1,6 @@
 /**
  * Tri-dimensional vector class.
  * 
- * @constructor
  * @param {Number} x
  * @param {Number} y
  * @param {Number} z
@@ -100,10 +99,18 @@ Vector3.prototype.dot = function(v) {
 	return this.x * v.x + this.y * v.y + this.z * v.z;
 };
 
-/**
- * NOTE: Only for 32-bit signed integers.
- */
 Vector3.prototype.floor = function() {
+	return new Vector3(
+		Math.floor(this.x),
+		Math.floor(this.y),
+		Math.floor(this.z),
+	);
+};
+
+/**
+ * Only for 32-bit signed integers.
+ */
+Vector3.prototype.floor32 = function() {
 	return new Vector3(
 		this.x | 0,
 		this.y | 0,

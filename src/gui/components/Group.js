@@ -3,7 +3,6 @@ import Component from "./Component.js";
 /**
  * @todo Documentation
  * @todo Throw an error if a group child doesn't fit its parent?
- * @constructor
  * @extends Component
  * @param {{
  *    children: Component[]
@@ -40,7 +39,7 @@ export default function Group({children}) {
 		if (vertical === "bottom") initialPosition.y = o.y - m.y;
 		else if (vertical === "center") initialPosition.y += o.y / 2;
 
-		this.setPosition(initialPosition.floor());
+		this.setPosition(initialPosition.floor32());
 
 		const position = this.getPosition();
 

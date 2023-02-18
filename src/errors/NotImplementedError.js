@@ -2,7 +2,6 @@
  * Represents an error where a class method is yet to be implemented.
  * This can act as an exception based TODO tag.
  * 
- * @constructor
  * @extends Error
  */
 export default function NotImplementedError() {
