@@ -23,7 +23,7 @@ export default function Component({align, margin, size}) {
 			m = margin,
 			o = parentSize.substract(size);
 
-		if (align !== 0 && !align) throw new TypeError(`Expecting an instance of Number, received ${typeof align}`);
+		if (align !== 0 && !align) throw TypeError(`Expecting an instance of Number, ${align.constructor.name} given`);
 
 		switch (align) {
 			case Component.alignLeftTop:
@@ -72,7 +72,7 @@ export default function Component({align, margin, size}) {
 
 	/** @returns {Vector2} */
 	this.getPosition = function() {
-		if (!(position instanceof Vector2)) throw new TypeError(`Expecting an instance of Vector2, received ${typeof position}`);
+		if (!(position instanceof Vector2)) throw TypeError(`Expecting an instance of Vector2, ${position.constructor.name} given`);
 
 		return position;
 	};
@@ -82,7 +82,7 @@ export default function Component({align, margin, size}) {
 
 	/** @returns {Number} */
 	this.getAlign = function() {
-		if (!(align instanceof Number)) throw new TypeError(`Expecting an instance of Number, received ${typeof align}`);
+		if (!(align instanceof Number)) throw TypeError(`Expecting an instance of Number, ${align.constructor.name} given`);
 
 		return align;
 	};;
@@ -92,6 +92,9 @@ export default function Component({align, margin, size}) {
 
 	/** @returns {Vector2} */
 	this.getSize = () => size;
+
+	/** @param {Vector2} value */
+	this.setSize = value => void (size = value);
 
 	/** @returns {Matrix3} */
 	this.getWorldMatrix = () => Matrix3
