@@ -1,4 +1,4 @@
-import {NotImplementedError} from "src/errors";
+import {NotImplementedError} from "./errors/index.js";
 import Instance from "./Instance.js";
 import WebGLRenderer from "./WebGLRenderer.js";
 

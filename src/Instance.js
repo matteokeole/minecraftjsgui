@@ -1,4 +1,4 @@
-import {Vector2, clampDown, clampUp, intersects} from "src/math";
+import {Vector2, clampDown, clampUp, intersects} from "./math/index.js";
 import Program from "./Program.js";
 import WebGLRenderer from "./WebGLRenderer.js";
 import RendererManager from "./RendererManager.js";
@@ -418,7 +418,7 @@ export default function Instance() {
 			listener = mouseEnterListeners[i];
 
 			if (!intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
-			if (listener.component.isHovered()) continue;
+			if (listener.component.getIsHovered()) continue;
 
 			listener.component.setIsHovered(true);
 			listener(pointerPosition);
@@ -428,7 +428,7 @@ export default function Instance() {
 			listener = mouseLeaveListeners[i];
 
 			if (intersects(pointerPosition, listener.component.getPosition(), listener.component.getSize())) continue;
-			if (!listener.component.isHovered()) continue;
+			if (!listener.component.getIsHovered()) continue;
 
 			listener.component.setIsHovered(false);
 			listener(pointerPosition);

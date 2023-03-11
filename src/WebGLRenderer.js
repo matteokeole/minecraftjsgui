@@ -1,5 +1,5 @@
-import {NotImplementedError, NoWebGL2Error, ShaderCompilationError} from "src/errors";
-import {Vector2} from "src/math";
+import {NotImplementedError, NoWebGL2Error, ShaderCompilationError} from "./errors/index.js";
+import {Vector2} from "./math/index.js";
 import Program from "./Program.js";
 import TextureWrapper from "./TextureWrapper.js";
 

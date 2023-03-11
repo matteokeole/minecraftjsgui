@@ -204,7 +204,7 @@ export default class GUIRenderer extends WebGLRenderer {
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureIndex);
 		gl.bufferData(
 			gl.ARRAY_BUFFER,
-			new Uint8Array(scene.map(component => component.getTextureWrapper().index)),
+			new Uint8Array(scene.map(component => component.getTexture().index)),
 			gl.STATIC_DRAW,
 		);
 

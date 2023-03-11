@@ -1,6 +1,7 @@
-import {NotImplementedError, ShaderCompilationError} from "src/errors";
+import {NotImplementedError, ShaderCompilationError} from "../../errors/index.js";
 
 /**
+ * @todo Replace by TextureGenerator
  * @todo Remove duplicate methods!
  */
 export default function BufferRenderer(instance) {

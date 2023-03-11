@@ -1,24 +1,17 @@
-import {NotImplementedError} from "src/errors";
-import {Matrix3, Vector2} from "src/math";
+import {Matrix3, Vector2} from "../../math/index.js";
 
 /**
  * @param {{
- *    align: String[2],
+ *    align: Number[2],
  *    margin: Vector2,
  *    size: Vector2,
  * }}
  */
 export default function Component({align, margin, size}) {
-	/**
-	 * Component offset from the top-left corner of the viewport.
-	 * 
-	 * @type {Vector2}
-	 */
+	/** @type {Vector2} */
 	let position;
 
 	/**
-	 * @todo Optimize
-	 * 
 	 * Computes the absolute position of the component
 	 * by using its alignment and margin.
 	 * 
@@ -29,6 +22,8 @@ export default function Component({align, margin, size}) {
 		const
 			m = margin,
 			o = parentSize.substract(size);
+
+		if (align !== 0 && !align) throw new TypeError(`Expecting an instance of Number, received ${typeof align}`);
 
 		switch (align) {
 			case Component.alignLeftTop:
@@ -75,38 +70,35 @@ export default function Component({align, margin, size}) {
 		position = initial.floor32();
 	};
 
-	this.getPosition = () => position;
+	/** @returns {Vector2} */
+	this.getPosition = function() {
+		if (!(position instanceof Vector2)) throw new TypeError(`Expecting an instance of Vector2, received ${typeof position}`);
 
-	this.setPosition = newPosition => void (position = newPosition);
+		return position;
+	};
 
-	this.getAlignment = () => align;
+	/** @param {Vector2} value */
+	this.setPosition = value => void (position = value);
 
+	/** @returns {Number} */
+	this.getAlign = function() {
+		if (!(align instanceof Number)) throw new TypeError(`Expecting an instance of Number, received ${typeof align}`);
+
+		return align;
+	};;
+
+	/** @returns {Vector2} */
 	this.getMargin = () => margin;
 
+	/** @returns {Vector2} */
 	this.getSize = () => size;
 
-	this.getWorldMatrix = () => Matrix3.translate(position).scale(size);
-
-	/**
-	 * @returns {Matrix3}
-	 */
-	this.getTextureMatrix = () => {
-		throw new NotImplementedError();
-	};
-
-	/**
-	 * @returns {TextureWrapper}
-	 */
-	this.getTextureWrapper = () => {
-		throw new NotImplementedError();
-	};
+	/** @returns {Matrix3} */
+	this.getWorldMatrix = () => Matrix3
+		.translate(position)
+		.scale(this.getSize());
 }
 
-/**
- * Component alignment constants.
- * 
- * @type {Number}
- */
 Component.alignLeftTop = 0;
 Component.alignCenterTop = 1;
 Component.alignRightTop = 2;

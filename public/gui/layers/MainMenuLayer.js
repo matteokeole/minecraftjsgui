@@ -1,11 +1,14 @@
-import {Component, Image, ImageButton, Layer} from "src/gui";
+import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
+import {inherits} from "src/utils";
 import {gui} from "../../main.js";
 import OptionsLayer from "./OptionsLayer.js";
+import Image from "../components/Image.js";
+import ImageButton from "../components/ImageButton.js";
 
-export default class MainMenuLayer extends Layer {
+export default function MainMenuLayer() {
 	/** @override */
-	build() {
+	this.build = function() {
 		return [
 			/* new Group({
 				align: Component.alignCenter,
@@ -112,5 +115,10 @@ export default class MainMenuLayer extends Layer {
 				uv: new Vector2(0, 0),
 			}),
 		];
-	}
+	};
+
+	/** @override */
+	this.dispose = () => {};
 }
+
+inherits(MainMenuLayer, Layer);
