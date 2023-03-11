@@ -1,7 +1,7 @@
 import Instance from "src/instance";
 import GUI from "./gui/GUI.js";
 import GUIRenderer from "./gui/GUIRenderer.js";
-import TestLayer from "./gui/layers/TestLayer.js";
+import MainMenuLayer from "./gui/layers/MainMenuLayer.js";
 
 /** @todo Fix undefined instance on catch */
 
@@ -24,7 +24,7 @@ try {
 		instance.texturePath,
 	);
 
-	gui.push(new TestLayer());
+	gui.push(new MainMenuLayer());
 
 	instance.startLoop();
 } catch (error) {
