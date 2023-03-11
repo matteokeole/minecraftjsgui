@@ -121,7 +121,7 @@ Vector2.prototype.round = function() {
 };
 
 /** @override */
-Vector2.prototype.substract = function(v) {
+Vector2.prototype.subtract = function(v) {
 	return new Vector2(
 		this.x - v.x,
 		this.y - v.y,

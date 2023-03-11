@@ -21,7 +21,7 @@ export default function Component({align, margin, size}) {
 	this.computePosition = function(initial, parentSize) {
 		const
 			m = margin,
-			o = parentSize.substract(size);
+			o = parentSize.subtract(size);
 
 		if (align !== 0 && !align) throw TypeError(`Expecting an instance of Number, ${align.constructor.name} given`);
 

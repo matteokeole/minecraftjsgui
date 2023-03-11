@@ -147,7 +147,7 @@ Vector3.prototype.round = function() {
 };
 
 /** @override */
-Vector3.prototype.substract = function(v) {
+Vector3.prototype.subtract = function(v) {
 	return new Vector3(
 		this.x - v.x,
 		this.y - v.y,
@@ -156,7 +156,7 @@ Vector3.prototype.substract = function(v) {
 };
 
 /** @override */
-Vector3.prototype.substractScalar = function(n) {
+Vector3.prototype.subtractScalar = function(n) {
 	return this.addScalar(-n);
 };
 
