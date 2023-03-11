@@ -22,7 +22,7 @@ export default function Group() {
 		const
 			[horizontal, vertical] = align,
 			m = margin,
-			o = parentSize.substract(size);
+			o = parentSize.subtract(size);
 		initialPosition = initialPosition.add(m);
 
 		if (horizontal === "right") initialPosition.x = o.x - m.x;

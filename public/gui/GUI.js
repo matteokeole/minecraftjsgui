@@ -90,24 +90,11 @@ export default class GUI extends RendererManager {
 	 */
 	addListeners(component) {
 		const {instance} = this;
+		let listener;
 
-		if (component.onMouseDown) {
-			component.onMouseDown.component = component;
-
-			instance.addMouseDownListener(component.onMouseDown);
-		}
-
-		if (component.onMouseEnter) {
-			component.onMouseEnter.component = component;
-
-			instance.addMouseEnterListener(component.onMouseEnter);
-		}
-
-		if (component.onMouseLeave) {
-			component.onMouseLeave.component = component;
-
-			instance.addMouseLeaveListener(component.onMouseLeave);
-		}
+		if (listener = component.getOnMouseDown()) instance.addMouseDownListener(listener);
+		if (listener = component.getOnMouseEnter()) instance.addMouseEnterListener(listener);
+		if (listener = component.getOnMouseLeave()) instance.addMouseLeaveListener(listener);
 	}
 
 	/**
@@ -118,12 +105,12 @@ export default class GUI extends RendererManager {
 	removeListeners(components) {
 		const {instance} = this;
 
-		for (let i = 0, l = components.length, component; i < l; i++) {
+		for (let i = 0, l = components.length, component, listener; i < l; i++) {
 			component = components[i];
 
-			component.onMouseDown && instance.removeMouseDownListener(component.onMouseDown);
-			component.onMouseEnter && instance.removeMouseEnterListener(component.onMouseEnter);
-			component.onMouseLeave && instance.removeMouseLeaveListener(component.onMouseLeave);
+			if (listener = component.getOnMouseDown()) instance.removeMouseDownListener(listener);
+			if (listener = component.getOnMouseEnter()) instance.removeMouseEnterListener(listener);
+			if (listener = component.getOnMouseLeave()) instance.removeMouseLeaveListener(listener);
 		}
 	}
 

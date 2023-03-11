@@ -17,7 +17,7 @@ export default function VisualComponent({uv}) {
 
 	/** @returns {TextureWrapper} */
 	this.getTexture = function() {
-		if (!(texture instanceof TextureWrapper)) throw new TypeError(`Expecting an instance of TextureWrapper, received ${typeof texture}`);
+		if (!(texture instanceof TextureWrapper)) throw TypeError(`Expecting an instance of TextureWrapper, ${texture.constructor.name} given`);
 
 		return texture;
 	};

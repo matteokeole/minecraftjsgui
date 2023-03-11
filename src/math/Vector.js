@@ -162,14 +162,14 @@ Vector.prototype.round = function() {
  * @param {Vector} v
  * @returns {Vector}
  */
-Vector.prototype.substract = function(v) {
+Vector.prototype.subtract = function(v) {
 	throw new NotImplementedError();
 };
 
 /**
  * @param {Number} n
  */
-Vector.prototype.substractScalar = function(n) {
+Vector.prototype.subtractScalar = function(n) {
 	return this.addScalar(-n);
 };
 
