@@ -1,5 +1,5 @@
 import Camera from "./Camera.js";
-import {Matrix3} from "src/math";
+import {Matrix3} from "../math/index.js";
 
 export default class OrthographicCamera extends Camera {
 	/**

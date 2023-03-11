@@ -1,4 +1,4 @@
-import {Vector2} from "src/math";
+import {Vector2} from "./math/index.js";
 
 /**
  * Wrapper for `WebGLTexture` objects.

@@ -1,6 +1,5 @@
 import {NotImplementedError} from "../errors/index.js";
 
-/** @todo Documentation */
 export default function Layer() {}
 
 /**
@@ -14,7 +13,6 @@ Layer.prototype.build = function() {
 	throw new NotImplementedError();
 };
 
-/** @todo Documentation */
 Layer.prototype.dispose = function() {
 	throw new NotImplementedError();
 };

@@ -1,5 +1,5 @@
-import {NotImplementedError} from "src/errors";
-import {Matrix3, Vector3} from "src/math";
+import {NotImplementedError} from "../errors/index.js";
+import {Matrix3, Vector3} from "../math/index.js";
 
 export default class Camera {
 	constructor() {

@@ -1,32 +1,24 @@
-import Component from "./Component.js";
+import {StructuralComponent} from "src/gui";
+import {inherits} from "src/utils";
 
 /**
- * @todo Documentation
  * @todo Throw an error if a group child doesn't fit its parent?
- * @extends Component
- * @param {{
- *    children: Component[]
- * }}
+ * 
+ * @extends StructuralComponent
  */
-export default function Group({children}) {
-	Component.apply(this, arguments);
-
-	const align = this.getAlignment();
-	const margin = this.getMargin();
-	const size = this.getSize();
-
-	this.getChildren = () => children;
-
-	// Cache the child length
-	const childLength = children.length;
+export default function Group() {
+	StructuralComponent.apply(this, arguments);
 
 	/**
-	 * @todo Review + documentation
-	 * 
 	 * @param {Vector2} initialPosition
 	 * @param {Vector2} parentSize
 	 */
 	this.computePosition = function(initialPosition, parentSize) {
+		const align = this.getAlign();
+		const margin = this.getMargin();
+		const size = this.getSize();
+		const length = this.getChildren().length;
+
 		const
 			[horizontal, vertical] = align,
 			m = margin,
@@ -40,9 +32,12 @@ export default function Group({children}) {
 		else if (vertical === "center") initialPosition.y += o.y / 2;
 
 		this.setPosition(initialPosition.floor32());
-
 		const position = this.getPosition();
 
-		for (let i = 0; i < childLength; i++) children[i].computePosition(position.clone(), size);
+		for (let i = 0; i < length; i++) {
+			children[i].computePosition(position.clone(), size);
+		}
 	};
 }
+
+inherits(StructuralComponent, Group);

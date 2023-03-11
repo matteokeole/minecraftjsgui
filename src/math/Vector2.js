@@ -1,5 +1,5 @@
-import inherits from "../inherits.js";
 import Vector from "./Vector.js";
+import {inherits} from "../utils/index.js";
 
 /**
  * Bi-dimensional vector class.

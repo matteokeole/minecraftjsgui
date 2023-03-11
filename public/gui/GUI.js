@@ -1,8 +1,9 @@
 import GUIRenderer from "./GUIRenderer.js";
 import {OrthographicCamera} from "src/cameras";
-import {Component, Group, Layer} from "src/gui";
+import {Component, Layer} from "src/gui";
 import {Matrix3, Vector2} from "src/math";
-import RendererManager from "../../src/RendererManager.js";
+import RendererManager from "src/manager";
+import Group from "./components/Group.js";
 
 export default class GUI extends RendererManager {
 	/**

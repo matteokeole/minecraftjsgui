@@ -1,8 +1,10 @@
-import {Component, Image, ImageButton, Layer} from "src/gui";
-import inherits from "src/inherits";
+import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
+import {inherits} from "src/utils";
 import {gui} from "../../main.js";
 import OptionsLayer from "./OptionsLayer.js";
+import Image from "../components/Image.js";
+import ImageButton from "../components/ImageButton.js";
 
 export default function MainMenuLayer() {
 	/** @override */
