@@ -1,9 +1,8 @@
 import GUIRenderer from "./GUIRenderer.js";
 import {OrthographicCamera} from "src/cameras";
-import {Component, Layer} from "src/gui";
+import {Component, DynamicComponent, Layer, StructuralComponent} from "src/gui";
 import {Matrix3, Vector2} from "src/math";
 import RendererManager from "src/manager";
-import Group from "./components/Group.js";
 
 export default class GUI extends RendererManager {
 	/**
@@ -71,15 +70,17 @@ export default class GUI extends RendererManager {
 		for (let i = 0, l = children.length, component; i < l; i++) {
 			component = children[i];
 
-			if (component instanceof Group) {
+			if (component instanceof StructuralComponent) {
 				this.addChildrenToRenderQueue(component.getChildren(), addListeners, addToTree);
 
 				continue;
 			}
 
 			this.renderQueue.push(component);
-			addListeners && this.addListeners(component);
-			addToTree && this.tree.push(component);
+
+			if (addListeners && component instanceof DynamicComponent) this.addListeners(component);
+
+			if (addToTree) this.tree.push(component);
 		}
 	}
 
@@ -107,6 +108,8 @@ export default class GUI extends RendererManager {
 
 		for (let i = 0, l = components.length, component, listener; i < l; i++) {
 			component = components[i];
+
+			if (!(component instanceof DynamicComponent)) continue;
 
 			if (listener = component.getOnMouseDown()) instance.removeMouseDownListener(listener);
 			if (listener = component.getOnMouseEnter()) instance.removeMouseEnterListener(listener);
@@ -157,7 +160,7 @@ export default class GUI extends RendererManager {
 		for (let i = 0, l = this.tree.length, component; i < l; i++) {
 			component = this.tree[i];
 
-			if (component instanceof Group) {
+			if (component instanceof StructuralComponent) {
 				this.addChildrenToRenderQueue(component.getChildren(), false, false);
 
 				continue;
