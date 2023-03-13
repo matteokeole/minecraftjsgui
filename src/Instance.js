@@ -216,6 +216,17 @@ export default function Instance() {
 	};
 
 	/**
+	 * Setups the instance texture generator.
+	 * 
+	 * @param {TextureGenerator} generator
+	 */
+	this.setupTextureGenerator = async function(generator) {
+		generator.build();
+		await generator.init(this.shaderPath);
+		// await generator.loadTextures("gui/widgets.png", this.texturePath);
+	};
+
+	/**
 	 * Creates an output `WebGLTexture` for a new renderer.
 	 * 
 	 * @returns {WebGLTexture}

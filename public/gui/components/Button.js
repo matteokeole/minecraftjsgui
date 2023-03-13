@@ -1,6 +1,7 @@
 import {DynamicComponent} from "src/gui";
 import {Vector2} from "src/math";
 import {inherits} from "src/utils";
+import {textureGenerator as generator} from "../../main.js";
 
 const BUTTON_HEIGHT = 20;
 
@@ -18,8 +19,22 @@ export default function Button({width, image}) {
 	this.setSize(new Vector2(width, BUTTON_HEIGHT));
 	this.setUV(new Vector2(0, 0));
 
-	/** @todo TextureGenerator */
+	// const texture = generateButtonTexture(width);
 	this.setTexture(image);
 }
 
 inherits(DynamicComponent, Button);
+
+function generateButtonTexture({width}) {
+	const viewport = new Vector2(width, 60);
+
+	generator.setViewport(viewport);
+
+	const {gl} = generator;
+
+	gl.useProgram(generator.programs.button);
+	gl.uniform2f(generator.uniforms.viewport, viewport.x, viewport.y);
+	gl.bindTexture(gl.TEXTURE_2D, generator.textures["gui/widgets.png"].texture);
+
+	gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+}
