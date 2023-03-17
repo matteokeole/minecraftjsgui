@@ -8,13 +8,13 @@ export default class TextureGenerator extends WebGLRenderer {
 	vaos;
 
 	/** @type {Object<String, Number>} */
-	#attributes;
+	attributes;
 
 	/** @type {Object<String, WebGLUniformLocation>} */
-	#uniforms;
+	uniforms;
 
 	/** @type {Object<String, WebGLBuffer>} */
-	#buffers;
+	buffers;
 
 	constructor() {
 		super({
@@ -51,21 +51,21 @@ export default class TextureGenerator extends WebGLRenderer {
 		gl.useProgram(program);
 		gl.bindVertexArray(this.vaos.button);
 
-		this.#attributes = {
+		this.attributes = {
 			position: 0,
 		};
 
-		this.#uniforms = {
+		this.uniforms = {
 			viewport: gl.getUniformLocation(program, "u_viewport"),
 		};
 
-		this.#buffers = {
+		this.buffers = {
 			position: gl.createBuffer(),
 		};
 
-		gl.enableVertexAttribArray(this.#attributes.position);
-		gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.position);
-		gl.vertexAttribPointer(this.#attributes.position, 2, gl.FLOAT, false, 0, 0);
+		gl.enableVertexAttribArray(this.attributes.position);
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
+		gl.vertexAttribPointer(this.attributes.position, 2, gl.FLOAT, false, 0, 0);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
 			0, 0,
 			1, 0,

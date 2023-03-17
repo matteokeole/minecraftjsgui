@@ -5,6 +5,14 @@ import {textureGenerator as generator} from "../../main.js";
 
 const BUTTON_HEIGHT = 20;
 
+/** @todo Remove name property */
+class ButtonWidth {
+	constructor({name, width}) {
+		this.name = name;
+		this.width = width;
+	}
+}
+
 /**
  * @extends DynamicComponent
  * @param {{
@@ -25,16 +33,33 @@ export default function Button({width, image}) {
 
 inherits(DynamicComponent, Button);
 
-function generateButtonTexture({width}) {
+Button.m = new ButtonWidth({
+	name: "m",
+	width: 96,
+});
+
+Button.l = new ButtonWidth({
+	name: "l",
+	width: 200,
+});
+
+/**
+ * @param {Number} width
+ * @param {WebGLTexture} baseTexture
+ * @returns {OffscreenCanvas}
+ */
+Button.generateTexture = function(buttonWidth, baseTexture) {
 	const viewport = new Vector2(width, 60);
 
 	generator.setViewport(viewport);
 
-	const {gl} = generator;
+	const {canvas, gl} = generator;
 
-	gl.useProgram(generator.programs.button);
+	gl.useProgram(generator.programs.button.program);
 	gl.uniform2f(generator.uniforms.viewport, viewport.x, viewport.y);
-	gl.bindTexture(gl.TEXTURE_2D, generator.textures["gui/widgets.png"].texture);
+	gl.bindTexture(gl.TEXTURE_2D, baseTexture);
 
 	gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+
+	return canvas;
 }
