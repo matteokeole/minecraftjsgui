@@ -57,6 +57,7 @@ export default class TextureGenerator extends WebGLRenderer {
 
 		this.uniforms = {
 			viewport: gl.getUniformLocation(program, "u_viewport"),
+			sampler: gl.getUniformLocation(program, "u_sampler"),
 		};
 
 		this.buffers = {
@@ -72,5 +73,8 @@ export default class TextureGenerator extends WebGLRenderer {
 			1, 1,
 			0, 1,
 		]), gl.STATIC_DRAW);
+
+		gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	}
 }
