@@ -17,7 +17,7 @@ export default function VisualComponent({uv}) {
 
 	/** @returns {TextureWrapper} */
 	this.getTexture = function() {
-		if (!(texture instanceof TextureWrapper)) throw TypeError(`Expecting an instance of TextureWrapper, ${texture.constructor.name} given`);
+		if (!(texture instanceof TextureWrapper)) throw TypeError(`Expecting an instance of TextureWrapper, ${texture} given`);
 
 		return texture;
 	};
@@ -26,9 +26,13 @@ export default function VisualComponent({uv}) {
 	this.setTexture = value => void (texture = value);
 
 	/** @returns {Matrix3} */
-	this.getTextureMatrix = () => Matrix3
-		.translate(this.getUV().divide(this.getTexture().size))
-		.scale(this.getSize().divide(this.getTexture().size));
+	this.getTextureMatrix = function() {
+		const textureSize = new Vector2(256, 256);
+
+		return Matrix3
+			.translate(this.getUV().divide(textureSize))
+			.scale(this.getSize().divide(textureSize));
+	};
 
 	/** @returns {Vector2} */
 	this.getUV = () => uv;

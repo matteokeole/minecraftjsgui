@@ -127,6 +127,9 @@ export default class WebGLRenderer {
 	}
 
 	/**
+	 * Initializes a new texture array for this renderer.
+	 * The maximum texture size is 256x256.
+	 * 
 	 * @param {Number} length
 	 */
 	createTextureArray(length) {
@@ -144,8 +147,7 @@ export default class WebGLRenderer {
 	 * @todo Test with `gl.RGB` color format
 	 * 
 	 * Asynchronous texture loader.
-	 * Loads a serie of sources in a `WebGLTexture` array.
-	 * The array dimensions are 256x256 and a pixelated filter is applied.
+	 * Loads a list of sources in a `WebGLTexture` array.
 	 * Uses `gl.RGBA` color format.
 	 * 
 	 * @param {String[]} paths
@@ -167,7 +169,7 @@ export default class WebGLRenderer {
 				continue;
 			}
 
-			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 256, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, image.width, image.height, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
 			this.textures[path] = new TextureWrapper(image, i);
 		}

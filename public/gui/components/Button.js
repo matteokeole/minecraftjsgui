@@ -19,19 +19,6 @@ export default function Button({width, disabled, onMouseEnter: onMouseEnterBase,
 	this.setSize(new Vector2(width.width, BUTTON_HEIGHT));
 	this.setUV(new Vector2(0, disabled ? 0 : 20));
 
-	/**
-	 * @todo Why does dividing by a vector that is not the size of the actual texture works?
-	 * 
-	 * @override
-	 */
-	this.getTextureMatrix = function() {
-		const textureSize = new Vector2(256, 256);
-
-		return Matrix3
-			.translate(this.getUV().divide(textureSize))
-			.scale(this.getSize().divide(textureSize));
-	};
-
 	this.setOnMouseEnter(function(p) {
 		if (disabled) return;
 

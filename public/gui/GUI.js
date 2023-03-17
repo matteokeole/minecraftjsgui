@@ -63,15 +63,29 @@ export default class GUI extends RendererManager {
 	 * NOTE: Recursive.
 	 * 
 	 * @param {Component[]} children
-	 * @param {Boolean} [addListeners=false]
-	 * @param {Boolean} [addToTree=false]
+	 * @param {Object} options
+	 * @param {Boolean} [options.parent]
+	 * @param {Boolean} [options.addListeners=false]
+	 * @param {Boolean} [options.addToTree=false]
 	 */
-	addChildrenToRenderQueue(children, addListeners = false, addToTree = false) {
+	addChildrenToRenderQueue(children, {parent, addListeners = false, addToTree = false}) {
+		const viewport = this.instance
+			.getViewport()
+			.divideScalar(this.instance.currentScale);
+
 		for (let i = 0, l = children.length, component; i < l; i++) {
 			component = children[i];
 
+			if (parent) component.setParent(parent);
+
 			if (component instanceof StructuralComponent) {
-				this.addChildrenToRenderQueue(component.getChildren(), addListeners, addToTree);
+				component.computePosition(new Vector2(0, 0), viewport);
+
+				this.addChildrenToRenderQueue(component.getChildren(), {
+					parent: component,
+					addListeners,
+					addToTree,
+				});
 
 				continue;
 			}
@@ -79,7 +93,6 @@ export default class GUI extends RendererManager {
 			this.renderQueue.push(component);
 
 			if (addListeners && component instanceof DynamicComponent) this.addListeners(component);
-
 			if (addToTree) this.tree.push(component);
 		}
 	}
@@ -121,14 +134,16 @@ export default class GUI extends RendererManager {
 	 * Computes the absolute position for each component of the render queue.
 	 */
 	computeTree() {
-		const {renderQueue} = this;
-		const parentSize = this.instance
-			.getViewport()
-			.divideScalar(this.instance.currentScale);
-
-		for (let i = 0, l = renderQueue.length; i < l; i++) {
-			renderQueue[i].computePosition(new Vector2(0, 0), parentSize);
-		}
+		for (
+			let i = 0,
+				queue = this.renderQueue,
+				l = queue.length,
+				viewport = this.instance
+					.getViewport()
+					.divideScalar(this.instance.currentScale);
+			i < l;
+			i++
+		) queue[i].computePosition(new Vector2(0, 0), viewport);
 	}
 
 	render() {
@@ -161,7 +176,11 @@ export default class GUI extends RendererManager {
 			component = this.tree[i];
 
 			if (component instanceof StructuralComponent) {
-				this.addChildrenToRenderQueue(component.getChildren(), false, false);
+				this.addChildrenToRenderQueue(component.getChildren(), {
+					parent: component,
+					addListeners: false,
+					addToTree: false,
+				});
 
 				continue;
 			}
@@ -188,7 +207,10 @@ export default class GUI extends RendererManager {
 		this.removeListeners(this.tree);
 
 		this.lastInsertionIndices.push(this.tree.length);
-		this.addChildrenToRenderQueue(layer.build(), true, true);
+		this.addChildrenToRenderQueue(layer.build(), {
+			addListeners: true,
+			addToTree: true,
+		});
 
 		this.computeTree();
 		this.render();
@@ -220,7 +242,10 @@ export default class GUI extends RendererManager {
 		// Clear the render queue
 		this.renderQueue.length = 0;
 
-		this.addChildrenToRenderQueue(this.tree, true, false);
+		this.addChildrenToRenderQueue(this.tree, {
+			addListener: true,
+			addToTree: false,
+		});
 
 		this.computeTree();
 		this.renderer.clear(); // Clear already rendered components
