@@ -1,5 +1,3 @@
-import NotImplementedError from "../errors/NotImplementedError.js";
-
 /**
  * Generic vector class.
  * 
@@ -15,43 +13,33 @@ export default function Vector(argLength, currentArgLength) {
  * @param {Vector} v
  * @returns {Vector}
  */
-Vector.prototype.add = function(v) {
-	throw new NotImplementedError();
-};
+Vector.prototype.add;
 
 /**
  * @abstract
  * @param {Number} n
  * @returns {Vector}
  */
-Vector.prototype.addScalar = function(n) {
-	throw new NotImplementedError();
-};
+Vector.prototype.addScalar;
 
 /**
  * @abstract
  * @returns {Vector}
  */
-Vector.prototype.ceil = function() {
-	throw new NotImplementedError();
-};
+Vector.prototype.ceil;
 
 /**
  * @abstract
  * @returns {Vector}
  */
-Vector.prototype.clone = function() {
-	throw new NotImplementedError();
-};
+Vector.prototype.clone;
 
 /**
  * @abstract
  * @param {Vector} v
  * @returns {Number}
  */
-Vector.prototype.distanceTo = function(v) {
-	throw new NotImplementedError();
-};
+Vector.prototype.distanceTo;
 
 /**
  * @abstract
@@ -59,9 +47,7 @@ Vector.prototype.distanceTo = function(v) {
  * @returns {Vector}
  * @throws {RangeError}
  */
-Vector.prototype.divide = function(v) {
-	throw new NotImplementedError();
-};
+Vector.prototype.divide;
 
 /**
  * @param {Number} n
@@ -78,17 +64,13 @@ Vector.prototype.divideScalar = function(n) {
  * @param {Vector} v
  * @returns {Number}
  */
-Vector.prototype.dot = function(v) {
-	throw new NotImplementedError();
-};
+Vector.prototype.dot;
 
 /**
  * @abstract
  * @returns {Vector}
  */
-Vector.prototype.floor = function() {
-	throw new NotImplementedError();
-};
+Vector.prototype.floor;
 
 /**
  * Only for 32-bit signed integers.
@@ -96,9 +78,7 @@ Vector.prototype.floor = function() {
  * @abstract
  * @returns {Vector}
  */
-Vector.prototype.floor32 = function() {
-	throw new NotImplementedError();
-};
+Vector.prototype.floor32;
 
 Vector.prototype.invert = function() {
 	return this.multiplyScalar(-1);
@@ -112,9 +92,7 @@ Vector.prototype.length = function() {
  * @abstract
  * @returns {Number}
  */
-Vector.prototype.lengthSquared = function() {
-	throw new NotImplementedError();
-};
+Vector.prototype.lengthSquared;
 
 /**
  * @param {Vector} v
@@ -132,18 +110,14 @@ Vector.prototype.lerp = function(v, n) {
  * @param {Vector} v
  * @returns {Vector}
  */
-Vector.prototype.multiply = function(v) {
-	throw new NotImplementedError();
-};
+Vector.prototype.multiply;
 
 /**
  * @abstract
  * @param {Number} n
  * @returns {Vector}
  */
-Vector.prototype.multiplyScalar = function(n) {
-	throw new NotImplementedError();
-};
+Vector.prototype.multiplyScalar;
 
 Vector.prototype.normalize = function() {
 	return this.divideScalar(this.length());
@@ -153,18 +127,14 @@ Vector.prototype.normalize = function() {
  * @abstract
  * @returns {Vector}
  */
-Vector.prototype.round = function() {
-	throw new NotImplementedError();
-};
+Vector.prototype.round;
 
 /**
  * @abstract
  * @param {Vector} v
  * @returns {Vector}
  */
-Vector.prototype.subtract = function(v) {
-	throw new NotImplementedError();
-};
+Vector.prototype.subtract;
 
 /**
  * @param {Number} n
@@ -177,6 +147,4 @@ Vector.prototype.subtractScalar = function(n) {
  * @abstract
  * @returns {Number[]}
  */
-Vector.prototype.toArray = function() {
-	throw new NotImplementedError();
-};
+Vector.prototype.toArray;
