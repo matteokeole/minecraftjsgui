@@ -1,6 +1,6 @@
 import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import {inherits} from "src/utils";
+import {extend} from "src/utils";
 import {gui} from "../../main.js";
 import OptionsLayer from "./OptionsLayer.js";
 import Image from "../components/Image.js";
@@ -114,9 +114,6 @@ export default function MainMenuLayer() {
 			uv: new Vector2(0, 0),
 		}),
 	];
-
-	/** @override */
-	this.dispose = () => {};
 }
 
-inherits(MainMenuLayer, Layer);
+extend(MainMenuLayer, Layer);

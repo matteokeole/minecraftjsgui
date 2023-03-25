@@ -1,10 +1,10 @@
 import {DynamicComponent} from "src/gui";
-import {inherits} from "src/utils";
+import {extend} from "src/utils";
 
 /**
  * @extends DynamicComponent
  * @param {{
- *    image: TextureWrapper
+ *    image: Texture
  * }}
  */
 export default function ImageButton({image}) {
@@ -13,4 +13,4 @@ export default function ImageButton({image}) {
 	this.setTexture(image);
 }
 
-inherits(ImageButton, DynamicComponent);
+extend(ImageButton, DynamicComponent);

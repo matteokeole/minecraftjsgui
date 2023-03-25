@@ -2,14 +2,17 @@ import {Matrix3, Vector2} from "../../math/index.js";
 
 /**
  * @param {{
- *    align: Number[2],
+ *    align: Number,
  *    margin: Vector2,
  *    size: Vector2,
  * }}
  */
-export default function Component({align, margin, size}) {
-	/** @type {Vector2} */
+export function Component({align, margin, size}) {
+	/** @type {?Vector2} */
 	let position;
+
+	/** @type {?Component} */
+	let parent;
 
 	/**
 	 * Computes the absolute position of the component
@@ -19,11 +22,18 @@ export default function Component({align, margin, size}) {
 	 * @param {Vector2} parentSize
 	 */
 	this.computePosition = function(initial, parentSize) {
+		const parent = this.getParent();
+
+		if (parent) {
+			initial = parent.getPosition().clone();
+			parentSize = parent.getSize().clone();
+		}
+
 		const
 			m = margin,
 			o = parentSize.subtract(size);
 
-		if (align !== 0 && !align) throw TypeError(`Expecting an instance of Number, ${align.constructor.name} given`);
+		if (align !== 0 && !align) throw TypeError(`Expecting an instance of Number, ${align} given`);
 
 		switch (align) {
 			case Component.alignLeftTop:
@@ -70,19 +80,21 @@ export default function Component({align, margin, size}) {
 		position = initial.floor32();
 	};
 
-	/** @returns {Vector2} */
-	this.getPosition = function() {
-		if (!(position instanceof Vector2)) throw TypeError(`Expecting an instance of Vector2, ${position.constructor.name} given`);
-
-		return position;
-	};
+	/** @returns {?Vector2} */
+	this.getPosition = () => position;
 
 	/** @param {Vector2} value */
 	this.setPosition = value => void (position = value);
 
+	/** @returns {?Component} */
+	this.getParent = () => parent;
+
+	/** @param {Component} value */
+	this.setParent = value => void (parent = value);
+
 	/** @returns {Number} */
 	this.getAlign = function() {
-		if (!(align instanceof Number)) throw TypeError(`Expecting an instance of Number, ${align.constructor.name} given`);
+		if (typeof align !== "number") throw TypeError(`Expecting an instance of Number, ${align} given`);
 
 		return align;
 	};;

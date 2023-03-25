@@ -1,10 +1,10 @@
 import {VisualComponent} from "src/gui";
-import {inherits} from "src/utils";
+import {extend} from "src/utils";
 
 /**
  * @extends VisualComponent
  * @param {{
- *    image: TextureWrapper
+ *    image: Texture
  * }}
  */
 export default function Image({image}) {
@@ -13,4 +13,4 @@ export default function Image({image}) {
 	this.setTexture(image);
 }
 
-inherits(Image, VisualComponent);
+extend(Image, VisualComponent);

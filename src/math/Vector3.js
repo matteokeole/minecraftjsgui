@@ -1,5 +1,5 @@
 import Vector from "./Vector.js";
-import {inherits} from "../utils/index.js";
+import {extend} from "../utils/index.js";
 
 /**
  * Tri-dimensional vector class.
@@ -22,7 +22,7 @@ export default function Vector3(x, y, z) {
 	this.z = z;
 }
 
-inherits(Vector3, Vector);
+extend(Vector3, Vector);
 
 /** @override */
 Vector3.prototype.add = function(v) {

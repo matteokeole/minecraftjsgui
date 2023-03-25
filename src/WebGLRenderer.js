@@ -1,7 +1,7 @@
 import {NotImplementedError, NoWebGL2Error, ShaderCompilationError} from "./errors/index.js";
 import {Vector2} from "./math/index.js";
 import Program from "./Program.js";
-import TextureWrapper from "./TextureWrapper.js";
+import Texture from "./Texture.js";
 
 /**
  * General-purpose renderer based on a WebGL context.
@@ -46,7 +46,7 @@ export default class WebGLRenderer {
 
 		/**
 		 * @public
-		 * @type {Object<String, TextureWrapper>}
+		 * @type {Object<String, Texture>}
 		 */
 		this.textures = {};
 	}
@@ -127,11 +127,27 @@ export default class WebGLRenderer {
 	}
 
 	/**
+	 * Initializes a new texture array for this renderer.
+	 * The maximum texture size is 256x256.
+	 * 
+	 * @param {Number} length
+	 */
+	createTextureArray(length) {
+		const {gl} = this;
+
+		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
+		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 256, 256, length);
+		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		this.#generateMipmaps ?
+			gl.generateMipmap(gl.TEXTURE_2D_ARRAY) :
+			gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	}
+
+	/**
 	 * @todo Test with `gl.RGB` color format
 	 * 
 	 * Asynchronous texture loader.
-	 * Loads a serie of sources in a `WebGLTexture` array.
-	 * The array dimensions are 256x256 and a pixelated filter is applied.
+	 * Loads a list of sources in a `WebGLTexture` array.
 	 * Uses `gl.RGBA` color format.
 	 * 
 	 * @param {String[]} paths
@@ -140,14 +156,6 @@ export default class WebGLRenderer {
 	async loadTextures(paths, basePath) {
 		const {gl} = this;
 		const {length} = paths;
-
-		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
-		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 256, 256, length + 3);
-		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		this.#generateMipmaps ?
-			gl.generateMipmap(gl.TEXTURE_2D_ARRAY) :
-			gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
 		const image = new Image();
 
 		for (let i = 0, path; i < length; i++) {
@@ -161,9 +169,9 @@ export default class WebGLRenderer {
 				continue;
 			}
 
-			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 256, 256, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, image.width, image.height, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-			this.textures[path] = new TextureWrapper(image, i);
+			this.textures[path] = new Texture(image, i);
 		}
 	}
 

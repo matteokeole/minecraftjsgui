@@ -1,5 +1,5 @@
-import VisualComponent from "./VisualComponent.js";
-import {inherits} from "../../utils/index.js";
+import {VisualComponent} from "../index.js";
+import {extend} from "../../utils/index.js";
 
 /** @typedef {(position: Vector2) => void} Listener */
 
@@ -11,29 +11,20 @@ import {inherits} from "../../utils/index.js";
  *    onMouseDown: ?Listener
  * }}
  */
-export default function DynamicComponent({onMouseEnter, onMouseLeave, onMouseDown}) {
+export function DynamicComponent({onMouseEnter, onMouseLeave, onMouseDown}) {
 	VisualComponent.apply(this, arguments);
 
 	/** @type {Boolean} */
 	let isHovered = false;
 
 	/** @type {?Listener} */
-	if (onMouseEnter) {
-		onMouseEnter = onMouseEnter.bind(this);
-		onMouseEnter.component = this;
-	}
+	onMouseEnter &&= configureListener(this, onMouseEnter);
 
 	/** @type {?Listener} */
-	if (onMouseLeave) {
-		onMouseLeave = onMouseLeave.bind(this);
-		onMouseLeave.component = this;
-	}
+	onMouseLeave &&= configureListener(this, onMouseLeave);
 
 	/** @type {?Listener} */
-	if (onMouseDown) {
-		onMouseDown = onMouseDown.bind(this);
-		onMouseDown.component = this;
-	}
+	onMouseDown &&= configureListener(this, onMouseDown);
 
 	/** @returns {Boolean} */
 	this.getIsHovered = () => isHovered;
@@ -45,19 +36,26 @@ export default function DynamicComponent({onMouseEnter, onMouseLeave, onMouseDow
 	this.getOnMouseEnter = () => onMouseEnter;
 
 	/** @param {Listener} value */
-	this.setOnMouseEnter = value => void (onMouseEnter = value);
+	this.setOnMouseEnter = value => void (onMouseEnter = configureListener(this, value));
 
 	/** @returns {?Listener} */
 	this.getOnMouseLeave = () => onMouseLeave;
 
 	/** @param {Listener} value */
-	this.setOnMouseLeave = value => void (onMouseLeave = value);
+	this.setOnMouseLeave = value => void (onMouseLeave = configureListener(this, value));
 
 	/** @returns {?Listener} */
 	this.getOnMouseDown = () => onMouseDown;
 
 	/** @param {Listener} value */
-	this.setOnMouseDown = value => void (onMouseDown = value);
+	this.setOnMouseDown = value => void (onMouseDown = configureListener(this, value));
 }
 
-inherits(DynamicComponent, VisualComponent);
+extend(DynamicComponent, VisualComponent);
+
+function configureListener(component, listener) {
+	listener = listener.bind(component);
+	listener.component = component;
+
+	return listener;
+}

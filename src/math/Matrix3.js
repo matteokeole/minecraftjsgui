@@ -27,6 +27,13 @@ Matrix3.prototype.translate = function(v) {
 };
 
 /**
+ * @param {Number} a Angle in radians
+ */
+Matrix3.prototype.rotate = function(a) {
+	return this.multiplyMatrix3(Matrix3.rotate(a));
+};
+
+/**
  * @param {Vector2} v
  */
 Matrix3.prototype.scale = function(v) {
@@ -140,7 +147,7 @@ Matrix3.translate = function(v) {
 /**
  * @param {Number} a Angle in radians
  */
-Matrix3.rotationZ = function(a) {
+Matrix3.rotate = function(a) {
 	const s = Math.sin(a), c = Math.cos(a);
 
 	return new Matrix3(

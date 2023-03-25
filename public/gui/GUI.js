@@ -7,9 +7,9 @@ import RendererManager from "src/manager";
 export default class GUI extends RendererManager {
 	/**
 	 * @param {Instance} instance
-	 *    Reference to the current instance,
-	 *    used for uploading the new render onto the output texture,
-	 *    registering listeners, manipulating the GUI scale, etc.
+	 * Reference to the current instance,
+	 * used for uploading the new render onto the output texture,
+	 * registering listeners and manipulating the GUI scale.
 	 * 
 	 * @param {GUIRenderer} renderer
 	 */
@@ -63,15 +63,29 @@ export default class GUI extends RendererManager {
 	 * NOTE: Recursive.
 	 * 
 	 * @param {Component[]} children
-	 * @param {Boolean} [addListeners=false]
-	 * @param {Boolean} [addToTree=false]
+	 * @param {Object} options
+	 * @param {Boolean} [options.parent]
+	 * @param {Boolean} [options.addListeners=false]
+	 * @param {Boolean} [options.addToTree=false]
 	 */
-	addChildrenToRenderQueue(children, addListeners = false, addToTree = false) {
+	addChildrenToRenderQueue(children, {parent, addListeners = false, addToTree = false}) {
+		const viewport = this.instance
+			.getViewport()
+			.divideScalar(this.instance.currentScale);
+
 		for (let i = 0, l = children.length, component; i < l; i++) {
 			component = children[i];
 
+			if (parent) component.setParent(parent);
+
 			if (component instanceof StructuralComponent) {
-				this.addChildrenToRenderQueue(component.getChildren(), addListeners, addToTree);
+				component.computePosition(new Vector2(0, 0), viewport);
+
+				this.addChildrenToRenderQueue(component.getChildren(), {
+					parent: component,
+					addListeners,
+					addToTree,
+				});
 
 				continue;
 			}
@@ -79,7 +93,6 @@ export default class GUI extends RendererManager {
 			this.renderQueue.push(component);
 
 			if (addListeners && component instanceof DynamicComponent) this.addListeners(component);
-
 			if (addToTree) this.tree.push(component);
 		}
 	}
@@ -121,14 +134,16 @@ export default class GUI extends RendererManager {
 	 * Computes the absolute position for each component of the render queue.
 	 */
 	computeTree() {
-		const {renderQueue} = this;
-		const parentSize = this.instance
-			.getViewport()
-			.divideScalar(this.instance.currentScale);
-
-		for (let i = 0, l = renderQueue.length; i < l; i++) {
-			renderQueue[i].computePosition(new Vector2(0, 0), parentSize);
-		}
+		for (
+			let i = 0,
+				queue = this.renderQueue,
+				l = queue.length,
+				viewport = this.instance
+					.getViewport()
+					.divideScalar(this.instance.currentScale);
+			i < l;
+			i++
+		) queue[i].computePosition(new Vector2(0, 0), viewport);
 	}
 
 	render() {
@@ -161,7 +176,11 @@ export default class GUI extends RendererManager {
 			component = this.tree[i];
 
 			if (component instanceof StructuralComponent) {
-				this.addChildrenToRenderQueue(component.getChildren(), false, false);
+				this.addChildrenToRenderQueue(component.getChildren(), {
+					parent: component,
+					addListeners: false,
+					addToTree: false,
+				});
 
 				continue;
 			}
@@ -174,7 +193,7 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
-	 * Builds a new layer on top of the layer stack.
+	 * Adds a new layer on top of the layer stack.
 	 * Calling this method will result in all the children of the new layer
 	 * being registered into the render queue.
 	 * The new components will be rendered on top of the previous ones.
@@ -188,7 +207,10 @@ export default class GUI extends RendererManager {
 		this.removeListeners(this.tree);
 
 		this.lastInsertionIndices.push(this.tree.length);
-		this.addChildrenToRenderQueue(layer.build(), true, true);
+		this.addChildrenToRenderQueue(layer.build(), {
+			addListeners: true,
+			addToTree: true,
+		});
 
 		this.computeTree();
 		this.render();
@@ -198,12 +220,12 @@ export default class GUI extends RendererManager {
 	 * Disposes the last layer from the layer stack.
 	 * Calling this method will result in all the children of all the stacked layers
 	 * being registered into the render queue.
-	 * NOTE: The first layer cannot be popped.
+	 * If the layer stack is empty or contains one layer, nothing will be done.
 	 */
 	pop() {
 		const {layerStack} = this;
 
-		if (layerStack.length === 1) return;
+		if (layerStack.length === 0 || layerStack.length === 1) return;
 
 		const layer = layerStack.pop();
 		layer.dispose();
@@ -220,7 +242,10 @@ export default class GUI extends RendererManager {
 		// Clear the render queue
 		this.renderQueue.length = 0;
 
-		this.addChildrenToRenderQueue(this.tree, true, false);
+		this.addChildrenToRenderQueue(this.tree, {
+			addListeners: true,
+			addToTree: false,
+		});
 
 		this.computeTree();
 		this.renderer.clear(); // Clear already rendered components

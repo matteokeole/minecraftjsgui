@@ -216,6 +216,17 @@ export default function Instance() {
 	};
 
 	/**
+	 * Setups the instance texture generator.
+	 * 
+	 * @param {TextureGenerator} generator
+	 */
+	this.setupTextureGenerator = async function(generator) {
+		generator.build();
+		await generator.init(this.shaderPath);
+		// await generator.loadTextures("gui/widgets.png", this.texturePath);
+	};
+
+	/**
 	 * Creates an output `WebGLTexture` for a new renderer.
 	 * 
 	 * @returns {WebGLTexture}
@@ -272,6 +283,8 @@ export default function Instance() {
 		const {gl} = outputRenderer;
 
 		gl.bindTexture(gl.TEXTURE_2D, this.rendererTextures[index]);
+		
+		/** @todo Replace by `texStorage2D` (lower memory costs in some implementations, according to {@link https://registry.khronos.org/webgl/specs/latest/2.0/#3.7.6}) */
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 	};
 

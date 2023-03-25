@@ -1,6 +1,7 @@
 import {Matrix3, Vector2} from "src/math";
 import WebGLRenderer from "src/renderer";
-import TextureWrapper from "../../src/TextureWrapper.js";
+import Texture from "../../src/Texture.js";
+import Button from "./components/Button.js";
 
 export default class GUIRenderer extends WebGLRenderer {
 	/** @type {Object<String, Number>} */
@@ -96,13 +97,7 @@ export default class GUIRenderer extends WebGLRenderer {
 		gl.vertexAttribDivisor(attributes.textureIndex, 1);
 	}
 
-	/**
-	 * @param {String[]} paths
-	 * @param {String} basePath
-	 */
-	async loadTestTextures(paths, basePath) {
-		await this.loadTextures(paths, basePath);
-
+	async loadTestTextures() {
 		const {gl} = this;
 		const textureLength = Object.keys(this.textures).length;
 		const dimension = 256;
@@ -128,88 +123,76 @@ export default class GUIRenderer extends WebGLRenderer {
 
 			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, textureLength + i, dimension, dimension, 1, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 
-			this.textures[colorKeys[i]] = new TextureWrapper(imageReplacement, textureLength + i);
+			this.textures[colorKeys[i]] = new Texture(imageReplacement, textureLength + i);
 		}
 	}
 
-	/** @override */
+	loadButtonTextures(widths) {
+		const {gl} = this;
+		const textureLength = Object.keys(this.textures).length;
+		const baseTexture = this.textures["gui/widgets.png"].getImage();
+
+		for (let i = 0, l = widths.length, image, width; i < l; i++) {
+			width = widths[i];
+			image = Button.generateTexture(width.width, baseTexture);
+
+			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, textureLength + i, width.width, 60, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+			this.textures[`Button.${width.name}`] = width.texture = new Texture(image, textureLength + i);
+		}
+	}
+
+	/**
+	 * @todo Use `camera` param?
+	 * 
+	 * @override
+	 */
 	render(scene, camera) {
-		const
-			{gl} = this,
-			renderQueueLength = scene.length,
-			bufferLength = renderQueueLength * 9,
-			worldMatrixData = new Float32Array(bufferLength),
-			worldMatrices = [],
-			textureMatrixData = new Float32Array(bufferLength),
-			textureMatrices = [];
-		const attributes = this.#attributes;
-		const buffers = this.#buffers;
-		let i = 0, component;
+		const {gl} = this,
+			componentCount = scene.length,
+			bufferLength = componentCount * 9,
+			worldMatrices = new Float32Array(bufferLength),
+			textureMatrices = new Float32Array(bufferLength),
+			textureIndices = new Uint8Array(componentCount);
+		let i = 0, loc;
 
-		// Register component world/texture matrices
-		for (i = 0; i < renderQueueLength; i++) {
-			worldMatrices.push(new Float32Array(
-				worldMatrixData.buffer,
-				i * 36,
-				9,
-			));
-
-			textureMatrices.push(new Float32Array(
-				textureMatrixData.buffer,
-				i * 36,
-				9,
-			));
-
+		for (let j = 0, component; i < componentCount; i++, j += 9) {
 			component = scene[i];
-			const worldMatrix = component.getWorldMatrix();
-			const textureMatrix = component.getTextureMatrix();
 
-			for (let j = 0; j < 9; j++) {
-				worldMatrices[i][j] = worldMatrix[j];
-				textureMatrices[i][j] = textureMatrix[j];
+			worldMatrices.set(component.getWorldMatrix(), j);
+			textureMatrices.set(component.getTextureMatrix(), j);
+			textureIndices[i] = component.getTexture().getIndex();
+		}
+
+		// Register world matrices
+		{
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.worldMatrix);
+			gl.bufferData(gl.ARRAY_BUFFER, worldMatrices, gl.STATIC_DRAW);
+
+			for (i = 0; i < 3; i++) {
+				gl.enableVertexAttribArray(loc = this.#attributes.worldMatrix + i);
+				gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+				gl.vertexAttribDivisor(loc, 1);
 			}
 		}
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.worldMatrix);
-		gl.bufferData(gl.ARRAY_BUFFER, worldMatrixData.byteLength, gl.DYNAMIC_DRAW);
+		// Register texture matrices
+		{
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.textureMatrix);
+			gl.bufferData(gl.ARRAY_BUFFER, textureMatrices, gl.STATIC_DRAW);
 
-		// Setup world matrix divisors
-		for (i = 0; i < 3; i++) {
-			const loc = attributes.worldMatrix + i;
-
-			gl.enableVertexAttribArray(loc);
-			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
-			gl.vertexAttribDivisor(loc, 1);
+			for (i = 0; i < 3; i++) {
+				gl.enableVertexAttribArray(loc = this.#attributes.textureMatrix + i);
+				gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+				gl.vertexAttribDivisor(loc, 1);
+			}
 		}
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.worldMatrix);
-		gl.bufferSubData(gl.ARRAY_BUFFER, 0, worldMatrixData);
+		// Register texture indices
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.textureIndex);
+		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureMatrix);
-		gl.bufferData(gl.ARRAY_BUFFER, textureMatrixData.byteLength, gl.DYNAMIC_DRAW);
-
-		// Setup texture matrix divisors
-		for (i = 0; i < 3; i++) {
-			const loc = attributes.textureMatrix + i;
-
-			gl.enableVertexAttribArray(loc);
-			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
-			gl.vertexAttribDivisor(loc, 1);
-		}
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureMatrix);
-		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
-
-		// Register component texture indices
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureIndex);
-		gl.bufferData(
-			gl.ARRAY_BUFFER,
-			new Uint8Array(scene.map(component => component.getTexture().index)),
-			gl.STATIC_DRAW,
-		);
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, null);
-		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, renderQueueLength);
+		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, componentCount);
 	}
 
 	/**

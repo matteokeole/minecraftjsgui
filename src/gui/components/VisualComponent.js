@@ -1,7 +1,9 @@
-import Component from "./Component.js";
+import {Component} from "../index.js";
 import {Matrix3, Vector2} from "../../math/index.js";
-import TextureWrapper from "../../TextureWrapper.js";
-import {inherits} from "../../utils/index.js";
+import Texture from "../../Texture.js";
+import {extend} from "../../utils/index.js";
+
+const TEXTURE_SIZE = new Vector2(256, 256);
 
 /**
  * @extends Component
@@ -9,26 +11,35 @@ import {inherits} from "../../utils/index.js";
  *    uv: Vector2
  * }}
  */
-export default function VisualComponent({uv}) {
+export function VisualComponent({uv}) {
 	Component.apply(this, arguments);
 
-	/** @type {TextureWrapper} */
+	/** @type {Subcomponent[]} */
+	let subcomponents = [];
+
+	/** @type {Texture} */
 	let texture;
 
-	/** @returns {TextureWrapper} */
+	/** @returns {Subcomponent[]} */
+	this.getSubcomponents = () => subcomponents;
+
+	/** @param {Subcomponent[]} value */
+	this.setSubcomponents = value => void (subcomponents = value);
+
+	/** @returns {Texture} */
 	this.getTexture = function() {
-		if (!(texture instanceof TextureWrapper)) throw TypeError(`Expecting an instance of TextureWrapper, ${texture.constructor.name} given`);
+		if (!(texture instanceof Texture)) throw TypeError(`Expecting an instance of Texture, ${texture} given`);
 
 		return texture;
 	};
 
-	/** @param {TextureWrapper} value */
+	/** @param {Texture} value */
 	this.setTexture = value => void (texture = value);
 
 	/** @returns {Matrix3} */
 	this.getTextureMatrix = () => Matrix3
-		.translate(this.getUV().divide(this.getTexture().size))
-		.scale(this.getSize().divide(this.getTexture().size));
+		.translate(this.getUV().divide(TEXTURE_SIZE))
+		.scale(this.getSize().divide(TEXTURE_SIZE));
 
 	/** @returns {Vector2} */
 	this.getUV = () => uv;
@@ -37,4 +48,4 @@ export default function VisualComponent({uv}) {
 	this.setUV = value => void (uv = value);
 }
 
-inherits(VisualComponent, Component);
+extend(VisualComponent, Component);
