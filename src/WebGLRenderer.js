@@ -1,7 +1,7 @@
 import {NotImplementedError, NoWebGL2Error, ShaderCompilationError} from "./errors/index.js";
 import {Vector2} from "./math/index.js";
 import Program from "./Program.js";
-import TextureWrapper from "./TextureWrapper.js";
+import Texture from "./Texture.js";
 
 /**
  * General-purpose renderer based on a WebGL context.
@@ -46,7 +46,7 @@ export default class WebGLRenderer {
 
 		/**
 		 * @public
-		 * @type {Object<String, TextureWrapper>}
+		 * @type {Object<String, Texture>}
 		 */
 		this.textures = {};
 	}
@@ -171,7 +171,7 @@ export default class WebGLRenderer {
 
 			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, image.width, image.height, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-			this.textures[path] = new TextureWrapper(image, i);
+			this.textures[path] = new Texture(image, i);
 		}
 	}
 

@@ -4,7 +4,7 @@ import {extend} from "src/utils";
 /**
  * @extends VisualComponent
  * @param {{
- *    image: TextureWrapper
+ *    image: Texture
  * }}
  */
 export default function Image({image}) {

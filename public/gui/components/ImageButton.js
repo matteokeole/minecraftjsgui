@@ -4,7 +4,7 @@ import {extend} from "src/utils";
 /**
  * @extends DynamicComponent
  * @param {{
- *    image: TextureWrapper
+ *    image: Texture
  * }}
  */
 export default function ImageButton({image}) {

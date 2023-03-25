@@ -1,6 +1,6 @@
 import {Component} from "../index.js";
 import {Matrix3, Vector2} from "../../math/index.js";
-import TextureWrapper from "../../TextureWrapper.js";
+import Texture from "../../Texture.js";
 import {extend} from "../../utils/index.js";
 
 /**
@@ -15,7 +15,7 @@ export function VisualComponent({uv}) {
 	/** @type {Subcomponent[]} */
 	let subcomponents = [];
 
-	/** @type {TextureWrapper} */
+	/** @type {Texture} */
 	let texture;
 
 	/** @returns {Subcomponent[]} */
@@ -24,14 +24,14 @@ export function VisualComponent({uv}) {
 	/** @param {Subcomponent[]} value */
 	this.setSubcomponents = value => void (subcomponents = value);
 
-	/** @returns {TextureWrapper} */
+	/** @returns {Texture} */
 	this.getTexture = function() {
-		if (!(texture instanceof TextureWrapper)) throw TypeError(`Expecting an instance of TextureWrapper, ${texture} given`);
+		if (!(texture instanceof Texture)) throw TypeError(`Expecting an instance of Texture, ${texture} given`);
 
 		return texture;
 	};
 
-	/** @param {TextureWrapper} value */
+	/** @param {Texture} value */
 	this.setTexture = value => void (texture = value);
 
 	/** @returns {Matrix3} */

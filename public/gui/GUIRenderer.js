@@ -1,6 +1,6 @@
 import {Matrix3, Vector2} from "src/math";
 import WebGLRenderer from "src/renderer";
-import TextureWrapper from "../../src/TextureWrapper.js";
+import Texture from "../../src/Texture.js";
 import Button from "./components/Button.js";
 
 export default class GUIRenderer extends WebGLRenderer {
@@ -123,14 +123,14 @@ export default class GUIRenderer extends WebGLRenderer {
 
 			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, textureLength + i, dimension, dimension, 1, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 
-			this.textures[colorKeys[i]] = new TextureWrapper(imageReplacement, textureLength + i);
+			this.textures[colorKeys[i]] = new Texture(imageReplacement, textureLength + i);
 		}
 	}
 
 	loadButtonTextures(widths) {
 		const {gl} = this;
 		const textureLength = Object.keys(this.textures).length;
-		const baseTexture = this.textures["gui/widgets.png"].image;
+		const baseTexture = this.textures["gui/widgets.png"].getImage();
 
 		for (let i = 0, l = widths.length, image, width; i < l; i++) {
 			width = widths[i];
@@ -138,7 +138,7 @@ export default class GUIRenderer extends WebGLRenderer {
 
 			gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, textureLength + i, width.width, 60, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-			this.textures[`Button.${width.name}`] = width.texture = new TextureWrapper(image, textureLength + i);
+			this.textures[`Button.${width.name}`] = width.texture = new Texture(image, textureLength + i);
 		}
 	}
 
