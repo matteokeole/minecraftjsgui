@@ -3,6 +3,8 @@ import {Matrix3, Vector2} from "../../math/index.js";
 import Texture from "../../Texture.js";
 import {extend} from "../../utils/index.js";
 
+const TEXTURE_SIZE = new Vector2(256, 256);
+
 /**
  * @extends Component
  * @param {{
@@ -35,13 +37,9 @@ export function VisualComponent({uv}) {
 	this.setTexture = value => void (texture = value);
 
 	/** @returns {Matrix3} */
-	this.getTextureMatrix = function() {
-		const textureSize = new Vector2(256, 256);
-
-		return Matrix3
-			.translate(this.getUV().divide(textureSize))
-			.scale(this.getSize().divide(textureSize));
-	};
+	this.getTextureMatrix = () => Matrix3
+		.translate(this.getUV().divide(TEXTURE_SIZE))
+		.scale(this.getSize().divide(TEXTURE_SIZE));
 
 	/** @returns {Vector2} */
 	this.getUV = () => uv;
