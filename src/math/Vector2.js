@@ -1,5 +1,5 @@
 import Vector from "./Vector.js";
-import {inherits} from "../utils/index.js";
+import {extend} from "../utils/index.js";
 
 /**
  * Bi-dimensional vector class.
@@ -18,7 +18,7 @@ export default function Vector2(x, y) {
 	this.y = y;
 }
 
-inherits(Vector2, Vector);
+extend(Vector2, Vector);
 
 /** @override */
 Vector2.prototype.add = function(v) {

@@ -1,3 +1,1 @@
-export {default as inherits} from "./inherits.js";
-
-/** @todo Debounce function? */
+export {extend} from "./extend.js";

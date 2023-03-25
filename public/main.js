@@ -3,8 +3,8 @@ import TextureGenerator from "src/generator";
 import Button from "./gui/components/Button.js";
 import GUI from "./gui/GUI.js";
 import GUIRenderer from "./gui/GUIRenderer.js";
-// import MainMenuLayer from "./gui/layers/TestLayer.js";
-import TestLayer from "./gui/layers/TestLayer.js";
+import MainMenuLayer from "./gui/layers/MainMenuLayer.js";
+// import TestLayer from "./gui/layers/TestLayer.js";
 
 /** @todo Fix undefined instance on throw */
 
@@ -39,7 +39,7 @@ try {
 		gui.renderer.loadButtonTextures(buttonWidths);
 	}
 
-	gui.push(new TestLayer());
+	gui.push(new MainMenuLayer());
 
 	instance.startLoop();
 } catch (error) {

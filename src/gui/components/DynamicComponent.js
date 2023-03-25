@@ -1,5 +1,5 @@
-import VisualComponent from "./VisualComponent.js";
-import {inherits} from "../../utils/index.js";
+import {VisualComponent} from "../index.js";
+import {extend} from "../../utils/index.js";
 
 /** @typedef {(position: Vector2) => void} Listener */
 
@@ -11,7 +11,7 @@ import {inherits} from "../../utils/index.js";
  *    onMouseDown: ?Listener
  * }}
  */
-export default function DynamicComponent({onMouseEnter, onMouseLeave, onMouseDown}) {
+export function DynamicComponent({onMouseEnter, onMouseLeave, onMouseDown}) {
 	VisualComponent.apply(this, arguments);
 
 	/** @type {Boolean} */
@@ -51,7 +51,7 @@ export default function DynamicComponent({onMouseEnter, onMouseLeave, onMouseDow
 	this.setOnMouseDown = value => void (onMouseDown = configureListener(this, value));
 }
 
-inherits(DynamicComponent, VisualComponent);
+extend(DynamicComponent, VisualComponent);
 
 function configureListener(component, listener) {
 	listener = listener.bind(component);

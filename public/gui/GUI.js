@@ -193,7 +193,7 @@ export default class GUI extends RendererManager {
 	}
 
 	/**
-	 * Builds a new layer on top of the layer stack.
+	 * Adds a new layer on top of the layer stack.
 	 * Calling this method will result in all the children of the new layer
 	 * being registered into the render queue.
 	 * The new components will be rendered on top of the previous ones.
@@ -220,12 +220,12 @@ export default class GUI extends RendererManager {
 	 * Disposes the last layer from the layer stack.
 	 * Calling this method will result in all the children of all the stacked layers
 	 * being registered into the render queue.
-	 * NOTE: The first layer cannot be popped.
+	 * If the layer stack is empty or contains one layer, nothing will be done.
 	 */
 	pop() {
 		const {layerStack} = this;
 
-		if (layerStack.length === 1) return;
+		if (layerStack.length === 0 || layerStack.length === 1) return;
 
 		const layer = layerStack.pop();
 		layer.dispose();

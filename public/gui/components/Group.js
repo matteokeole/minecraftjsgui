@@ -1,5 +1,5 @@
 import {Component, StructuralComponent} from "src/gui";
-import {inherits} from "src/utils";
+import {extend} from "src/utils";
 
 /**
  * @todo Throw an error if a group child doesn't fit its parent?
@@ -79,4 +79,4 @@ export default function Group() {
 	};
 }
 
-inherits(Group, StructuralComponent);
+extend(Group, StructuralComponent);

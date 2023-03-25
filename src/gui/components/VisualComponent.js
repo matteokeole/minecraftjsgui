@@ -1,7 +1,7 @@
-import Component from "./Component.js";
+import {Component} from "../index.js";
 import {Matrix3, Vector2} from "../../math/index.js";
 import TextureWrapper from "../../TextureWrapper.js";
-import {inherits} from "../../utils/index.js";
+import {extend} from "../../utils/index.js";
 
 /**
  * @extends Component
@@ -9,11 +9,20 @@ import {inherits} from "../../utils/index.js";
  *    uv: Vector2
  * }}
  */
-export default function VisualComponent({uv}) {
+export function VisualComponent({uv}) {
 	Component.apply(this, arguments);
+
+	/** @type {Subcomponent[]} */
+	let subcomponents = [];
 
 	/** @type {TextureWrapper} */
 	let texture;
+
+	/** @returns {Subcomponent[]} */
+	this.getSubcomponents = () => subcomponents;
+
+	/** @param {Subcomponent[]} value */
+	this.setSubcomponents = value => void (subcomponents = value);
 
 	/** @returns {TextureWrapper} */
 	this.getTexture = function() {
@@ -41,4 +50,4 @@ export default function VisualComponent({uv}) {
 	this.setUV = value => void (uv = value);
 }
 
-inherits(VisualComponent, Component);
+extend(VisualComponent, Component);

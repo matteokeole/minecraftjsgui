@@ -7,7 +7,7 @@ import {Matrix3, Vector2} from "../../math/index.js";
  *    size: Vector2,
  * }}
  */
-export default function Component({align, margin, size}) {
+export function Component({align, margin, size}) {
 	/** @type {?Vector2} */
 	let position;
 

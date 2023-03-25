@@ -1,6 +1,6 @@
 import {DynamicComponent} from "src/gui";
-import {Matrix3, Vector2} from "src/math";
-import {inherits} from "src/utils";
+import {Vector2} from "src/math";
+import {extend} from "src/utils";
 import {gui, textureGenerator as generator} from "../../main.js";
 
 const BUTTON_HEIGHT = 20;
@@ -46,7 +46,7 @@ export default function Button({width, disabled, onMouseEnter: onMouseEnterBase,
 	});
 }
 
-inherits(Button, DynamicComponent);
+extend(Button, DynamicComponent);
 
 /** @todo Remove `name` property */
 /** @todo Remove `texture` property */
