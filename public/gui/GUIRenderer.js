@@ -143,89 +143,56 @@ export default class GUIRenderer extends WebGLRenderer {
 	}
 
 	/**
-	 * @todo Use camera param?
+	 * @todo Use `camera` param?
 	 * 
 	 * @override
 	 */
 	render(scene, camera) {
-		const
-			{gl} = this,
-			renderQueueLength = scene.length,
-			bufferLength = renderQueueLength * 9,
-			worldMatrixData = new Float32Array(bufferLength),
-			textureMatrixData = new Float32Array(bufferLength),
-			worldMatrices = [],
-			textureMatrices = [],
-			textureIndices = new Int8Array(renderQueueLength);
-		const attributes = this.#attributes;
-		const buffers = this.#buffers;
+		const {gl} = this,
+			componentCount = scene.length,
+			bufferLength = componentCount * 9,
+			worldMatrices = new Float32Array(bufferLength),
+			textureMatrices = new Float32Array(bufferLength),
+			textureIndices = new Uint8Array(componentCount);
+		let i = 0, loc;
 
-		// Register component world/texture matrices
-		for (let i = 0, component; i < renderQueueLength; i++) {
-			worldMatrices.push(new Float32Array(
-				worldMatrixData.buffer,
-				i * 36,
-				9,
-			));
-
-			textureMatrices.push(new Float32Array(
-				textureMatrixData.buffer,
-				i * 36,
-				9,
-			));
-
+		for (let j = 0, component; i < componentCount; i++, j += 9) {
 			component = scene[i];
-			const worldMatrix = component.getWorldMatrix();
-			const textureMatrix = component.getTextureMatrix();
 
-			for (let j = 0; j < 9; j++) {
-				worldMatrices[i][j] = worldMatrix[j];
-				textureMatrices[i][j] = textureMatrix[j];
-			}
-
+			worldMatrices.set(component.getWorldMatrix(), j);
+			textureMatrices.set(component.getTextureMatrix(), j);
 			textureIndices[i] = component.getTexture().getIndex();
 		}
 
-		// Prepare world matrix buffer
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.worldMatrix);
-		gl.bufferData(gl.ARRAY_BUFFER, worldMatrixData.byteLength, gl.DYNAMIC_DRAW);
+		// Register world matrices
+		{
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.worldMatrix);
+			gl.bufferData(gl.ARRAY_BUFFER, worldMatrices, gl.STATIC_DRAW);
 
-		// Setup world matrix divisors
-		for (let i = 0; i < 3; i++) {
-			const loc = attributes.worldMatrix + i;
-
-			gl.enableVertexAttribArray(loc);
-			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
-			gl.vertexAttribDivisor(loc, 1);
+			for (i = 0; i < 3; i++) {
+				gl.enableVertexAttribArray(loc = this.#attributes.worldMatrix + i);
+				gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+				gl.vertexAttribDivisor(loc, 1);
+			}
 		}
 
-		// Register component world matrices
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.worldMatrix);
-		gl.bufferSubData(gl.ARRAY_BUFFER, 0, worldMatrixData);
+		// Register texture matrices
+		{
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.textureMatrix);
+			gl.bufferData(gl.ARRAY_BUFFER, textureMatrices, gl.STATIC_DRAW);
 
-		// Prepare texture matrix buffer
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureMatrix);
-		gl.bufferData(gl.ARRAY_BUFFER, textureMatrixData.byteLength, gl.DYNAMIC_DRAW);
-
-		// Setup texture matrix divisors
-		for (let i = 0; i < 3; i++) {
-			const loc = attributes.textureMatrix + i;
-
-			gl.enableVertexAttribArray(loc);
-			gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
-			gl.vertexAttribDivisor(loc, 1);
+			for (i = 0; i < 3; i++) {
+				gl.enableVertexAttribArray(loc = this.#attributes.textureMatrix + i);
+				gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 36, i * 12);
+				gl.vertexAttribDivisor(loc, 1);
+			}
 		}
 
-		// Register component texture matrices
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureMatrix);
-		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
-
-		// Register component texture indices
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureIndex);
+		// Register texture indices
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.textureIndex);
 		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, null);
-		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, renderQueueLength);
+		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, componentCount);
 	}
 
 	/**
