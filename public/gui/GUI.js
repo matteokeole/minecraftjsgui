@@ -7,9 +7,9 @@ import RendererManager from "src/manager";
 export default class GUI extends RendererManager {
 	/**
 	 * @param {Instance} instance
-	 *    Reference to the current instance,
-	 *    used for uploading the new render onto the output texture,
-	 *    registering listeners, manipulating the GUI scale, etc.
+	 * Reference to the current instance,
+	 * used for uploading the new render onto the output texture,
+	 * registering listeners and manipulating the GUI scale.
 	 * 
 	 * @param {GUIRenderer} renderer
 	 */
@@ -243,7 +243,7 @@ export default class GUI extends RendererManager {
 		this.renderQueue.length = 0;
 
 		this.addChildrenToRenderQueue(this.tree, {
-			addListener: true,
+			addListeners: true,
 			addToTree: false,
 		});
 

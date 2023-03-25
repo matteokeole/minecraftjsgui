@@ -1,3 +1,5 @@
+import {NotImplementedError} from "../errors/index.js";
+
 export function Layer() {}
 
 /**
@@ -5,6 +7,8 @@ export function Layer() {}
  * 
  * @returns {Component[]}
  */
-Layer.prototype.build;
+Layer.prototype.build = function() {
+	throw new NotImplementedError();
+};
 
-Layer.prototype.dispose;
+Layer.prototype.dispose = () => {};

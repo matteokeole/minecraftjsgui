@@ -10,13 +10,9 @@ export default function TextureWrapper(image, index) {
 	/** @type {HTMLImageElement} */
 	this.image = image;
 
-	/**
-	 * Index of this texture in the texture array.
-	 * 
-	 * @type {Number}
-	 */
-	this.index = index;
-
 	/** @type {Vector2} */
 	this.size = new Vector2(this.image.width, this.image.height);
+
+	/** @returns {Number} */
+	this.getIndex = () => index;
 }

@@ -142,22 +142,26 @@ export default class GUIRenderer extends WebGLRenderer {
 		}
 	}
 
-	/** @override */
+	/**
+	 * @todo Use camera param?
+	 * 
+	 * @override
+	 */
 	render(scene, camera) {
 		const
 			{gl} = this,
 			renderQueueLength = scene.length,
 			bufferLength = renderQueueLength * 9,
 			worldMatrixData = new Float32Array(bufferLength),
-			worldMatrices = [],
 			textureMatrixData = new Float32Array(bufferLength),
-			textureMatrices = [];
+			worldMatrices = [],
+			textureMatrices = [],
+			textureIndices = new Int8Array(renderQueueLength);
 		const attributes = this.#attributes;
 		const buffers = this.#buffers;
-		let i = 0, component;
 
 		// Register component world/texture matrices
-		for (i = 0; i < renderQueueLength; i++) {
+		for (let i = 0, component; i < renderQueueLength; i++) {
 			worldMatrices.push(new Float32Array(
 				worldMatrixData.buffer,
 				i * 36,
@@ -178,13 +182,16 @@ export default class GUIRenderer extends WebGLRenderer {
 				worldMatrices[i][j] = worldMatrix[j];
 				textureMatrices[i][j] = textureMatrix[j];
 			}
+
+			textureIndices[i] = component.getTexture().getIndex();
 		}
 
+		// Prepare world matrix buffer
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.worldMatrix);
 		gl.bufferData(gl.ARRAY_BUFFER, worldMatrixData.byteLength, gl.DYNAMIC_DRAW);
 
 		// Setup world matrix divisors
-		for (i = 0; i < 3; i++) {
+		for (let i = 0; i < 3; i++) {
 			const loc = attributes.worldMatrix + i;
 
 			gl.enableVertexAttribArray(loc);
@@ -192,14 +199,16 @@ export default class GUIRenderer extends WebGLRenderer {
 			gl.vertexAttribDivisor(loc, 1);
 		}
 
+		// Register component world matrices
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.worldMatrix);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, worldMatrixData);
 
+		// Prepare texture matrix buffer
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureMatrix);
 		gl.bufferData(gl.ARRAY_BUFFER, textureMatrixData.byteLength, gl.DYNAMIC_DRAW);
 
 		// Setup texture matrix divisors
-		for (i = 0; i < 3; i++) {
+		for (let i = 0; i < 3; i++) {
 			const loc = attributes.textureMatrix + i;
 
 			gl.enableVertexAttribArray(loc);
@@ -207,16 +216,13 @@ export default class GUIRenderer extends WebGLRenderer {
 			gl.vertexAttribDivisor(loc, 1);
 		}
 
+		// Register component texture matrices
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureMatrix);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, textureMatrixData);
 
 		// Register component texture indices
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureIndex);
-		gl.bufferData(
-			gl.ARRAY_BUFFER,
-			new Uint8Array(scene.map(component => component.getTexture().index)),
-			gl.STATIC_DRAW,
-		);
+		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, renderQueueLength);
