@@ -1,7 +1,7 @@
 import {Matrix3, Vector2} from "../math/index.js";
 import WebGLRenderer from "../WebGLRenderer.js";
 import Texture from "../Texture.js";
-import Button from "../../public/components/Button.js";
+import Button from "../../public/components/_Button.js";
 
 /**
  * @todo Convert to function constructor
@@ -146,6 +146,7 @@ export class GUIRenderer extends WebGLRenderer {
 	}
 
 	/**
+	 * @todo Optimize the subcomponent part
 	 * @todo Use `camera` param?
 	 * 
 	 * @override
@@ -159,18 +160,55 @@ export class GUIRenderer extends WebGLRenderer {
 			textureIndices = new Uint8Array(componentCount);
 		let i = 0, loc;
 
-		for (let j = 0, component; i < componentCount; i++, j += 9) {
+		const subcomponentWorldMatrices = [];
+		const subcomponentTextureMatrices = [];
+		const subcomponentTextureIndices = [];
+		let subcomponentCount = 0;
+
+		for (let component; i < componentCount; i++) {
+			component = scene[i];
+
+			const subcomponents = component.getSubcomponents();
+			let subcomponent, l = subcomponents.length;
+			subcomponentCount += l;
+
+			for (let j = 0; j < l; j++) {
+				subcomponent = subcomponents[j];
+
+				const position = component.getPosition()
+					.clone()
+					.add(subcomponent.getOffset());
+
+				// World matrix
+				subcomponentWorldMatrices.push(
+					...Matrix3
+						.translate(position)
+						.scale(subcomponent.getSize())
+				);
+
+				// Texture matrix
+				subcomponentTextureMatrices.push(
+					...Matrix3
+						.translate(subcomponent.getUV().divide(new Vector2(256, 256)))
+						.scale(subcomponent.getSize().divide(new Vector2(256, 256)))
+				);
+
+				subcomponentTextureIndices.push(component.getTexture().getIndex());
+			}
+		}
+
+		/* for (let j = 0, component; i < componentCount; i++, j += 9) {
 			component = scene[i];
 
 			worldMatrices.set(component.getWorldMatrix(), j);
 			textureMatrices.set(component.getTextureMatrix(), j);
 			textureIndices[i] = component.getTexture().getIndex();
-		}
+		} */
 
 		// Register world matrices
 		{
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.worldMatrix);
-			gl.bufferData(gl.ARRAY_BUFFER, worldMatrices, gl.STATIC_DRAW);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(subcomponentWorldMatrices), gl.STATIC_DRAW);
 
 			for (i = 0; i < 3; i++) {
 				gl.enableVertexAttribArray(loc = this.#attributes.worldMatrix + i);
@@ -182,7 +220,7 @@ export class GUIRenderer extends WebGLRenderer {
 		// Register texture matrices
 		{
 			gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.textureMatrix);
-			gl.bufferData(gl.ARRAY_BUFFER, textureMatrices, gl.STATIC_DRAW);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(subcomponentTextureMatrices), gl.STATIC_DRAW);
 
 			for (i = 0; i < 3; i++) {
 				gl.enableVertexAttribArray(loc = this.#attributes.textureMatrix + i);
@@ -193,9 +231,9 @@ export class GUIRenderer extends WebGLRenderer {
 
 		// Register texture indices
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.#buffers.textureIndex);
-		gl.bufferData(gl.ARRAY_BUFFER, textureIndices, gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array(subcomponentTextureIndices), gl.STATIC_DRAW);
 
-		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, componentCount);
+		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, subcomponentCount);
 	}
 
 	/**
