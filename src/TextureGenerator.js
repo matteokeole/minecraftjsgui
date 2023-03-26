@@ -1,5 +1,12 @@
 import WebGLRenderer from "./WebGLRenderer.js";
 
+/**
+ * @todo Convert to function constructor
+ * 
+ * Will be replaced by subcomponents to allow more control over complex components.
+ * 
+ * @deprecated
+ */
 export default class TextureGenerator extends WebGLRenderer {
 	/** @type {Object<String, WebGLProgram>} */
 	programs;

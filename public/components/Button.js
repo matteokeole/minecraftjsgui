@@ -1,7 +1,7 @@
 import {DynamicComponent} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import {gui, textureGenerator as generator} from "../../main.js";
+import {gui, textureGenerator as generator} from "../main.js";
 
 const BUTTON_HEIGHT = 20;
 

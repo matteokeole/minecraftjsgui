@@ -1,9 +1,12 @@
-import {Matrix3, Vector2} from "src/math";
-import WebGLRenderer from "src/renderer";
-import Texture from "../../src/Texture.js";
-import Button from "./components/Button.js";
+import {Matrix3, Vector2} from "../math/index.js";
+import WebGLRenderer from "../WebGLRenderer.js";
+import Texture from "../Texture.js";
+import Button from "../../public/components/Button.js";
 
-export default class GUIRenderer extends WebGLRenderer {
+/**
+ * @todo Convert to function constructor
+ */
+export class GUIRenderer extends WebGLRenderer {
 	/** @type {Object<String, Number>} */
 	#attributes;
 

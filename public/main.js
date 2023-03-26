@@ -1,10 +1,9 @@
 import Instance from "src/instance";
 import TextureGenerator from "src/generator";
-import Button from "./gui/components/Button.js";
-import GUI from "./gui/GUI.js";
-import GUIRenderer from "./gui/GUIRenderer.js";
-import MainMenuLayer from "./gui/layers/MainMenuLayer.js";
-// import TestLayer from "./gui/layers/TestLayer.js";
+import {GUI, GUIRenderer} from "src/gui";
+import MainMenuLayer from "./layers/MainMenuLayer.js";
+// import TestLayer from "./layers/TestLayer.js";
+import Button from "./components/Button.js";
 
 /** @todo Fix undefined instance on throw */
 

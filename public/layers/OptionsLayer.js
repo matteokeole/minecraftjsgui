@@ -1,7 +1,7 @@
 import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import {gui} from "../../main.js";
+import {gui} from "../main.js";
 import Image from "../components/Image.js";
 import ImageButton from "../components/ImageButton.js";
 
