@@ -35,17 +35,19 @@ export default function OptionsLayer() {
 				image: gui.renderer.textures["gui/widgets.png"],
 				uv: new Vector2(0, 106),
 				onMouseEnter: function() {
-					const newUv = this.getUV();
-					newUv.y = 126;
-					this.setUV(newUv);
+					const subcomponents = this.getSubcomponents();
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 126));
+
+					this.setSubcomponents(subcomponents);
 
 					gui.renderQueue.push(this);
 					gui.render();
 				},
 				onMouseLeave: function() {
-					const newUv = this.getUV();
-					newUv.y = 106;
-					this.setUV(newUv);
+					const subcomponents = this.getSubcomponents();
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 106));
+
+					this.setSubcomponents(subcomponents);
 
 					gui.renderQueue.push(this);
 					gui.render();
@@ -59,17 +61,19 @@ export default function OptionsLayer() {
 				image: gui.renderer.textures["gui/widgets.png"],
 				uv: new Vector2(0, 146),
 				onMouseEnter: function() {
-					const newUv = this.getUV();
-					newUv.y = 166;
-					this.setUV(newUv);
+					const subcomponents = this.getSubcomponents();
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 166));
+
+					this.setSubcomponents(subcomponents);
 
 					gui.renderQueue.push(this);
 					gui.render();
 				},
 				onMouseLeave: function() {
-					const newUv = this.getUV();
-					newUv.y = 146;
-					this.setUV(newUv);
+					const subcomponents = this.getSubcomponents();
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 146));
+
+					this.setSubcomponents(subcomponents);
 
 					gui.renderQueue.push(this);
 					gui.render();

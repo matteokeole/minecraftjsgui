@@ -16,4 +16,7 @@ export function Subcomponent({offset, size, uv}) {
 
 	/** @returns {Vector2} */
 	this.getUV = () => uv;
+
+	/** @param {Vector2} value */
+	this.setUV = value => void (uv = value);
 }

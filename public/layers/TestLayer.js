@@ -7,10 +7,10 @@ export default class TestLayer extends Layer {
 	build() {
 		return [
 			new Button({
-				align: Component.alignLeftTop,
+				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
-				uv: new Vector2(0, 0),
-				width: 200,
+				width: 120,
+				disabled: false,
 			}),
 		];
 	}
