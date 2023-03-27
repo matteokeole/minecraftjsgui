@@ -26,6 +26,8 @@ try {
 	await gui.renderer.loadTextures(textures, instance.texturePath);
 	await gui.renderer.loadTestTextures();
 
+	gui.fontData = await (await fetch("assets/font/ascii.json")).json();
+
 	gui.push(new TestLayer());
 
 	instance.startLoop();

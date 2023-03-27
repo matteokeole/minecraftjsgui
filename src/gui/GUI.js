@@ -1,56 +1,51 @@
 import {Component, DynamicComponent, GUIRenderer, Layer, StructuralComponent} from "./index.js";
 import {OrthographicCamera} from "../cameras/index.js";
 import {Matrix3, Vector2} from "../math/index.js";
-import RendererManager from "../RendererManager.js";
+import {RendererManager} from "../RendererManager.js";
 
 /**
- * @todo Convert to function constructor
+ * @extends RendererManager
+ * @param {Instance} instance Reference to the current instance, used for uploading the new render onto the output texture, registering listeners and manipulating the GUI scale.
+ * @param {GUIRenderer} renderer
  */
-export class GUI extends RendererManager {
+export function GUI(instance, renderer) {
+	RendererManager.call(this, instance, renderer);
+
+	/** @type {Instance} */
+	this.instance = instance;
+
+	/** @type {WebGLRenderer} */
+	this.renderer = renderer;
+
+	/** @type {Camera} */
+	this.camera = new OrthographicCamera(instance.getViewport());
+
+	/** @type {Layer[]} */
+	this.layerStack = [];
+
 	/**
-	 * @param {Instance} instance
-	 * Reference to the current instance,
-	 * used for uploading the new render onto the output texture,
-	 * registering listeners and manipulating the GUI scale.
+	 * @todo Replace by `builtComponents`?
 	 * 
-	 * @param {GUIRenderer} renderer
+	 * Children of currently built layers.
+	 * 
+	 * @type {Component[]}
 	 */
-	constructor(instance, renderer) {
-		super();
+	this.tree = [];
 
-		/** @type {Instance} */
-		this.instance = instance;
+	/**
+	 * Components registered for the next render.
+	 * 
+	 * @type {Component[]}
+	 */
+	this.renderQueue = [];
 
-		/** @type {WebGLRenderer} */
-		this.renderer = renderer;
+	/** @type {Number[]} */
+	this.lastInsertionIndices = [];
 
-		/** @type {Camera} */
-		this.camera = new OrthographicCamera(this.instance.getViewport());
+	/** @type {?Object} */
+	this.fontData;
 
-		/** @type {Layer[]} */
-		this.layerStack = [];
-
-		/**
-		 * @todo Replace by `builtComponents`?
-		 * 
-		 * Children of currently built layers.
-		 * 
-		 * @type {Component[]}
-		 */
-		this.tree = [];
-
-		/**
-		 * Components registered for the next render.
-		 * 
-		 * @type {Component[]}
-		 */
-		this.renderQueue = [];
-
-		/** @type {Number[]} */
-		this.lastInsertionIndices = [];
-	}
-
-	async init() {
+	this.init = async function() {
 		const {shaderPath, currentScale} = this.instance;
 		const viewport = this.instance.getViewport();
 		const projectionMatrix = this.camera.projectionMatrix = Matrix3
@@ -58,7 +53,7 @@ export class GUI extends RendererManager {
 			.scale(new Vector2(currentScale, currentScale));
 
 		await this.renderer.init(shaderPath, projectionMatrix);
-	}
+	};
 
 	/**
 	 * Populates the component tree.
@@ -70,7 +65,7 @@ export class GUI extends RendererManager {
 	 * @param {Boolean} [options.addListeners=false]
 	 * @param {Boolean} [options.addToTree=false]
 	 */
-	addChildrenToRenderQueue(children, {parent, addListeners = false, addToTree = false}) {
+	this.addChildrenToRenderQueue = function(children, {parent, addListeners = false, addToTree = false}) {
 		const viewport = this.instance
 			.getViewport()
 			.divideScalar(this.instance.currentScale);
@@ -97,28 +92,28 @@ export class GUI extends RendererManager {
 			if (addListeners && component instanceof DynamicComponent) this.addListeners(component);
 			if (addToTree) this.tree.push(component);
 		}
-	}
+	};
 
 	/**
 	 * Initialize event listeners for the provided component.
 	 * 
 	 * @param {Component} component
 	 */
-	addListeners(component) {
+	this.addListeners = function(component) {
 		const {instance} = this;
 		let listener;
 
 		if (listener = component.getOnMouseDown()) instance.addMouseDownListener(listener);
 		if (listener = component.getOnMouseEnter()) instance.addMouseEnterListener(listener);
 		if (listener = component.getOnMouseLeave()) instance.addMouseLeaveListener(listener);
-	}
+	};
 
 	/**
 	 * Discards event listeners for the provided component.
 	 * 
 	 * @param {Component[]} components
 	 */
-	removeListeners(components) {
+	this.removeListeners = function(components) {
 		const {instance} = this;
 
 		for (let i = 0, l = components.length, component, listener; i < l; i++) {
@@ -130,12 +125,12 @@ export class GUI extends RendererManager {
 			if (listener = component.getOnMouseEnter()) instance.removeMouseEnterListener(listener);
 			if (listener = component.getOnMouseLeave()) instance.removeMouseLeaveListener(listener);
 		}
-	}
+	};
 
 	/**
 	 * Computes the absolute position for each component of the render queue.
 	 */
-	computeTree() {
+	this.computeTree = function() {
 		for (
 			let i = 0,
 				queue = this.renderQueue,
@@ -146,16 +141,16 @@ export class GUI extends RendererManager {
 			i < l;
 			i++
 		) queue[i].computePosition(new Vector2(0, 0), viewport);
-	}
+	};
 
-	render() {
+	this.render = function() {
 		this.renderer.render(this.renderQueue, this.camera);
 
 		// Clear the render queue
 		this.renderQueue.length = 0;
 
 		this.instance.updateRendererTexture(0, this.renderer.canvas);
-	}
+	};
 
 	/**
 	 * Resizes the viewport of the renderer and triggers a new render.
@@ -163,7 +158,7 @@ export class GUI extends RendererManager {
 	 * 
 	 * @param {Vector2} viewport
 	 */
-	resize(viewport) {
+	this.resize = function(viewport) {
 		const {currentScale} = this.instance;
 
 		/** @todo Replace by `OrthographicCamera.updateProjectionMatrix` */
@@ -192,7 +187,7 @@ export class GUI extends RendererManager {
 
 		this.computeTree();
 		this.render();
-	}
+	};
 
 	/**
 	 * Adds a new layer on top of the layer stack.
@@ -202,7 +197,7 @@ export class GUI extends RendererManager {
 	 * 
 	 * @param {Layer} layer
 	 */
-	push(layer) {
+	this.push = function(layer) {
 		this.layerStack.push(layer);
 
 		// Discard event listeners of previous layers
@@ -216,7 +211,7 @@ export class GUI extends RendererManager {
 
 		this.computeTree();
 		this.render();
-	}
+	};
 
 	/**
 	 * Disposes the last layer from the layer stack.
@@ -224,7 +219,7 @@ export class GUI extends RendererManager {
 	 * being registered into the render queue.
 	 * If the layer stack is empty or contains one layer, nothing will be done.
 	 */
-	pop() {
+	this.pop = function() {
 		const {layerStack} = this;
 
 		if (layerStack.length === 0 || layerStack.length === 1) return;
@@ -254,5 +249,5 @@ export class GUI extends RendererManager {
 		this.render();
 
 		this.instance.updateRendererTexture(0, this.renderer.canvas);
-	}
+	};
 }

@@ -10,8 +10,14 @@ import {extend} from "src/utils";
 export function Text(text, {dropShadow}) {
 	VisualComponent.apply(this, arguments);
 
-	// /** @type {String[]} */
-	// const characters = text.split('');
+	/** @type {String[]} */
+	const characters = text.split('');
+
+	if (dropShadow) {
+		//
+	} else {
+		//
+	}
 }
 
 extend(Text, VisualComponent);

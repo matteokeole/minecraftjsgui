@@ -1,7 +1,7 @@
 import {Vector2, clampDown, clampUp, intersects} from "./math/index.js";
 import Program from "./Program.js";
 import WebGLRenderer from "./WebGLRenderer.js";
-import RendererManager from "./RendererManager.js";
+import {RendererManager} from "./RendererManager.js";
 
 /**
  * @todo Find a better name
