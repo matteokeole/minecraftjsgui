@@ -1,6 +1,6 @@
 import Instance from "src/instance";
 import {GUI, GUIRenderer} from "src/gui";
-import MainMenuLayer from "./layers/MainMenuLayer.js";
+// import MainMenuLayer from "./layers/MainMenuLayer.js";
 import TestLayer from "./layers/TestLayer.js";
 
 /** @todo Fix undefined instance on throw */
@@ -19,17 +19,14 @@ try {
 	await instance.setupRenderers([gui]);
 
 	// Load GUI textures and test color textures
-	{
-		const textures = await (await fetch("assets/textures/textures.json")).json();
-		const testTexturesLength = 3;
+	const textures = await (await fetch("assets/textures/textures.json")).json();
 
-		gui.renderer.createTextureArray(textures.length + testTexturesLength);
+	gui.renderer.createTextureArray(textures.length + 3);
 
-		await gui.renderer.loadTextures(textures, instance.texturePath);
-		await gui.renderer.loadTestTextures();
-	}
+	await gui.renderer.loadTextures(textures, instance.texturePath);
+	await gui.renderer.loadTestTextures();
 
-	gui.push(new MainMenuLayer());
+	gui.push(new TestLayer());
 
 	instance.startLoop();
 } catch (error) {

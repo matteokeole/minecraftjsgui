@@ -1,6 +1,6 @@
 import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import Button from "../components/Button.js";
+import {Button} from "../components/index.js";
 
 export default class TestLayer extends Layer {
 	/** @override */

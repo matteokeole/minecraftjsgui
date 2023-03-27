@@ -19,7 +19,7 @@ const BUTTON_HEIGHT = 20;
  *    onMouseDown: ?Function
  * }}
  */
-export default function Button({width, disabled, onMouseEnter: onMouseEnterClient, onMouseLeave: onMouseLeaveClient, onMouseDown: onMouseDownClient}) {
+export function Button({width, disabled, onMouseEnter: onMouseEnterClient, onMouseLeave: onMouseLeaveClient, onMouseDown: onMouseDownClient}) {
 	DynamicComponent.apply(this, arguments);
 
 	const halfWidth = width * .5;
