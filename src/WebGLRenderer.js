@@ -4,6 +4,8 @@ import Program from "./Program.js";
 import Texture from "./Texture.js";
 
 /**
+ * @todo Convert to function constructor
+ * 
  * General-purpose renderer based on a WebGL context.
  */
 export default class WebGLRenderer {
@@ -59,7 +61,7 @@ export default class WebGLRenderer {
 	}
 
 	/**
-	 * @todo Set viewport size as multiples of 2 to avoid subpixel artifacts?
+	 * @todo Set viewport size as multiples of 2 to avoid subpixel artifacts? (This only concerns the current use of the lib)
 	 * 
 	 * @param {Vector2} viewport
 	 * @returns {Vector2}

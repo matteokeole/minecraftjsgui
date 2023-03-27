@@ -1,5 +1,5 @@
 /**
- * Wrapper for `WebGLTexture`.
+ * Wrapper on a `WebGLTexture`.
  * 
  * @param {HTMLImageElement} image
  * @param {Number} index

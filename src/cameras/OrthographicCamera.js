@@ -1,7 +1,10 @@
-import Camera from "./Camera.js";
+import {Camera} from "./Camera.js";
 import {Matrix3} from "../math/index.js";
 
-export default class OrthographicCamera extends Camera {
+/**
+ * @todo Convert to function constructor
+ */
+export class OrthographicCamera extends Camera {
 	/**
 	 * @param {Vector2} viewport
 	 */

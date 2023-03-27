@@ -1,10 +1,12 @@
-import GUIRenderer from "./GUIRenderer.js";
-import {OrthographicCamera} from "src/cameras";
-import {Component, DynamicComponent, Layer, StructuralComponent} from "src/gui";
-import {Matrix3, Vector2} from "src/math";
-import RendererManager from "src/manager";
+import {Component, DynamicComponent, GUIRenderer, Layer, StructuralComponent} from "./index.js";
+import {OrthographicCamera} from "../cameras/index.js";
+import {Matrix3, Vector2} from "../math/index.js";
+import RendererManager from "../RendererManager.js";
 
-export default class GUI extends RendererManager {
+/**
+ * @todo Convert to function constructor
+ */
+export class GUI extends RendererManager {
 	/**
 	 * @param {Instance} instance
 	 * Reference to the current instance,

@@ -1,7 +1,10 @@
 import {NotImplementedError} from "../errors/index.js";
 import {Matrix3, Vector3} from "../math/index.js";
 
-export default class Camera {
+/**
+ * @todo Convert to function constructor
+ */
+export class Camera {
 	constructor() {
 		/** @type {Vector3} */
 		this.position = new Vector3(0, 0, 0);
