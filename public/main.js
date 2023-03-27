@@ -27,6 +27,7 @@ try {
 	await gui.renderer.loadTestTextures();
 
 	gui.fontData = await (await fetch("assets/font/ascii.json")).json();
+	gui.loadFontSubcomponents();
 
 	gui.push(new TestLayer());
 

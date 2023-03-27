@@ -1,4 +1,4 @@
-import {Component, DynamicComponent, GUIRenderer, Layer, StructuralComponent} from "./index.js";
+import {Component, DynamicComponent, GUIRenderer, Layer, Subcomponent, StructuralComponent} from "./index.js";
 import {OrthographicCamera} from "../cameras/index.js";
 import {Matrix3, Vector2} from "../math/index.js";
 import {RendererManager} from "../RendererManager.js";
@@ -45,6 +45,9 @@ export function GUI(instance, renderer) {
 	/** @type {?Object} */
 	this.fontData;
 
+	/** @type {Object<String, Subcomponent>} */
+	this.fontSubcomponents = {};
+
 	this.init = async function() {
 		const {shaderPath, currentScale} = this.instance;
 		const viewport = this.instance.getViewport();
@@ -53,6 +56,20 @@ export function GUI(instance, renderer) {
 			.scale(new Vector2(currentScale, currentScale));
 
 		await this.renderer.init(shaderPath, projectionMatrix);
+	};
+
+	this.loadFontSubcomponents = function() {
+		const fontData = Object.entries(this.fontData);
+
+		for (let i = 0, l = fontData.length, symbol, character; i < l; i++) {
+			[symbol, character] = fontData[i];
+
+			this.fontSubcomponents[symbol] = new Subcomponent({
+				size: new Vector2(character.width, 8),
+				offset: new Vector2(0, 0),
+				uv: new Vector2(...character.uv),
+			});
+		}
 	};
 
 	/**
