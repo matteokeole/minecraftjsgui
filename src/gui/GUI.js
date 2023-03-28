@@ -42,9 +42,6 @@ export function GUI(instance, renderer) {
 	/** @type {Number[]} */
 	this.lastInsertionIndices = [];
 
-	/** @type {?Object} */
-	this.fontData;
-
 	/** @type {Object<String, Subcomponent>} */
 	this.fontSubcomponents = {};
 
@@ -58,10 +55,26 @@ export function GUI(instance, renderer) {
 		await this.renderer.init(shaderPath, projectionMatrix);
 	};
 
-	this.loadFontSubcomponents = function() {
-		const fontData = Object.entries(this.fontData);
+	/**
+	 * @todo Measure performance
+	 * 
+	 * @param {Object} fontData
+	 */
+	this.loadFontSubcomponents = function(fontData) {
+		fontData = Object.entries(fontData);
 
-		for (let i = 0, l = fontData.length, symbol, character; i < l; i++) {
+		this.fontSubcomponents = Object.fromEntries(
+			fontData.map(([key, {width, uv}]) => [
+				key,
+				new Subcomponent({
+					size: new Vector2(width, 8),
+					offset: new Vector2(0, 0),
+					uv: new Vector2(...uv),
+				}),
+			]),
+		);
+
+		/* for (let i = 0, l = fontData.length, symbol, character; i < l; i++) {
 			[symbol, character] = fontData[i];
 
 			this.fontSubcomponents[symbol] = new Subcomponent({
@@ -69,7 +82,7 @@ export function GUI(instance, renderer) {
 				offset: new Vector2(0, 0),
 				uv: new Vector2(...character.uv),
 			});
-		}
+		} */
 	};
 
 	/**
