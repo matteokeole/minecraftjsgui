@@ -9,7 +9,7 @@ import {extend} from "src/utils";
  *    uv: Vector2
  * }}
  */
-export default function ImageButton({image, uv}) {
+export function ImageButton({image, uv}) {
 	DynamicComponent.apply(this, arguments);
 
 	this.setTexture(image);

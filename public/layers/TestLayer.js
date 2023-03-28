@@ -1,16 +1,15 @@
 import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import Button from "../components/Button.js";
+import {Button, Text} from "../components/index.js";
 
 export default class TestLayer extends Layer {
 	/** @override */
 	build() {
 		return [
-			new Button({
+			new Text({
 				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
-				width: 120,
-				disabled: false,
+				text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 			}),
 		];
 	}

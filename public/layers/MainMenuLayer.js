@@ -3,8 +3,7 @@ import {Vector2} from "src/math";
 import {extend} from "src/utils";
 import {gui} from "../main.js";
 import OptionsLayer from "./OptionsLayer.js";
-import Image from "../components/Image.js";
-import ImageButton from "../components/ImageButton.js";
+import {Image, ImageButton} from "../components/index.js";
 
 export default function MainMenuLayer() {
 	/** @override */

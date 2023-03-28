@@ -1,22 +1,24 @@
-import {Camera} from "./Camera.js";
-import {Matrix3} from "../math/index.js";
+import {Camera} from "./index.js";
+import {Matrix3, Vector2} from "../math/index.js";
+import {extend} from "../utils/index.js";
 
 /**
- * @todo Convert to function constructor
+ * @extends Camera
+ * @param {Vector2} viewport
  */
-export class OrthographicCamera extends Camera {
-	/**
-	 * @param {Vector2} viewport
-	 */
-	constructor(viewport) {
-		super();
+export function OrthographicCamera(viewport) {
+	Camera.call(this);
 
-		/** @type {Vector2} */
-		this.viewport = viewport;
-	}
+	/** @type {Vector2} */
+	this.getViewport = () => viewport;
 
-	/** @override */
-	updateProjectionMatrix() {
-		this.projectionMatrix = Matrix3.projection(this.viewport);
-	}
+	/** @param {Vector2} value */
+	this.setViewport = value => void (viewport = value);
 }
+
+extend(OrthographicCamera, Camera);
+
+/** @override */
+OrthographicCamera.prototype.updateProjectionMatrix = function() {
+	this.setProjectionMatrix(Matrix3.projection(this.getViewport()));
+};

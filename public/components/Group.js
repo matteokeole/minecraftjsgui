@@ -6,7 +6,7 @@ import {extend} from "src/utils";
  * 
  * @extends StructuralComponent
  */
-export default function Group() {
+export function Group() {
 	StructuralComponent.apply(this, arguments);
 
 	/**

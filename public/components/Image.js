@@ -9,7 +9,7 @@ import {extend} from "src/utils";
  *    uv: Vector2
  * }}
  */
-export default function Image({image, uv}) {
+export function Image({image, uv}) {
 	VisualComponent.apply(this, arguments);
 
 	this.setTexture(image);
