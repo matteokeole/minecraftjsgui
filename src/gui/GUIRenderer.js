@@ -41,8 +41,8 @@ export class GUIRenderer extends WebGLRenderer {
 		 * @type {Program}
 		 */
 		let program = await this.loadProgram(
-			"component.vert",
-			"component.frag",
+			"subcomponent.vert",
+			"subcomponent.frag",
 			shaderPath,
 		);
 
