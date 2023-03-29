@@ -4,7 +4,7 @@
  * @abstract
  * @throws {TypeError}
  */
-export default function Vector(argLength, currentArgLength) {
+export function Vector(argLength, currentArgLength) {
 	if (currentArgLength < argLength) throw TypeError(`Failed to construct '${this.constructor.name}': ${argLength} arguments required, but only ${currentArgLength} present.`);
 }
 

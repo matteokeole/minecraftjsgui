@@ -1,5 +1,3 @@
-import NotImplementedError from "./NotImplementedError.js";
-import NoWebGL2Error from "./NoWebGL2Error.js";
-import ShaderCompilationError from "./ShaderCompilationError.js";
-
-export {NotImplementedError, NoWebGL2Error, ShaderCompilationError};
+export {NotImplementedError} from "./NotImplementedError.js";
+export {NoWebGL2Error} from "./NoWebGL2Error.js";
+export {ShaderCompilationError} from "./ShaderCompilationError.js";

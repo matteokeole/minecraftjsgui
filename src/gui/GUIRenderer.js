@@ -40,18 +40,14 @@ export class GUIRenderer extends WebGLRenderer {
 		 * 
 		 * @type {Program}
 		 */
-		let program = await this.loadProgram(
+		const program = await this.loadProgram(
 			"subcomponent.vert",
 			"subcomponent.frag",
 			shaderPath,
 		);
 
 		this.linkProgram(program);
-
-		({program} = program);
-
-		gl.useProgram(program);
-
+		gl.useProgram(program.getProgram());
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -62,7 +58,7 @@ export class GUIRenderer extends WebGLRenderer {
 			textureIndex: 7,
 		};
 		const uniforms = this.#uniforms = {
-			projectionMatrix: gl.getUniformLocation(program, "u_projection"),
+			projectionMatrix: gl.getUniformLocation(program.getProgram(), "u_projection"),
 		};
 		const buffers = this.#buffers = {
 			position: gl.createBuffer(),

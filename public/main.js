@@ -1,7 +1,7 @@
 import Instance from "src/instance";
 import {GUI, GUIRenderer} from "src/gui";
-// import MainMenuLayer from "./layers/MainMenuLayer.js";
-import TestLayer from "./layers/TestLayer.js";
+import MainMenuLayer from "./layers/MainMenuLayer.js";
+// import TestLayer from "./layers/TestLayer.js";
 
 /** @todo Fix undefined instance on throw */
 
@@ -28,7 +28,7 @@ try {
 	await gui.renderer.loadTestTextures();
 	gui.loadFontSubcomponents(await (await fetch("assets/font/ascii.json")).json());
 
-	gui.push(new TestLayer());
+	gui.push(new MainMenuLayer());
 
 	instance.startLoop();
 } catch (error) {
