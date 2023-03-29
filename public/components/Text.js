@@ -5,12 +5,10 @@ import {gui} from "../main.js";
 
 /**
  * @extends VisualComponent
- * @param {{
- *    text: String
- * }}
+ * @param {String} text
  */
-export function Text({text}) {
-	VisualComponent.apply(this, arguments);
+export function Text(text) {
+	VisualComponent.call(this, arguments[1]);
 
 	/** @type {String[]} */
 	const characters = text.split('');

@@ -4,7 +4,7 @@
  * 
  * @extends Error
  */
-export default function NotImplementedError() {
+export function NotImplementedError() {
 	const instance = Error("This feature is not implemented yet.");
 
 	Object.setPrototypeOf(instance, this);

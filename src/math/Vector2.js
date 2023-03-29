@@ -1,4 +1,4 @@
-import Vector from "./Vector.js";
+import {Vector} from "./Vector.js";
 import {extend} from "../utils/index.js";
 
 /**
@@ -8,7 +8,7 @@ import {extend} from "../utils/index.js";
  * @param {Number} x
  * @param {Number} y
  */
-export default function Vector2(x, y) {
+export function Vector2(x, y) {
 	Vector.call(this, 2, arguments.length);
 
 	/** @type {Number} */

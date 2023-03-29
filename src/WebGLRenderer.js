@@ -1,6 +1,6 @@
 import {NotImplementedError, NoWebGL2Error, ShaderCompilationError} from "./errors/index.js";
 import {Vector2} from "./math/index.js";
-import Program from "./Program.js";
+import {Program} from "./Program.js";
 import Texture from "./Texture.js";
 
 /**
@@ -102,26 +102,26 @@ export default class WebGLRenderer {
 
 	/**
 	 * Links a loaded program to the WebGL context.
-	 * Returns `true` if the linking ended successfully, `false` otherwise.
+	 * Returns `true` if the linking was successful, `false` otherwise.
 	 * 
 	 * @param {Program} program
 	 * @returns {Boolean}
 	 * @throws {ShaderCompilationError}
 	 */
-	linkProgram({program, vertexShader, fragmentShader}) {
+	linkProgram(program) {
 		const {gl} = this;
 
-		gl.linkProgram(program);
+		gl.linkProgram(program.getProgram());
 
-		if (gl.getProgramParameter(program, gl.LINK_STATUS)) return true;
+		if (gl.getProgramParameter(program.getProgram(), gl.LINK_STATUS)) return true;
 
 		let log;
 
-		if ((log = gl.getShaderInfoLog(vertexShader)).length !== 0) {
+		if ((log = gl.getShaderInfoLog(program.getVertexShader())).length !== 0) {
 			throw new ShaderCompilationError(log, gl.VERTEX_SHADER);
 		}
 
-		if ((log = gl.getShaderInfoLog(fragmentShader)).length !== 0) {
+		if ((log = gl.getShaderInfoLog(program.getFragmentShader())).length !== 0) {
 			throw new ShaderCompilationError(log, gl.FRAGMENT_SHADER);
 		}
 

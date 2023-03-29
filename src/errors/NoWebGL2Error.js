@@ -4,7 +4,7 @@
  * 
  * @extends Error
  */
-export default function NoWebGL2Error() {
+export function NoWebGL2Error() {
 	const
 		instance = Error("It seems that your browser doesn't support WebGL2."),
 		img = document.createElement("img");

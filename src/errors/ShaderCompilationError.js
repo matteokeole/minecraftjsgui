@@ -6,7 +6,7 @@
  * @param {String} message Shader info log
  * @param {Number} type Shader type (`gl.VERTEX_SHADER` or `gl.FRAGMENT_SHADER`)
  */
-export default function ShaderCompilationError(message, type) {
+export function ShaderCompilationError(message, type) {
 	const instance = Error(`${shaderTypes[type]} SHADER ${message}`);
 
 	instance.node = document.createElement("div");

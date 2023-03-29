@@ -1,5 +1,5 @@
 import {Vector2, clampDown, clampUp, intersects} from "./math/index.js";
-import Program from "./Program.js";
+import {Program} from "./Program.js";
 import WebGLRenderer from "./WebGLRenderer.js";
 import {RendererManager} from "./RendererManager.js";
 
@@ -322,7 +322,7 @@ export default function Instance() {
 		outputRenderer.linkProgram(program);
 
 		/** @todo Make useProgram helper in `WebGLRenderer`? */
-		gl.useProgram(program.program);
+		gl.useProgram(program.getProgram());
 
 		gl.attribute = {
 			position: 0,
