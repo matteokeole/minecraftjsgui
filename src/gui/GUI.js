@@ -235,7 +235,7 @@ export function GUI(instance, renderer) {
 		this.removeListeners(this.tree);
 
 		this.lastInsertionIndices.push(this.tree.length);
-		this.addChildrenToRenderQueue(layer.build(), {
+		this.addChildrenToRenderQueue(layer.build(this), {
 			addListeners: true,
 			addToTree: true,
 		});

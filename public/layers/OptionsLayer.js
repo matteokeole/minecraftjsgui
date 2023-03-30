@@ -1,12 +1,11 @@
 import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import {gui} from "../main.js";
 import {Image, ImageButton} from "../components/index.js";
 
 export default function OptionsLayer() {
 	/** @override */
-	this.build = function() {
+	this.build = function(context) {
 		/** @type {Number} */
 		let counter = 0;
 
@@ -16,14 +15,14 @@ export default function OptionsLayer() {
 			new Image({
 				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
-				image: gui.renderer.textures["overlay"],
+				image: context.renderer.textures["overlay"],
 				size: new Vector2(2000, 2000),
 				uv: new Vector2(0, 0),
 			}),
 			new Image({
 				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
-				image: gui.renderer.textures["grey"],
+				image: context.renderer.textures["grey"],
 				size: new Vector2(300, 180),
 				uv: new Vector2(0, 0),
 			}),
@@ -31,7 +30,7 @@ export default function OptionsLayer() {
 				align: Component.alignCenter,
 				margin: new Vector2(110, -75),
 				size: new Vector2(20, 20),
-				image: gui.renderer.textures["gui/widgets.png"],
+				image: context.renderer.textures["gui/widgets.png"],
 				uv: new Vector2(0, 106),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
@@ -39,8 +38,8 @@ export default function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					gui.renderQueue.push(this);
-					gui.render();
+					context.renderQueue.push(this);
+					context.render();
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
@@ -48,8 +47,8 @@ export default function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					gui.renderQueue.push(this);
-					gui.render();
+					context.renderQueue.push(this);
+					context.render();
 				},
 				onMouseDown: () => console.debug(`Counter = ${++counter}`),
 			}),
@@ -57,7 +56,7 @@ export default function OptionsLayer() {
 				align: Component.alignCenter,
 				margin: new Vector2(134, -75),
 				size: new Vector2(20, 20),
-				image: gui.renderer.textures["gui/widgets.png"],
+				image: context.renderer.textures["gui/widgets.png"],
 				uv: new Vector2(0, 146),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
@@ -65,8 +64,8 @@ export default function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					gui.renderQueue.push(this);
-					gui.render();
+					context.renderQueue.push(this);
+					context.render();
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
@@ -74,10 +73,10 @@ export default function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					gui.renderQueue.push(this);
-					gui.render();
+					context.renderQueue.push(this);
+					context.render();
 				},
-				onMouseDown: () => gui.pop(),
+				onMouseDown: () => context.pop(),
 			}),
 		];
 	};

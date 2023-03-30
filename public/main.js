@@ -3,20 +3,21 @@ import {GUI, GUIRenderer} from "src/gui";
 import Layer from "./layers/MainMenuLayer.js";
 // import Layer from "./layers/TestLayer.js";
 
-/** @todo Fix undefined instance on throw */
+/**
+ * @todo Fix undefined instance on throw
+ * 
+ * @type {?Instance}
+ */
+let instance;
 
 /** @type {?GUI} */
 export let gui;
-
-/** @type {?Instance} */
-let instance;
 
 try {
 	instance = new Instance({
 		shaderPath: "assets/shaders/",
 		texturePath: "assets/textures/",
 	});
-
 	gui = new GUI(instance, new GUIRenderer());
 
 	instance.build();
