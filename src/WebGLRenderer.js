@@ -3,6 +3,9 @@ import {Vector2} from "./math/index.js";
 import {Program} from "./Program.js";
 import Texture from "./Texture.js";
 
+/** @type {Vector2} */
+const MAX_TEXTURE_SIZE = new Vector2(256, 256);
+
 /**
  * @todo Convert to function constructor
  * 
@@ -136,11 +139,12 @@ export default class WebGLRenderer {
 	 */
 	createTextureArray(length) {
 		const {gl} = this;
+		const generateMipmaps = this.#generateMipmaps;
 
 		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
-		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 256, 256, length);
+		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, MAX_TEXTURE_SIZE.x, MAX_TEXTURE_SIZE.y, length);
 		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		this.#generateMipmaps ?
+		generateMipmaps ?
 			gl.generateMipmap(gl.TEXTURE_2D_ARRAY) :
 			gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	}

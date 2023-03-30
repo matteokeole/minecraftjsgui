@@ -10,8 +10,11 @@ import {RendererManager} from "./RendererManager.js";
  * 
  * Game instance.
  * This holds information about asset base paths, viewport dimensions and GUI scale.
+ * 
+ * @param {String} shaderPath
+ * @param {String} texturePath
  */
-export default function Instance() {
+export default function Instance({shaderPath, texturePath}) {
 	const DEFAULT_WIDTH = 320;
 	const DEFAULT_HEIGHT = 240;
 	const RESIZE_DELAY = 50;
@@ -46,14 +49,12 @@ export default function Instance() {
 
 	let rendererLength;
 
-	let mouseEnterListeners = [];
-	let mouseEnterListenerCount = 0;
-
-	let mouseLeaveListeners = [];
-	let mouseLeaveListenerCount = 0;
-
-	let mouseDownListeners = [];
-	let mouseDownListenerCount = 0;
+	let mouseEnterListeners = [],
+		mouseEnterListenerCount = 0,
+		mouseLeaveListeners = [],
+		mouseLeaveListenerCount = 0,
+		mouseDownListeners = [],
+		mouseDownListenerCount = 0;
 
 	/**
 	 * @private
@@ -79,19 +80,11 @@ export default function Instance() {
 	 */
 	this.rendererTextures = [];
 
-	/**
-	 * Shader folder path, relative to the root folder.
-	 * 
-	 * @type {?String}
-	 */
-	this.shaderPath = "assets/shaders/";
+	/** @returns {String} */
+	this.getShaderPath = () => shaderPath;
 
-	/**
-	 * Texture folder path, relative to the root folder.
-	 * 
-	 * @type {?String}
-	 */
-	this.texturePath = "assets/textures/";
+	/** @returns {String} */
+	this.getTexturePath = () => texturePath;
 
 	/**
 	 * Cached values of `window.innerWidth` and `window.innerHeight`.
@@ -316,7 +309,7 @@ export default function Instance() {
 		const program = await outputRenderer.loadProgram(
 			"main.vert",
 			"main.frag",
-			this.shaderPath,
+			this.getShaderPath(),
 		);
 
 		outputRenderer.linkProgram(program);
