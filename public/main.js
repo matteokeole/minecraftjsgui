@@ -1,7 +1,7 @@
 import Instance from "src/instance";
 import {GUI, GUIRenderer} from "src/gui";
-import MainMenuLayer from "./layers/MainMenuLayer.js";
-// import TestLayer from "./layers/TestLayer.js";
+import Layer from "./layers/MainMenuLayer.js";
+// import Layer from "./layers/TestLayer.js";
 
 /** @todo Fix undefined instance on throw */
 
@@ -12,7 +12,10 @@ export let gui;
 let instance;
 
 try {
-	instance = new Instance();
+	instance = new Instance({
+		shaderPath: "assets/shaders/",
+		texturePath: "assets/textures/",
+	});
 
 	gui = new GUI(instance, new GUIRenderer());
 
@@ -24,11 +27,11 @@ try {
 	const textures = await (await fetch("assets/textures/textures.json")).json();
 
 	gui.renderer.createTextureArray(textures.length + 3);
-	await gui.renderer.loadTextures(textures, instance.texturePath);
+	await gui.renderer.loadTextures(textures, instance.getTexturePath());
 	await gui.renderer.loadTestTextures();
 	gui.loadFontSubcomponents(await (await fetch("assets/font/ascii.json")).json());
 
-	gui.push(new MainMenuLayer());
+	gui.push(new Layer());
 
 	instance.startLoop();
 } catch (error) {

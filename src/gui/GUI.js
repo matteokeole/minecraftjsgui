@@ -46,7 +46,8 @@ export function GUI(instance, renderer) {
 	this.fontSubcomponents = {};
 
 	this.init = async function() {
-		const {shaderPath, currentScale} = this.instance;
+		const {currentScale} = this.instance;
+		const shaderPath = this.instance.getShaderPath();
 		const viewport = this.instance.getViewport();
 		const projectionMatrix = this.camera.projectionMatrix = Matrix3
 			.projection(viewport)
