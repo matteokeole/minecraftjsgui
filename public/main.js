@@ -1,7 +1,7 @@
-import Instance from "src/instance";
+import {Instance} from "src/instance";
 import {GUI, GUIRenderer} from "src/gui";
-import Layer from "./layers/MainMenuLayer.js";
-// import Layer from "./layers/TestLayer.js";
+import {MainMenuLayer as Layer} from "./layers/MainMenuLayer.js";
+// import {TestLayer as Layer} from "./layers/TestLayer.js";
 
 /**
  * @todo Fix undefined instance on throw
