@@ -6,7 +6,7 @@ import {extend} from "src/utils";
  * @extends VisualComponent
  * @param {{
  *    image: Texture,
- *    uv: Vector2
+ *    uv: Vector2,
  * }}
  */
 export function Image({image, uv}) {

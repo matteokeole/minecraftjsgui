@@ -1,5 +1,5 @@
 import {Component, Layer} from "src/gui";
-import {Vector2} from "src/math";
+import {Vector2, Vector3} from "src/math";
 import {extend} from "src/utils";
 import {OptionsLayer} from "./OptionsLayer.js";
 import {ImageButton, Text} from "../components/index.js";
@@ -111,6 +111,7 @@ export function MainMenuLayer() {
 		new Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", {
 			align: Component.alignCenter,
 			margin: new Vector2(0, 0),
+			color: Text.YELLOW,
 		}),
 	];
 }

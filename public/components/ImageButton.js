@@ -6,7 +6,7 @@ import {extend} from "src/utils";
  * @extends DynamicComponent
  * @param {{
  *    image: Texture,
- *    uv: Vector2
+ *    uv: Vector2,
  * }}
  */
 export function ImageButton({image, uv}) {
