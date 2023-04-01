@@ -14,9 +14,9 @@ const BUTTON_HEIGHT = 20;
  * @param {{
  *    width: Number,
  *    disabled: Boolean,
- *    onMouseEnter: ?Function
- *    onMouseLeave: ?Function
- *    onMouseDown: ?Function
+ *    onMouseEnter: ?Function,
+ *    onMouseLeave: ?Function,
+ *    onMouseDown: ?Function,
  * }}
  */
 export function Button({width, disabled, onMouseEnter: onMouseEnterClient, onMouseLeave: onMouseLeaveClient, onMouseDown: onMouseDownClient}) {
