@@ -3,7 +3,9 @@ import {Vector2} from "src/math";
 import {extend} from "src/utils";
 import {Image, ImageButton} from "../components/index.js";
 
-export default function OptionsLayer() {
+export function OptionsLayer() {
+	Layer.call(this);
+
 	/** @override */
 	this.build = function(context) {
 		/** @type {Number} */
@@ -15,14 +17,14 @@ export default function OptionsLayer() {
 			new Image({
 				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
-				image: context.renderer.textures["overlay"],
+				image: context.getTexture("overlay"),
 				size: new Vector2(2000, 2000),
 				uv: new Vector2(0, 0),
 			}),
 			new Image({
 				align: Component.alignCenter,
 				margin: new Vector2(0, 0),
-				image: context.renderer.textures["grey"],
+				image: context.getTexture("grey"),
 				size: new Vector2(300, 180),
 				uv: new Vector2(0, 0),
 			}),
@@ -30,7 +32,7 @@ export default function OptionsLayer() {
 				align: Component.alignCenter,
 				margin: new Vector2(110, -75),
 				size: new Vector2(20, 20),
-				image: context.renderer.textures["gui/widgets.png"],
+				image: context.getTexture("gui/widgets.png"),
 				uv: new Vector2(0, 106),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
@@ -56,7 +58,7 @@ export default function OptionsLayer() {
 				align: Component.alignCenter,
 				margin: new Vector2(134, -75),
 				size: new Vector2(20, 20),
-				image: context.renderer.textures["gui/widgets.png"],
+				image: context.getTexture("gui/widgets.png"),
 				uv: new Vector2(0, 146),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();

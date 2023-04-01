@@ -37,7 +37,7 @@ export function Button({width, disabled, onMouseEnter: onMouseEnterClient, onMou
 	];
 
 	this.setSize(new Vector2(width, BUTTON_HEIGHT));
-	this.setTexture(gui.renderer.textures["gui/widgets.png"]);
+	this.setTexture(gui.getTexture("gui/widgets.png"));
 	this.setSubcomponents(subcomponents);
 	this.setOnMouseEnter(function(p) {
 		if (disabled) return;

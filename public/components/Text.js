@@ -27,7 +27,7 @@ export function Text(text) {
 	}
 
 	this.setSize(new Vector2(width, 8));
-	this.setTexture(gui.renderer.textures["font/ascii.png"]);
+	this.setTexture(gui.getTexture("font/ascii.png"));
 	this.setSubcomponents(subcomponents);
 }
 

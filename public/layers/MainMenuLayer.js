@@ -1,10 +1,12 @@
 import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import OptionsLayer from "./OptionsLayer.js";
-import {Image, ImageButton} from "../components/index.js";
+import {OptionsLayer} from "./OptionsLayer.js";
+import {ImageButton, Text} from "../components/index.js";
 
-export default function MainMenuLayer() {
+export function MainMenuLayer() {
+	Layer.call(this);
+
 	/** @override */
 	this.build = context => [
 		/* new Group({
@@ -16,7 +18,7 @@ export default function MainMenuLayer() {
 					align: Component.alignLeftTop,
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: context.renderer.textures["gui/widgets.png"],
+					image: context.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 146),
 					onMouseEnter: function() {
 						const newUv = this.getUV();
@@ -40,21 +42,21 @@ export default function MainMenuLayer() {
 					align: Component.alignRightTop,
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: context.renderer.textures["gui/widgets.png"],
+					image: context.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 186),
 				}),
 				new ImageButton({
 					align: Component.alignLeftBottom,
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: context.renderer.textures["gui/widgets.png"],
+					image: context.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 186),
 				}),
 				new ImageButton({
 					align: Component.alignRightBottom,
 					margin: new Vector2(0, 0),
 					size: new Vector2(20, 20),
-					image: context.renderer.textures["gui/widgets.png"],
+					image: context.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 186),
 				}),
 			],
@@ -63,7 +65,7 @@ export default function MainMenuLayer() {
 			align: Component.alignLeftTop,
 			margin: new Vector2(0, 0),
 			size: new Vector2(20, 20),
-			image: context.renderer.textures["gui/widgets.png"],
+			image: context.getTexture("gui/widgets.png"),
 			uv: new Vector2(0, 146),
 			onMouseEnter: function() {
 				const subcomponents = this.getSubcomponents();
@@ -89,29 +91,26 @@ export default function MainMenuLayer() {
 			align: Component.alignRightTop,
 			margin: new Vector2(0, 0),
 			size: new Vector2(20, 20),
-			image: context.renderer.textures["gui/widgets.png"],
+			image: context.getTexture("gui/widgets.png"),
 			uv: new Vector2(0, 186),
 		}),
 		new ImageButton({
 			align: Component.alignLeftBottom,
 			margin: new Vector2(0, 0),
 			size: new Vector2(20, 20),
-			image: context.renderer.textures["gui/widgets.png"],
+			image: context.getTexture("gui/widgets.png"),
 			uv: new Vector2(0, 186),
 		}),
 		new ImageButton({
 			align: Component.alignRightBottom,
 			margin: new Vector2(0, 0),
 			size: new Vector2(20, 20),
-			image: context.renderer.textures["gui/widgets.png"],
+			image: context.getTexture("gui/widgets.png"),
 			uv: new Vector2(0, 186),
 		}),
-		new Image({
+		new Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", {
 			align: Component.alignCenter,
 			margin: new Vector2(0, 0),
-			image: context.renderer.textures["darkgrey"],
-			size: new Vector2(400, 320),
-			uv: new Vector2(0, 0),
 		}),
 	];
 }
