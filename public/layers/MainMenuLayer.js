@@ -25,16 +25,14 @@ export function MainMenuLayer() {
 						newUv.y = 166;
 						this.setUV(newUv);
 
-						context.renderQueue.push(this);
-						context.render();
+						context.pushToRenderQueue(this).render();
 					},
 					onMouseLeave: function() {
 						const newUv = this.getUV();
 						newUv.y = 146;
 						this.setUV(newUv);
 
-						context.renderQueue.push(this);
-						context.render();
+						context.pushToRenderQueue(this).render();
 					},
 					onMouseDown: () => context.push(new OptionsLayer()),
 				}),
@@ -73,8 +71,7 @@ export function MainMenuLayer() {
 
 				this.setSubcomponents(subcomponents);
 
-				context.renderQueue.push(this);
-				context.render();
+				context.pushToRenderQueue(this).render();
 			},
 			onMouseLeave: function() {
 				const subcomponents = this.getSubcomponents();
@@ -82,8 +79,7 @@ export function MainMenuLayer() {
 
 				this.setSubcomponents(subcomponents);
 
-				context.renderQueue.push(this);
-				context.render();
+				context.pushToRenderQueue(this).render();
 			},
 			onMouseDown: () => context.push(new OptionsLayer()),
 		}),

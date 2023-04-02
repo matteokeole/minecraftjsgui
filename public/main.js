@@ -18,7 +18,7 @@ try {
 		shaderPath: "assets/shaders/",
 		texturePath: "assets/textures/",
 	});
-	gui = new GUI(instance, new GUIRenderer());
+	gui = new GUI(new GUIRenderer(), instance);
 
 	instance.build();
 	await instance.initialize();
@@ -26,10 +26,11 @@ try {
 
 	// Load GUI textures and test color textures
 	const textures = await (await fetch("assets/textures/textures.json")).json();
+	const renderer = gui.getRenderer();
 
-	gui.renderer.createTextureArray(textures.length + 3);
-	await gui.renderer.loadTextures(textures, instance.getTexturePath());
-	await gui.renderer.loadTestTextures();
+	renderer.createTextureArray(textures.length + 3);
+	await renderer.loadTextures(textures, instance.getTexturePath());
+	await renderer.loadTestTextures();
 	gui.loadFontSubcomponents(await (await fetch("assets/font/ascii.json")).json());
 
 	gui.push(new Layer());
