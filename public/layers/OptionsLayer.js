@@ -40,8 +40,7 @@ export function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					context.renderQueue.push(this);
-					context.render();
+					context.pushToRenderQueue(this).render();
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
@@ -49,8 +48,7 @@ export function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					context.renderQueue.push(this);
-					context.render();
+					context.pushToRenderQueue(this).render();
 				},
 				onMouseDown: () => console.debug(`Counter = ${++counter}`),
 			}),
@@ -66,8 +64,7 @@ export function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					context.renderQueue.push(this);
-					context.render();
+					context.pushToRenderQueue(this).render();
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
@@ -75,8 +72,7 @@ export function OptionsLayer() {
 
 					this.setSubcomponents(subcomponents);
 
-					context.renderQueue.push(this);
-					context.render();
+					context.pushToRenderQueue(this).render();
 				},
 				onMouseDown: () => context.pop(),
 			}),

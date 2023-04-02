@@ -15,11 +15,12 @@ export function Text(text, {color}) {
 	/** @type {String[]} */
 	const characters = text.split('');
 	const subcomponents = [];
+	const fontSubcomponents = gui.getFontSubcomponents();
 	let width = 0;
 
 	for (let i = 0, l = characters.length, character, subcomponent; i < l; i++) {
 		character = characters[i];
-		subcomponent = (gui.fontSubcomponents[character] ?? gui.fontSubcomponents["undefined"]).clone();
+		subcomponent = (fontSubcomponents[character] ?? fontSubcomponents["undefined"]).clone();
 		subcomponent.setOffset(new Vector2(width, 0));
 
 		if (color) {
