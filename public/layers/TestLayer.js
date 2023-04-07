@@ -1,23 +1,22 @@
 import {Component, Layer} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import {CursText, Image} from "../components/index.js";
+import {Text} from "../components/index.js";
 
 export function TestLayer() {
 	Layer.call(this);
 
 	/** @override */
 	this.build = context => [
-		new Image({
+		new Text("Test with 'ascii' font", {
 			align: Component.alignLeftTop,
-			margin: new Vector2(0, 0),
-			size: new Vector2(15, 18),
-			image: context.getTexture("darkgrey"),
-			uv: new Vector2(0, 0),
+			margin: new Vector2(10, 10),
+			font: context.getFont("ascii"),
 		}),
-		new CursText("lv 16", {
+		new Text("test with 'curs' font", {
 			align: Component.alignLeftTop,
-			margin: new Vector2(0, 0),
+			margin: new Vector2(10, 30),
+			font: context.getFont("curs"),
 		}),
 	];
 }

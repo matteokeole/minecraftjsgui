@@ -1,7 +1,7 @@
 import {DynamicComponent, Subcomponent} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import {gui} from "../main.js";
+import {gui as context} from "../main.js";
 
 /** @type {Number} */
 const DEFAULT_WIDTH = 200;
@@ -37,7 +37,7 @@ export function Button({width, disabled, onMouseEnter: onMouseEnterClient, onMou
 	];
 
 	this.setSize(new Vector2(width, BUTTON_HEIGHT));
-	this.setTexture(gui.getTexture("gui/widgets.png"));
+	this.setTexture(context.getTexture("gui/widgets.png"));
 	this.setSubcomponents(subcomponents);
 	this.setOnMouseEnter(function(p) {
 		if (disabled) return;
@@ -47,8 +47,7 @@ export function Button({width, disabled, onMouseEnter: onMouseEnterClient, onMou
 		subcomponents[0].setUV(new Vector2(0, 86));
 		subcomponents[1].setUV(new Vector2(DEFAULT_WIDTH - halfWidth, 86));
 
-		gui.renderQueue.push(this);
-		gui.render();
+		context.pushToRenderQueue(this).render();
 	});
 	this.setOnMouseLeave(function(p) {
 		if (disabled) return;
@@ -58,8 +57,7 @@ export function Button({width, disabled, onMouseEnter: onMouseEnterClient, onMou
 		subcomponents[0].setUV(new Vector2(0, 66));
 		subcomponents[1].setUV(new Vector2(DEFAULT_WIDTH - halfWidth, 66));
 
-		gui.renderQueue.push(this);
-		gui.render();
+		context.pushToRenderQueue(this).render();
 	});
 	this.setOnMouseDown(function(p) {
 		if (disabled) return;
