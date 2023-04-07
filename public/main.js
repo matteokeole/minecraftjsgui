@@ -1,7 +1,7 @@
 import {Font, Instance} from "src";
 import {GUI, GUIRenderer} from "src/gui";
-// import {MainMenuLayer as Layer} from "./layers/MainMenuLayer.js";
-import {TestLayer as Layer} from "./layers/TestLayer.js";
+import {MainMenuLayer as Layer} from "./layers/MainMenuLayer.js";
+// import {TestLayer as Layer} from "./layers/TestLayer.js";
 
 /**
  * @todo Fix undefined instance on throw
@@ -30,12 +30,6 @@ try {
 			texturePath: "font/",
 			letterHeight: 8,
 			letterSpacing: 1,
-		}),
-		new Font({
-			name: "curs",
-			texturePath: "font/",
-			letterHeight: 18,
-			letterSpacing: 3,
 		}),
 	]);
 

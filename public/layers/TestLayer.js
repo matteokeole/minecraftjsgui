@@ -12,11 +12,7 @@ export function TestLayer() {
 			align: Component.alignLeftTop,
 			margin: new Vector2(10, 10),
 			font: context.getFont("ascii"),
-		}),
-		new Text("test with 'curs' font", {
-			align: Component.alignLeftTop,
-			margin: new Vector2(10, 30),
-			font: context.getFont("curs"),
+			color: Text.RED,
 		}),
 	];
 }
