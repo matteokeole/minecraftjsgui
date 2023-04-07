@@ -15,7 +15,7 @@ export function TestLayer() {
 			image: context.getTexture("darkgrey"),
 			uv: new Vector2(0, 0),
 		}),
-		new CursText("5", {
+		new CursText("lv 16", {
 			align: Component.alignLeftTop,
 			margin: new Vector2(0, 0),
 		}),
