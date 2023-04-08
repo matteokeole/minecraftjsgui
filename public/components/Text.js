@@ -2,7 +2,7 @@ import {Font} from "src";
 import {VisualComponent} from "src/gui";
 import {Vector2, Vector3} from "src/math";
 import {extend} from "src/utils";
-import {gui as context} from "../main.js";
+import {guiManager as context} from "../main.js";
 
 /**
  * @extends VisualComponent
