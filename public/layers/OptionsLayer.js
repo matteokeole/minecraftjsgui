@@ -34,6 +34,7 @@ export function OptionsLayer() {
 				size: new Vector2(20, 20),
 				image: context.getTexture("gui/widgets.png"),
 				uv: new Vector2(0, 106),
+				onMouseDown: () => console.debug(`Counter = ${++counter}`),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
 					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 126));
@@ -50,7 +51,6 @@ export function OptionsLayer() {
 
 					context.pushToRenderQueue(this).render();
 				},
-				onMouseDown: () => console.debug(`Counter = ${++counter}`),
 			}),
 			new ImageButton({
 				align: Component.alignCenter,
@@ -58,6 +58,7 @@ export function OptionsLayer() {
 				size: new Vector2(20, 20),
 				image: context.getTexture("gui/widgets.png"),
 				uv: new Vector2(0, 146),
+				onMouseDown: () => context.pop(),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
 					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 166));
@@ -74,7 +75,6 @@ export function OptionsLayer() {
 
 					context.pushToRenderQueue(this).render();
 				},
-				onMouseDown: () => context.pop(),
 			}),
 		];
 	};

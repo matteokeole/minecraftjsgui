@@ -1,26 +1,35 @@
+import {Font} from "src";
 import {VisualComponent} from "src/gui";
 import {Vector2, Vector3} from "src/math";
 import {extend} from "src/utils";
-import {gui} from "../main.js";
+import {guiManager as context} from "../main.js";
 
 /**
  * @extends VisualComponent
  * @param {String} text
  * @param {Object} options
+ * @param {?Font} [options.font]
  * @param {Vector3} options.color
  */
-export function Text(text, {color}) {
+export function Text(text, {font, color}) {
 	VisualComponent.call(this, arguments[1]);
+
+	font ??= context.getMainFont();
+
+	/** @type {?Object<String, Subcomponent>} */
+	const fontCharacters = font.getCharacters();
+
+	/** @type {Number} */
+	const letterSpacing = font.getLetterSpacing();
 
 	/** @type {String[]} */
 	const characters = text.split('');
 	const subcomponents = [];
-	const fontSubcomponents = gui.getFontSubcomponents();
 	let width = 0;
 
-	for (let i = 0, l = characters.length, character, subcomponent; i < l; i++) {
-		character = characters[i];
-		subcomponent = (fontSubcomponents[character] ?? fontSubcomponents["undefined"]).clone();
+	for (let i = 0, l = characters.length, symbol, subcomponent; i < l; i++) {
+		symbol = characters[i];
+		subcomponent = (fontCharacters[symbol] ?? fontCharacters[""]).clone();
 		subcomponent.setOffset(new Vector2(width, 0));
 
 		if (color) {
@@ -30,11 +39,11 @@ export function Text(text, {color}) {
 
 		subcomponents.push(subcomponent);
 
-		width += subcomponent.getSize().x + 1;
+		width += subcomponent.getSize().x + letterSpacing;
 	}
 
-	this.setSize(new Vector2(width, 8)); // This leaves a trailing pixel
-	this.setTexture(gui.getTexture("font/ascii.png"));
+	this.setSize(new Vector2(width, 8));
+	this.setTexture(context.getTexture(font.getTexturePath()));
 	this.setSubcomponents(subcomponents);
 }
 

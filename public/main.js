@@ -1,39 +1,42 @@
-import {Instance} from "src/instance";
-import {GUI, GUIRenderer} from "src/gui";
-import {MainMenuLayer as Layer} from "./layers/MainMenuLayer.js";
-// import {TestLayer as Layer} from "./layers/TestLayer.js";
+import {Font, Instance} from "src";
+import {GUIManager, GUIRenderer} from "src/gui";
+import {MainMenuLayer} from "./layers/MainMenuLayer.js";
 
-/**
- * @todo Fix undefined instance on throw
- * 
- * @type {?Instance}
- */
-let instance;
+/** @type {Instance} */
+let instance = new Instance({
+	fontPath: "assets/fonts/",
+	shaderPath: "assets/shaders/",
+	texturePath: "assets/textures/",
+});
 
-/** @type {?GUI} */
-export let gui;
+/** @type {GUIManager} */
+export let guiManager = new GUIManager(new GUIRenderer(), instance);
 
 try {
-	instance = new Instance({
-		shaderPath: "assets/shaders/",
-		texturePath: "assets/textures/",
-	});
-	gui = new GUI(new GUIRenderer(), instance);
-
 	instance.build();
+
 	await instance.initialize();
-	await instance.setupRenderers([gui]);
+	await instance.setupRenderers([guiManager]);
+	await guiManager.setupFonts([
+		new Font({
+			name: "ascii",
+			texturePath: "font/",
+			letterHeight: 8,
+			letterSpacing: 1,
+		}),
+	]);
 
 	// Load GUI textures and test color textures
-	const textures = await (await fetch("assets/textures/textures.json")).json();
-	const renderer = gui.getRenderer();
+	{
+		const textures = await (await fetch("assets/textures/textures.json")).json();
+		const renderer = guiManager.getRenderer();
 
-	renderer.createTextureArray(textures.length + 3);
-	await renderer.loadTextures(textures, instance.getTexturePath());
-	await renderer.loadTestTextures();
-	gui.loadFontSubcomponents(await (await fetch("assets/font/ascii.json")).json());
+		renderer.createTextureArray(textures.length + 3);
+		await renderer.loadTextures(textures, instance.getTexturePath());
+		await renderer.loadTestTextures();
+	}
 
-	gui.push(new Layer());
+	guiManager.push(new MainMenuLayer());
 
 	instance.startLoop();
 } catch (error) {
