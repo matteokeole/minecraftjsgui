@@ -1,7 +1,7 @@
 import {DynamicComponent, Subcomponent} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import {guiManager as context} from "../main.js";
+import {guiComposite as context} from "../main.js";
 
 /** @type {Number} */
 const DEFAULT_WIDTH = 200;

@@ -1,44 +1,29 @@
-import {Font, Instance} from "src";
-import {GUIManager, GUIRenderer} from "src/gui";
-import {MainMenuLayer} from "./layers/MainMenuLayer.js";
+// import {Font, Instance} from "src";
+import {GUIComposite, GUIRenderer} from "src/gui";
+// import {MainMenuLayer} from "./layers/MainMenuLayer.js";
+import {Instance as TestInstance} from "./Instance.js";
+import {InstanceRenderer as TestInstanceRenderer} from "./InstanceRenderer.js";
 
-/** @type {Instance} */
-let instance = new Instance({
-	fontPath: "assets/fonts/",
-	shaderPath: "assets/shaders/",
-	texturePath: "assets/textures/",
-});
+const instance = new TestInstance(new TestInstanceRenderer());
 
-/** @type {GUIManager} */
-export let guiManager = new GUIManager(new GUIRenderer(), instance);
+instance.setParameter("font_path", "assets/fonts/");
+instance.setParameter("shader_path", "assets/shaders/");
+instance.setParameter("texture_path", "assets/textures/");
+
+export const guiComposite = new GUIComposite(new GUIRenderer(), instance);
+
+instance.setComposites([
+	guiComposite,
+]);
+
+await instance.build();
+
+/** @todo Load assets */
+
+document.body.appendChild(instance.getRenderer().getCanvas());
 
 try {
-	instance.build();
-
-	await instance.initialize();
-	await instance.setupRenderers([guiManager]);
-	await guiManager.setupFonts([
-		new Font({
-			name: "ascii",
-			texturePath: "font/",
-			letterHeight: 8,
-			letterSpacing: 1,
-		}),
-	]);
-
-	// Load GUI textures and test color textures
-	{
-		const textures = await (await fetch("assets/textures/textures.json")).json();
-		const renderer = guiManager.getRenderer();
-
-		renderer.createTextureArray(textures.length + 3);
-		await renderer.loadTextures(textures, instance.getTexturePath());
-		await renderer.loadTestTextures();
-	}
-
-	guiManager.push(new MainMenuLayer());
-
-	instance.startLoop();
+	// instance.run();
 } catch (error) {
 	console.error(error);
 
@@ -46,3 +31,48 @@ try {
 
 	if ("node" in error) document.body.appendChild(error.node);
 }
+
+// /** @type {Instance} */
+// let instance = new Instance({
+// 	fontPath: "assets/fonts/",
+// 	shaderPath: "assets/shaders/",
+// 	texturePath: "assets/textures/",
+// });
+
+// /** @type {GUIComposite} */
+// export let guiComposite = new GUIComposite(new GUIRenderer(), instance);
+
+// try {
+// 	instance.build();
+
+// 	await instance.initialize();
+// 	await instance.setupRenderers([guiComposite]);
+// 	await guiComposite.setupFonts([
+// 		new Font({
+// 			name: "ascii",
+// 			texturePath: "font/",
+// 			letterHeight: 8,
+// 			letterSpacing: 1,
+// 		}),
+// 	]);
+
+// 	// Load GUI textures and test color textures
+// 	{
+// 		const textures = await (await fetch("assets/textures/textures.json")).json();
+// 		const renderer = guiComposite.getRenderer();
+
+// 		renderer.createTextureArray(textures.length + 3);
+// 		await renderer.loadTextures(textures, instance.getTexturePath());
+// 		await renderer.loadTestTextures();
+// 	}
+
+// 	guiComposite.push(new MainMenuLayer());
+
+// 	instance.startLoop();
+// } catch (error) {
+// 	console.error(error);
+
+// 	instance.dispose();
+
+// 	if ("node" in error) document.body.appendChild(error.node);
+// }

@@ -2,7 +2,7 @@ import {Font} from "src";
 import {VisualComponent} from "src/gui";
 import {Vector2, Vector3} from "src/math";
 import {extend} from "src/utils";
-import {guiManager as context} from "../main.js";
+import {guiComposite as context} from "../main.js";
 
 /**
  * @extends VisualComponent
@@ -16,7 +16,7 @@ export function Text(text, {font, color}) {
 
 	font ??= context.getMainFont();
 
-	/** @type {?Object<String, Subcomponent>} */
+	/** @type {?Object.<String, Subcomponent>} */
 	const fontCharacters = font.getCharacters();
 
 	/** @type {Number} */
