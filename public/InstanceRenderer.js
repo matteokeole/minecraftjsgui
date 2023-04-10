@@ -14,7 +14,10 @@ export function InstanceRenderer() {
 	const buffers = {};
 	let gl;
 
-	/** @param {String} shaderPath */
+	/**
+	 * @override
+	 * @param {String} shaderPath
+	 */
 	this.build = async function(shaderPath) {
 		_build();
 
@@ -62,6 +65,10 @@ export function InstanceRenderer() {
 			1, 1,
 			0, 1,
 		]), gl.STATIC_DRAW);
+
+		// gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
+		// gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		// gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, _, _, _);
 	};
 
 	/** @override */
