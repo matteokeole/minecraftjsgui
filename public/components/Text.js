@@ -39,7 +39,7 @@ export function Text(text, {font, color}) {
 
 		subcomponents.push(subcomponent);
 
-		width += subcomponent.getSize().x + letterSpacing;
+		width += subcomponent.getSize()[0] + letterSpacing;
 	}
 
 	this.setSize(new Vector2(width, 8));

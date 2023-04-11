@@ -37,7 +37,7 @@ export function OptionsLayer() {
 				onMouseDown: () => console.debug(`Counter = ${++counter}`),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 126));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 126));
 
 					this.setSubcomponents(subcomponents);
 
@@ -45,7 +45,7 @@ export function OptionsLayer() {
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 106));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 106));
 
 					this.setSubcomponents(subcomponents);
 
@@ -61,7 +61,7 @@ export function OptionsLayer() {
 				onMouseDown: () => context.pop(),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 166));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 166));
 
 					this.setSubcomponents(subcomponents);
 
@@ -69,7 +69,7 @@ export function OptionsLayer() {
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 146));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 146));
 
 					this.setSubcomponents(subcomponents);
 

@@ -1,4 +1,4 @@
-import {AbstractInstance} from "../src/dev/AbstractInstance.js";
+import {AbstractInstance} from "src";
 import {extend} from "src/utils";
 import {InstanceRenderer} from "./InstanceRenderer.js";
 

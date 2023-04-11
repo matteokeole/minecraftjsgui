@@ -42,7 +42,7 @@ export function MainMenuLayer() {
 					uv: new Vector2(0, 106),
 					onMouseEnter: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 126));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 126));
 
 						this.setSubcomponents(subcomponents);
 
@@ -50,7 +50,7 @@ export function MainMenuLayer() {
 					},
 					onMouseLeave: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 106));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 106));
 
 						this.setSubcomponents(subcomponents);
 
@@ -77,7 +77,7 @@ export function MainMenuLayer() {
 					uv: new Vector2(0, 0),
 					onMouseEnter: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 20));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 20));
 
 						this.setSubcomponents(subcomponents);
 
@@ -85,7 +85,7 @@ export function MainMenuLayer() {
 					},
 					onMouseLeave: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 0));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 0));
 
 						this.setSubcomponents(subcomponents);
 
