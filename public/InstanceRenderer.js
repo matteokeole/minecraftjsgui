@@ -1,5 +1,4 @@
 import {WebGLRenderer} from "src";
-import {Vector2} from "src/math";
 import {extend} from "src/utils";
 import {Program} from "src/wrappers";
 
@@ -48,14 +47,14 @@ export function InstanceRenderer() {
 		gl.enableVertexAttribArray(attributes.vertex);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
 		gl.vertexAttribPointer(attributes.vertex, 2, gl.FLOAT, false, 0, 0);
-		// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]), gl.STATIC_DRAW);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, -1, 1, -1, -1, 1, -1]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]), gl.STATIC_DRAW);
+		// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, -1, 1, -1, -1, 1, -1]), gl.STATIC_DRAW);
 
 		gl.enableVertexAttribArray(attributes.uv);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.uv);
 		gl.vertexAttribPointer(attributes.uv, 2, gl.FLOAT, false, 0, 0);
-		// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]), gl.STATIC_DRAW);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, 0, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]), gl.STATIC_DRAW);
+		// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, 0, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
 
 		for (let i = 0, texture; i < compositeCount; i++) {
 			textures.push(texture = gl.createTexture());

@@ -17,10 +17,10 @@ export function TestLayer() {
 			}),
 			new Image({
 				align: Component.alignCenter,
-				margin: new Vector2(),
+				margin: new Vector2(110, 10),
 				size: new Vector2(256, 256),
 				image: context.getTexture("gui/widgets.png"),
-				uv: new Vector2(),
+				uv: new Vector2(0, 0),
 			}),
 		];
 	};
