@@ -27,8 +27,8 @@ export function InstanceRenderer() {
 		gl = this.getContext();
 
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		// gl.enable(gl.BLEND);
-		// gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 		/** @type {Program} */
 		const program = await this.loadProgram("compose.vert", "compose.frag", shaderPath);
@@ -47,12 +47,7 @@ export function InstanceRenderer() {
 		gl.enableVertexAttribArray(attributes.vertex);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
 		gl.vertexAttribPointer(attributes.vertex, 2, gl.FLOAT, false, 0, 0);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-			-1, -1,
-			 1, -1,
-			 1,  1,
-			-1,  1,
-		]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]), gl.STATIC_DRAW);
 
 		gl.enableVertexAttribArray(attributes.textureIndex);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureIndex);
@@ -62,12 +57,7 @@ export function InstanceRenderer() {
 		gl.enableVertexAttribArray(attributes.uv);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.uv);
 		gl.vertexAttribPointer(attributes.uv, 2, gl.FLOAT, false, 0, 0);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-			0, 0,
-			1, 0,
-			1, 1,
-			0, 1,
-		]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]), gl.STATIC_DRAW);
 
 		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
 		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -75,10 +65,8 @@ export function InstanceRenderer() {
 	};
 
 	/** @override */
-	this.render = function() {
-		/** @todo Get the number of canvas textures */
-
-		// gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4);
+	this.render = function(compositeCount) {
+		gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, compositeCount);
 	};
 }
 
