@@ -1,4 +1,5 @@
 import {WebGLRenderer} from "src";
+import {Vector2} from "src/math";
 import {extend} from "src/utils";
 import {Program} from "src/wrappers";
 
@@ -17,8 +18,10 @@ export function InstanceRenderer() {
 	/**
 	 * @override
 	 * @param {String} shaderPath
+	 * @param {Vector2} screen
+	 * @param {Number} compositeCount
 	 */
-	this.build = async function(shaderPath) {
+	this.build = async function(shaderPath, screen, compositeCount) {
 		_build();
 
 		gl = this.getContext();
@@ -66,9 +69,9 @@ export function InstanceRenderer() {
 			0, 1,
 		]), gl.STATIC_DRAW);
 
-		// gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
-		// gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		// gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, _, _, _);
+		gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
+		gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, innerWidth, screen.x, screen.y, compositeCount);
 	};
 
 	/** @override */
