@@ -18,6 +18,9 @@ export function InstanceRenderer() {
 	/** @param {Number} value */
 	this.setCompositeCount = value => void (compositeCount = value);
 
+	/** @returns {Number} */
+	this.getCompositeCount = () => compositeCount;
+
 	/**
 	 * @override
 	 * @param {String} shaderPath
@@ -47,14 +50,12 @@ export function InstanceRenderer() {
 		gl.enableVertexAttribArray(attributes.vertex);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
 		gl.vertexAttribPointer(attributes.vertex, 2, gl.FLOAT, false, 0, 0);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]), gl.STATIC_DRAW);
-		// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, -1, 1, -1, -1, 1, -1]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, -1, 1, -1, -1, 1, -1]), gl.STATIC_DRAW);
 
 		gl.enableVertexAttribArray(attributes.uv);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.uv);
 		gl.vertexAttribPointer(attributes.uv, 2, gl.FLOAT, false, 0, 0);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]), gl.STATIC_DRAW);
-		// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, 0, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, 0, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
 
 		for (let i = 0, texture; i < compositeCount; i++) {
 			textures.push(texture = gl.createTexture());

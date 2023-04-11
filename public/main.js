@@ -15,7 +15,33 @@ try {
 	instance.setParameter("current_scale", 2);
 	instance.setParameter("desired_scale", 2);
 	instance.setParameter("max_scale", 2);
+	instance.setParameter("default_width", 320);
+	instance.setParameter("default_height", 240);
+	instance.setParameter("resize_delay", 50);
 	instance.setComposites([guiComposite]);
+	instance.setResizeObserver(new ResizeObserver(([entry]) => {
+		// Avoid the first resize
+		if (instance.getIsFirstResize()) return instance.setIsFirstResize(false);
+
+		clearTimeout(instance.getResizeTimeoutId());
+		instance.setResizeTimeoutId(setTimeout(() => {
+			let width, height, dpr = 1;
+
+			if (entry.devicePixelContentBoxSize) {
+				({inlineSize: width, blockSize: height} = entry.devicePixelContentBoxSize[0]);
+			} else {
+				dpr = devicePixelRatio;
+
+				if (entry.contentBoxSize) {
+					entry.contentBoxSize[0] ?
+						({inlineSize: width, blockSize: height} = entry.contentBoxSize[0]) :
+						({inlineSize: width, blockSize: height} = entry.contentBoxSize);
+				} else ({width, height} = entry.contentRect);
+			}
+
+			instance.resize(width, height, dpr);
+		}, instance.getParameter("resize_delay")));
+	}));
 
 	await instance.build();
 
@@ -49,48 +75,3 @@ try {
 
 	if ("node" in error) document.body.appendChild(error.node);
 }
-
-// /** @type {Instance} */
-// let instance = new Instance({
-// 	fontPath: "assets/fonts/",
-// 	shaderPath: "assets/shaders/",
-// 	texturePath: "assets/textures/",
-// });
-
-// /** @type {GUIComposite} */
-// export let guiComposite = new GUIComposite(new GUIRenderer(), instance);
-
-// try {
-// 	instance.build();
-
-// 	await instance.initialize();
-// 	await instance.setupRenderers([guiComposite]);
-// 	await guiComposite.setupFonts([
-// 		new Font({
-// 			name: "ascii",
-// 			texturePath: "font/",
-// 			letterHeight: 8,
-// 			letterSpacing: 1,
-// 		}),
-// 	]);
-
-// 	// Load GUI textures and test color textures
-// 	{
-// 		const textures = await (await fetch("assets/textures/textures.json")).json();
-// 		const renderer = guiComposite.getRenderer();
-
-// 		renderer.createTextureArray(textures.length + 3);
-// 		await renderer.loadTextures(textures, instance.getTexturePath());
-// 		await renderer.loadTestTextures();
-// 	}
-
-// 	guiComposite.push(new MainMenuLayer());
-
-// 	instance.startLoop();
-// } catch (error) {
-// 	console.error(error);
-
-// 	instance.dispose();
-
-// 	if ("node" in error) document.body.appendChild(error.node);
-// }
