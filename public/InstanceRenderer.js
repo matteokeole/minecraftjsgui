@@ -72,7 +72,7 @@ export function InstanceRenderer() {
 	this.setTexture = function(index, texture) {
 		gl.bindTexture(gl.TEXTURE_2D, textures[index]);
 		/** @todo Replace by `texStorage2D` (lower memory costs in some implementations, according to {@link https://registry.khronos.org/webgl/specs/latest/2.0/#3.7.6}) */
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
 	};
 
 	/** @override */
