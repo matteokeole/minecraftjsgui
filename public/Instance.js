@@ -24,16 +24,10 @@ extend(Instance, AbstractInstance);
  * @param {Number} dpr
  */
 Instance.prototype.resize = function(width, height, dpr) {
-	const viewport = this.getRenderer().getViewport();
-
-	{
-		/** @type {Vector2} */
-		const newViewport = new Vector2(width, height)
-			.multiplyScalar(dpr)
-			.floor();
-
-		viewport.set(newViewport);
-	}
+	/** @type {Vector2} */
+	const viewport = new Vector2(width, height)
+		.multiplyScalar(dpr)
+		.floor();
 
 	this.getRenderer().setViewport(viewport);
 
@@ -53,7 +47,8 @@ Instance.prototype.resize = function(width, height, dpr) {
 		this.setParameter("current_scale", clampUp(desiredScale, maxScale));
 	}
 
+	const composites = this.getComposites();
 	const compositeCount = this.getRenderer().getCompositeCount();
 
-	for (i = 0; i < compositeCount; i++) this.getComposites()[i].resize(viewport);
+	for (i = 0; i < compositeCount; i++) composites[i].resize(viewport);
 };

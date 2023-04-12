@@ -19,12 +19,12 @@ try {
 	instance.setParameter("default_height", 240);
 	instance.setParameter("resize_delay", 50);
 	instance.setComposites([guiComposite]);
-	instance.setResizeObserver(new ResizeObserver(([entry]) => {
+	instance.setResizeObserver(new ResizeObserver(function([entry]) {
 		// Avoid the first resize
-		if (instance.getIsFirstResize()) return instance.setIsFirstResize(false);
+		if (this.getIsFirstResize()) return this.setIsFirstResize(false);
 
-		clearTimeout(instance.getResizeTimeoutId());
-		instance.setResizeTimeoutId(setTimeout(() => {
+		clearTimeout(this.getResizeTimeoutId());
+		this.setResizeTimeoutId(setTimeout(() => {
 			let width, height, dpr = 1;
 
 			if (entry.devicePixelContentBoxSize) {
@@ -39,9 +39,9 @@ try {
 				} else ({width, height} = entry.contentRect);
 			}
 
-			instance.resize(width, height, dpr);
-		}, instance.getParameter("resize_delay")));
-	}));
+			this.resize(width, height, dpr);
+		}, this.getParameter("resize_delay")));
+	}.bind(instance)));
 
 	await instance.build();
 
@@ -65,6 +65,13 @@ try {
 	}
 
 	document.body.appendChild(instance.getRenderer().getCanvas());
+
+	try {
+		instance.getResizeObserver().observe(instance.getRenderer().getCanvas(), {box: "device-pixel-content-box"});
+	} catch (error) {
+		// If "device-pixel-content-box" isn't defined, try with "content-box"
+		instance.getResizeObserver().observe(instance.getRenderer().getCanvas(), {box: "content-box"});
+	}
 
 	guiComposite.push(new MainMenuLayer());
 	instance.run();

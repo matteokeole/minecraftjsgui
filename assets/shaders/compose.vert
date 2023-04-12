@@ -8,6 +8,5 @@ out vec2 v_uv;
 void main() {
 	gl_Position = vec4(a_vertex, 0, 1);
 
-	v_uv = a_uv;
-	// v_uv = (a_vertex + 1.0) * .5;
+	v_uv = (a_vertex + 1.0) * .5;
 }
