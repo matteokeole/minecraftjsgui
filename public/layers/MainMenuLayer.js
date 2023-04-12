@@ -4,6 +4,7 @@ import {extend} from "src/utils";
 import {OptionsLayer} from "./OptionsLayer.js";
 import {Button, Group, ImageButton, Text} from "../components/index.js";
 
+/** @extends Layer */
 export function MainMenuLayer() {
 	Layer.call(this);
 

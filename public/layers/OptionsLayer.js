@@ -3,6 +3,7 @@ import {Vector2} from "src/math";
 import {extend} from "src/utils";
 import {Image, ImageButton} from "../components/index.js";
 
+/** @extends Layer */
 export function OptionsLayer() {
 	Layer.call(this);
 
