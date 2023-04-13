@@ -17,12 +17,12 @@ export function MainMenuLayer() {
 		}),
 		new Group({
 			align: Component.alignCenter,
-			margin: new Vector2(0, 0),
+			margin: new Vector2(),
 			size: new Vector2(248, 104),
 			children: [
 				new Button({
 					align: Component.alignCenterTop,
-					margin: new Vector2(0, 0),
+					margin: new Vector2(),
 					width: 200,
 				}),
 				new Button({
@@ -37,7 +37,7 @@ export function MainMenuLayer() {
 				}),
 				new ImageButton({
 					align: Component.alignLeftBottom,
-					margin: new Vector2(0, 0),
+					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 106),
@@ -72,10 +72,10 @@ export function MainMenuLayer() {
 				}),
 				new ImageButton({
 					align: Component.alignRightBottom,
-					margin: new Vector2(0, 0),
+					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/accessibility.png"),
-					uv: new Vector2(0, 0),
+					uv: new Vector2(),
 					onMouseEnter: function() {
 						const subcomponents = this.getSubcomponents();
 						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 20));

@@ -14,7 +14,7 @@ export function ImageButton({image, uv}) {
 	this.setTexture(image);
 	this.setSubcomponents([
 		new Subcomponent({
-			offset: new Vector2(0, 0),
+			offset: new Vector2(),
 			size: this.getSize(),
 			uv,
 		}),

@@ -17,17 +17,17 @@ export function OptionsLayer() {
 		return [
 			new Image({
 				align: Component.alignCenter,
-				margin: new Vector2(0, 0),
+				margin: new Vector2(),
 				image: context.getTexture("overlay"),
 				size: new Vector2(2000, 2000),
-				uv: new Vector2(0, 0),
+				uv: new Vector2(),
 			}),
 			new Image({
 				align: Component.alignCenter,
-				margin: new Vector2(0, 0),
+				margin: new Vector2(),
 				image: context.getTexture("grey"),
 				size: new Vector2(300, 180),
-				uv: new Vector2(0, 0),
+				uv: new Vector2(),
 			}),
 			new ImageButton({
 				align: Component.alignCenter,

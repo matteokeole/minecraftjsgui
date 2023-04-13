@@ -24,7 +24,7 @@ export function Button({width, disabled, onMouseDown: onMouseDownClient, onMouse
 	const halfWidth = width * .5;
 	const subcomponents = [
 		new Subcomponent({
-			offset: new Vector2(0, 0),
+			offset: new Vector2(),
 			size: new Vector2(halfWidth, 20),
 			uv: new Vector2(0, disabled ? 46 : 66),
 		}),
