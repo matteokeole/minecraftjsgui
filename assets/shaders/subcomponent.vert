@@ -1,6 +1,6 @@
 #version 300 es
 
-layout(location = 0) in vec2 a_position;
+layout(location = 0) in vec2 a_vertex;
 layout(location = 1) in mat3 a_world;
 layout(location = 4) in uint a_texture_index;
 layout(location = 5) in mat3 a_texture;
@@ -13,7 +13,7 @@ out vec2 v_uv;
 out vec4 v_color_mask;
 
 void main() {
-	vec3 position = vec3(a_position, 1);
+	vec3 position = vec3(a_vertex, 1);
 
 	gl_Position = vec4(u_projection * a_world * position, 1);
 

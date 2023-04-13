@@ -32,7 +32,7 @@ export function InstanceRenderer() {
 
 		{
 			/** @type {Program} */
-			const program = await this.loadProgram("compose.vert", "compose.frag", shaderPath);
+			const program = await this.loadProgram("composite.vert", "composite.frag", shaderPath);
 
 			this.linkProgram(program);
 			gl.useProgram(program.getProgram());
