@@ -7,9 +7,6 @@ export function InstanceRenderer() {
 	WebGLRenderer.call(this, {offscreen: false});
 
 	const _build = this.build;
-	const attributes = {};
-	const buffers = {};
-	const textures = [];
 	let gl, compositeCount;
 
 	/** @param {Number} value */
@@ -38,6 +35,10 @@ export function InstanceRenderer() {
 			gl.useProgram(program.getProgram());
 		}
 
+		const attributes = this.getAttributes();
+		const buffers = this.getBuffers();
+		const textures = this.getTextures();
+
 		attributes.vertex = 0;
 		attributes.uv = 1;
 
@@ -54,10 +55,10 @@ export function InstanceRenderer() {
 		gl.vertexAttribPointer(attributes.uv, 2, gl.FLOAT, false, 0, 0);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, 0, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
 
-		for (let i = 0, texture; i < compositeCount; i++) {
-			textures.push(texture = gl.createTexture());
+		for (let i = 0; i < compositeCount; i++) {
+			textures[i] = gl.createTexture();
 
-			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.bindTexture(gl.TEXTURE_2D, textures[i]);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		}
 	};
@@ -67,7 +68,7 @@ export function InstanceRenderer() {
 	 * @param {OffscreenCanvas} texture
 	 */
 	this.updateCompositeTexture = function(index, texture) {
-		gl.bindTexture(gl.TEXTURE_2D, textures[index]);
+		gl.bindTexture(gl.TEXTURE_2D, this.getTextures()[index]);
 		/** @todo Replace by `texStorage2D` (lower memory costs in some implementations, according to {@link https://registry.khronos.org/webgl/specs/latest/2.0/#3.7.6}) */
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
 	};
@@ -75,7 +76,7 @@ export function InstanceRenderer() {
 	/** @override */
 	this.render = function() {
 		for (let i = 0; i < compositeCount; i++) {
-			gl.bindTexture(gl.TEXTURE_2D, textures[i]);
+			gl.bindTexture(gl.TEXTURE_2D, this.getTextures()[i]);
 			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 		}
 	};
