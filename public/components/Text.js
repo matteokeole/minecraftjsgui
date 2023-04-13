@@ -1,6 +1,6 @@
 import {Font} from "src";
 import {VisualComponent} from "src/gui";
-import {Vector2, Vector3} from "src/math";
+import {Vector2, Vector3, Vector4} from "src/math";
 import {extend} from "src/utils";
 import {guiComposite as context} from "../main.js";
 
@@ -32,10 +32,7 @@ export function Text(text, {font, color}) {
 		subcomponent = (fontCharacters[symbol] ?? fontCharacters[""]).clone();
 		subcomponent.setOffset(new Vector2(width, 0));
 
-		if (color) {
-			subcomponent.setColorMask(color);
-			subcomponent.setColorMaskWeight(1);
-		}
+		if (color) subcomponent.setColorMask(new Vector4(color[0], color[1], color[2], 1));
 
 		subcomponents.push(subcomponent);
 
