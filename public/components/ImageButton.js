@@ -4,10 +4,9 @@ import {extend} from "src/utils";
 
 /**
  * @extends DynamicComponent
- * @param {{
- *    image: Texture,
- *    uv: Vector2,
- * }}
+ * @param {Object} options
+ * @param {Texture} image
+ * @param {Vector2} uv
  */
 export function ImageButton({image, uv}) {
 	DynamicComponent.apply(this, arguments);

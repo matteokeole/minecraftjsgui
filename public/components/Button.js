@@ -11,13 +11,12 @@ const BUTTON_HEIGHT = 20;
 
 /**
  * @extends DynamicComponent
- * @param {{
- *    width: Number,
- *    disabled: Boolean,
- *    onMouseDown: ?Function,
- *    onMouseEnter: ?Function,
- *    onMouseLeave: ?Function,
- * }}
+ * @param {Object} options
+ * @param {Number} width
+ * @param {Boolean} disabled
+ * @param {?Function} onMouseDown
+ * @param {?Function} onMouseEnter
+ * @param {?Function} onMouseLeave
  */
 export function Button({width, disabled, onMouseDown: onMouseDownClient, onMouseEnter: onMouseEnterClient, onMouseLeave: onMouseLeaveClient}) {
 	DynamicComponent.apply(this, arguments);
