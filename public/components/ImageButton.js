@@ -4,10 +4,9 @@ import {extend} from "src/utils";
 
 /**
  * @extends DynamicComponent
- * @param {{
- *    image: Texture,
- *    uv: Vector2,
- * }}
+ * @param {Object} options
+ * @param {Texture} image
+ * @param {Vector2} uv
  */
 export function ImageButton({image, uv}) {
 	DynamicComponent.apply(this, arguments);
@@ -15,7 +14,7 @@ export function ImageButton({image, uv}) {
 	this.setTexture(image);
 	this.setSubcomponents([
 		new Subcomponent({
-			offset: new Vector2(0, 0),
+			offset: new Vector2(),
 			size: this.getSize(),
 			uv,
 		}),

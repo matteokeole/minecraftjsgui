@@ -3,6 +3,7 @@ import {Vector2} from "src/math";
 import {extend} from "src/utils";
 import {Image, ImageButton} from "../components/index.js";
 
+/** @extends Layer */
 export function OptionsLayer() {
 	Layer.call(this);
 
@@ -16,17 +17,17 @@ export function OptionsLayer() {
 		return [
 			new Image({
 				align: Component.alignCenter,
-				margin: new Vector2(0, 0),
+				margin: new Vector2(),
 				image: context.getTexture("overlay"),
 				size: new Vector2(2000, 2000),
-				uv: new Vector2(0, 0),
+				uv: new Vector2(),
 			}),
 			new Image({
 				align: Component.alignCenter,
-				margin: new Vector2(0, 0),
+				margin: new Vector2(),
 				image: context.getTexture("grey"),
 				size: new Vector2(300, 180),
-				uv: new Vector2(0, 0),
+				uv: new Vector2(),
 			}),
 			new ImageButton({
 				align: Component.alignCenter,
@@ -37,7 +38,7 @@ export function OptionsLayer() {
 				onMouseDown: () => console.debug(`Counter = ${++counter}`),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 126));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 126));
 
 					this.setSubcomponents(subcomponents);
 
@@ -45,7 +46,7 @@ export function OptionsLayer() {
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 106));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 106));
 
 					this.setSubcomponents(subcomponents);
 
@@ -61,7 +62,7 @@ export function OptionsLayer() {
 				onMouseDown: () => context.pop(),
 				onMouseEnter: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 166));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 166));
 
 					this.setSubcomponents(subcomponents);
 
@@ -69,7 +70,7 @@ export function OptionsLayer() {
 				},
 				onMouseLeave: function() {
 					const subcomponents = this.getSubcomponents();
-					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 146));
+					subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 146));
 
 					this.setSubcomponents(subcomponents);
 
