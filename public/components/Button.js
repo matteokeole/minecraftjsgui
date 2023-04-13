@@ -1,7 +1,7 @@
 import {DynamicComponent, Subcomponent} from "src/gui";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
-import {guiManager as context} from "../main.js";
+import {guiComposite as context} from "../main.js";
 
 /** @type {Number} */
 const DEFAULT_WIDTH = 200;
@@ -11,13 +11,12 @@ const BUTTON_HEIGHT = 20;
 
 /**
  * @extends DynamicComponent
- * @param {{
- *    width: Number,
- *    disabled: Boolean,
- *    onMouseDown: ?Function,
- *    onMouseEnter: ?Function,
- *    onMouseLeave: ?Function,
- * }}
+ * @param {Object} options
+ * @param {Number} width
+ * @param {Boolean} disabled
+ * @param {?Function} onMouseDown
+ * @param {?Function} onMouseEnter
+ * @param {?Function} onMouseLeave
  */
 export function Button({width, disabled, onMouseDown: onMouseDownClient, onMouseEnter: onMouseEnterClient, onMouseLeave: onMouseLeaveClient}) {
 	DynamicComponent.apply(this, arguments);
@@ -25,7 +24,7 @@ export function Button({width, disabled, onMouseDown: onMouseDownClient, onMouse
 	const halfWidth = width * .5;
 	const subcomponents = [
 		new Subcomponent({
-			offset: new Vector2(0, 0),
+			offset: new Vector2(),
 			size: new Vector2(halfWidth, 20),
 			uv: new Vector2(0, disabled ? 46 : 66),
 		}),

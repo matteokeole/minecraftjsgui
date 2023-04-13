@@ -4,6 +4,7 @@ import {extend} from "src/utils";
 import {OptionsLayer} from "./OptionsLayer.js";
 import {Button, Group, ImageButton, Text} from "../components/index.js";
 
+/** @extends Layer */
 export function MainMenuLayer() {
 	Layer.call(this);
 
@@ -16,12 +17,12 @@ export function MainMenuLayer() {
 		}),
 		new Group({
 			align: Component.alignCenter,
-			margin: new Vector2(0, 0),
+			margin: new Vector2(),
 			size: new Vector2(248, 104),
 			children: [
 				new Button({
 					align: Component.alignCenterTop,
-					margin: new Vector2(0, 0),
+					margin: new Vector2(),
 					width: 200,
 				}),
 				new Button({
@@ -36,13 +37,13 @@ export function MainMenuLayer() {
 				}),
 				new ImageButton({
 					align: Component.alignLeftBottom,
-					margin: new Vector2(0, 0),
+					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 106),
 					onMouseEnter: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 126));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 126));
 
 						this.setSubcomponents(subcomponents);
 
@@ -50,7 +51,7 @@ export function MainMenuLayer() {
 					},
 					onMouseLeave: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 106));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 106));
 
 						this.setSubcomponents(subcomponents);
 
@@ -71,13 +72,13 @@ export function MainMenuLayer() {
 				}),
 				new ImageButton({
 					align: Component.alignRightBottom,
-					margin: new Vector2(0, 0),
+					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/accessibility.png"),
-					uv: new Vector2(0, 0),
+					uv: new Vector2(),
 					onMouseEnter: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 20));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 20));
 
 						this.setSubcomponents(subcomponents);
 
@@ -85,7 +86,7 @@ export function MainMenuLayer() {
 					},
 					onMouseLeave: function() {
 						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV().x, 0));
+						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 0));
 
 						this.setSubcomponents(subcomponents);
 
