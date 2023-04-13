@@ -20,6 +20,7 @@ try {
 	instance.setParameter("resize_delay", 50);
 	instance.setComposites([guiComposite]);
 	instance.setResizeObserver(new ResizeObserver(function([entry]) {
+		/** @todo Use the first resize to calculate the initial GUI scale multiplier? */
 		// Avoid the first resize
 		if (this.getIsFirstResize()) return this.setIsFirstResize(false);
 
