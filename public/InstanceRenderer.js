@@ -56,9 +56,7 @@ export function InstanceRenderer() {
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, 0, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
 
 		for (let i = 0; i < compositeCount; i++) {
-			textures[i] = gl.createTexture();
-
-			gl.bindTexture(gl.TEXTURE_2D, textures[i]);
+			gl.bindTexture(gl.TEXTURE_2D, textures[i] = gl.createTexture());
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		}
 	};
