@@ -1,5 +1,5 @@
 import {AbstractInstance} from "src";
-import {Vector2, clampDown, clampUp} from "src/math";
+import {min, max, Vector2} from "src/math";
 import {extend} from "src/utils";
 import {InstanceRenderer} from "./InstanceRenderer.js";
 
@@ -38,13 +38,13 @@ Instance.prototype.resize = function(width, height, dpr) {
 		viewport[1] > this.getParameter("default_height") * dpr * i
 	) i++;
 
-	this.setParameter("max_scale", clampDown(i - 1, 1));
+	this.setParameter("max_scale", min(i - 1, 1));
 
 	{
 		const desiredScale = this.getParameter("desired_scale");
 		const maxScale = this.getParameter("max_scale");
 
-		this.setParameter("current_scale", clampUp(desiredScale, maxScale));
+		this.setParameter("current_scale", max(desiredScale, maxScale));
 	}
 
 	const composites = this.getComposites();
