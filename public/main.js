@@ -1,5 +1,6 @@
 import {Font} from "src";
 import {GUIComposite, GUIRenderer} from "src/gui";
+import {Texture} from "src/wrappers";
 import {Instance} from "./Instance.js";
 import {InstanceRenderer} from "./InstanceRenderer.js";
 import {MainMenuLayer} from "./layers/MainMenuLayer.js";
@@ -62,7 +63,7 @@ try {
 
 		renderer.createTextureArray(textures.length + 3);
 		await renderer.loadTextures(textures, instance.getParameter("texture_path"));
-		await renderer.loadTestTextures();
+		await loadTestTextures(renderer);
 	}
 
 	document.body.appendChild(instance.getRenderer().getCanvas());
@@ -82,4 +83,35 @@ try {
 	instance.dispose();
 
 	if ("node" in error) document.body.appendChild(error.node);
+}
+
+async function loadTestTextures(renderer) {
+	const gl = renderer.getContext();
+	const textures = renderer.getUserTextures();
+	const textureLength = Object.keys(textures).length;
+	const dimension = 256;
+	const imageReplacement = {
+		width: dimension,
+		height: dimension,
+	};
+	const canvas = new OffscreenCanvas(dimension, dimension);
+	const ctx = canvas.getContext("2d");
+	const colors = {
+		darkgrey: "#2b2b2b",
+		grey: "#6f6f6f",
+		overlay: "#000a",
+	};
+	const colorKeys = Object.keys(colors);
+
+	for (let i = 0, l = colorKeys.length, color; i < l; i++) {
+		color = colors[colorKeys[i]];
+
+		ctx.clearRect(0, 0, dimension, dimension);
+		ctx.fillStyle = color;
+		ctx.fillRect(0, 0, dimension, dimension);
+
+		gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, textureLength + i, dimension, dimension, 1, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+
+		textures[colorKeys[i]] = new Texture(imageReplacement, textureLength + i);
+	}
 }
