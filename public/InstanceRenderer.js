@@ -29,7 +29,7 @@ export function InstanceRenderer() {
 
 		{
 			/** @type {Program} */
-			const program = await this.loadProgram("composite.vert", "composite.frag", shaderPath);
+			const program = await this.loadProgram(shaderPath, "composite.vert", "composite.frag");
 
 			this.linkProgram(program);
 			gl.useProgram(program.getProgram());
