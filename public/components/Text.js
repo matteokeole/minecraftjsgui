@@ -32,7 +32,7 @@ export function Text(text, {font, color}) {
 		subcomponent = (fontCharacters[symbol] ?? fontCharacters[""]).clone();
 		subcomponent.setOffset(new Vector2(width, 0));
 
-		if (color) subcomponent.setColorMask(new Vector4(color[0], color[1], color[2], 1));
+		if (color) subcomponent.setColorMask(new Vector4(color[0], color[1], color[2], 255));
 
 		subcomponents.push(subcomponent);
 
