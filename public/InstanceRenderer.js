@@ -40,20 +40,13 @@ export function InstanceRenderer() {
 		const textures = this.getTextures();
 
 		attributes.vertex = 0;
-		attributes.uv = 1;
 
 		buffers.vertex = gl.createBuffer();
-		buffers.uv = gl.createBuffer();
 
 		gl.enableVertexAttribArray(attributes.vertex);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
 		gl.vertexAttribPointer(attributes.vertex, 2, gl.FLOAT, false, 0, 0);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, -1, 1, -1, -1, 1, -1]), gl.STATIC_DRAW);
-
-		gl.enableVertexAttribArray(attributes.uv);
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.uv);
-		gl.vertexAttribPointer(attributes.uv, 2, gl.FLOAT, false, 0, 0);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, 0, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
 
 		for (let i = 0; i < compositeCount; i++) {
 			gl.bindTexture(gl.TEXTURE_2D, textures[i] = gl.createTexture());
