@@ -1,13 +1,23 @@
-import {Font} from "src";
+import {BitmapFont} from "src/fonts";
 import {GUIComposite, GUIRenderer} from "src/gui";
-import {Texture} from "src/wrappers";
-import {Instance} from "./Instance.js";
-import {InstanceRenderer} from "./InstanceRenderer.js";
+import {MainInstance} from "./MainInstance.js";
+import {MainInstanceRenderer} from "./MainInstanceRenderer.js";
 import {MainMenuLayer} from "./layers/MainMenuLayer.js";
 
-const instance = new Instance(new InstanceRenderer());
+const instance = new MainInstance(new MainInstanceRenderer());
 
-export const guiComposite = new GUIComposite(new GUIRenderer(), instance);
+export const guiComposite = new GUIComposite({
+	renderer: new GUIRenderer(),
+	instance,
+	fonts: {
+		ascii: new BitmapFont({
+			glyphMapPath: "ascii.json",
+			texturePath: "font/ascii.png",
+			tileHeight: 8,
+			tileSpacing: 1,
+		}),
+	},
+});
 
 try {
 	instance.setParameter("font_path", "assets/fonts/");
@@ -21,9 +31,16 @@ try {
 	instance.setParameter("resize_delay", 50);
 	instance.setComposites([guiComposite]);
 	instance.setResizeObserver(new ResizeObserver(function([entry]) {
-		/** @todo Use the first resize to calculate the initial GUI scale multiplier? */
+		/**
+		 * @todo Use the first resize to calculate the initial GUI scale multiplier?
+		 */
+
 		// Avoid the first resize
-		if (this.getIsFirstResize()) return this.setIsFirstResize(false);
+		if (this.isFirstResize()) {
+			this.setFirstResize(false);
+
+			return;
+		}
 
 		clearTimeout(this.getResizeTimeoutId());
 		this.setResizeTimeoutId(setTimeout(() => {
@@ -47,71 +64,50 @@ try {
 
 	await instance.build();
 
-	// Load assets
+	const renderer = guiComposite.getRenderer();
+
+	// Load colors and textures
 	{
-		await guiComposite.setupFonts([
-			new Font({
-				name: "ascii",
-				texturePath: "font/",
-				letterHeight: 8,
-				letterSpacing: 1,
-			}),
-		]);
-
+		const colors = {
+			darkgrey: "#2b2b2b",
+			grey: "#6f6f6f",
+			overlay: "#000a",
+		};
 		const textures = await (await fetch("assets/textures/textures.json")).json();
-		const renderer = guiComposite.getRenderer();
 
-		renderer.createTextureArray(textures.length + 3);
+		renderer.createTextureArray(Object.keys(colors).length + textures.length);
+
+		renderer.loadColors(colors);
 		await renderer.loadTextures(textures, instance.getParameter("texture_path"));
-		await loadTestTextures(renderer);
 	}
 
 	document.body.appendChild(instance.getRenderer().getCanvas());
 
 	try {
-		instance.getResizeObserver().observe(instance.getRenderer().getCanvas(), {box: "device-pixel-content-box"});
+		instance.getResizeObserver().observe(
+			instance.getRenderer().getCanvas(),
+			{
+				box: "device-pixel-content-box",
+			},
+		);
 	} catch (error) {
 		// If "device-pixel-content-box" isn't defined, try with "content-box"
-		instance.getResizeObserver().observe(instance.getRenderer().getCanvas(), {box: "content-box"});
+		instance.getResizeObserver().observe(
+			instance.getRenderer().getCanvas(),
+			{
+				box: "content-box",
+			},
+		);
 	}
 
 	guiComposite.push(new MainMenuLayer());
-	instance.run();
+	instance.loop();
 } catch (error) {
 	console.error(error);
 
 	instance.dispose();
 
-	if ("node" in error) document.body.appendChild(error.node);
-}
-
-async function loadTestTextures(renderer) {
-	const gl = renderer.getContext();
-	const textures = renderer.getUserTextures();
-	const textureLength = Object.keys(textures).length;
-	const dimension = 256;
-	const imageReplacement = {
-		width: dimension,
-		height: dimension,
-	};
-	const canvas = new OffscreenCanvas(dimension, dimension);
-	const ctx = canvas.getContext("2d");
-	const colors = {
-		darkgrey: "#2b2b2b",
-		grey: "#6f6f6f",
-		overlay: "#000a",
-	};
-	const colorKeys = Object.keys(colors);
-
-	for (let i = 0, l = colorKeys.length, color; i < l; i++) {
-		color = colors[colorKeys[i]];
-
-		ctx.clearRect(0, 0, dimension, dimension);
-		ctx.fillStyle = color;
-		ctx.fillRect(0, 0, dimension, dimension);
-
-		gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, textureLength + i, dimension, dimension, 1, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
-
-		textures[colorKeys[i]] = new Texture(imageReplacement, textureLength + i);
+	if ("node" in error) {
+		document.body.appendChild(error.node);
 	}
 }

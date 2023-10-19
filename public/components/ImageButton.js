@@ -1,15 +1,16 @@
-import {DynamicComponent, Subcomponent} from "src/gui";
+import {Subcomponent} from "src/gui";
+import {ReactiveComponent} from "src/gui/components";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
 
 /**
- * @extends DynamicComponent
+ * @extends ReactiveComponent
  * @param {Object} options
  * @param {Texture} image
  * @param {Vector2} uv
  */
 export function ImageButton({image, uv}) {
-	DynamicComponent.apply(this, arguments);
+	ReactiveComponent.apply(this, arguments);
 
 	this.setTexture(image);
 	this.setSubcomponents([
@@ -21,4 +22,4 @@ export function ImageButton({image, uv}) {
 	]);
 }
 
-extend(ImageButton, DynamicComponent);
+extend(ImageButton, ReactiveComponent);

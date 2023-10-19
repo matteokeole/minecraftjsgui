@@ -1,101 +1,100 @@
-import {Component, Layer} from "src/gui";
+import {Alignment, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import {extend} from "src/utils";
 import {OptionsLayer} from "./OptionsLayer.js";
 import {Button, Group, ImageButton, Text} from "../components/index.js";
 
-/** @extends Layer */
-export function MainMenuLayer() {
-	Layer.call(this);
+export class MainMenuLayer extends Layer {
+	/**
+	 * @inheritdoc
+	 */
+	build(context) {
+		return [
+			new Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", {
+				alignment: Alignment.alignCenterTop,
+				margin: new Vector2(0, 10),
+				font: context.getFont("ascii"),
+				color: Text.YELLOW,
+			}),
+			/* new Group({
+				alignment: Alignment.alignCenter,
+				margin: new Vector2(),
+				size: new Vector2(248, 104),
+				children: [
+					new Button({
+						alignment: Alignment.alignCenterTop,
+						margin: new Vector2(),
+						width: 200,
+					}),
+					new Button({
+						alignment: Alignment.alignCenterTop,
+						margin: new Vector2(0, 24),
+						width: 200,
+					}),
+					new Button({
+						alignment: Alignment.alignCenterTop,
+						margin: new Vector2(0, 48),
+						width: 200,
+					}),
+					new ImageButton({
+						alignment: Alignment.alignLeftBottom,
+						margin: new Vector2(),
+						size: new Vector2(20, 20),
+						image: context.getTexture("gui/widgets.png"),
+						uv: new Vector2(0, 106),
+						onMouseEnter: function() {
+							const subcomponents = this.getSubcomponents();
+							subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 126));
 
-	/** @override */
-	this.build = context => [
-		new Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", {
-			align: Component.alignCenterTop,
-			margin: new Vector2(0, 10),
-			color: Text.YELLOW,
-		}),
-		new Group({
-			align: Component.alignCenter,
-			margin: new Vector2(),
-			size: new Vector2(248, 104),
-			children: [
-				new Button({
-					align: Component.alignCenterTop,
-					margin: new Vector2(),
-					width: 200,
-				}),
-				new Button({
-					align: Component.alignCenterTop,
-					margin: new Vector2(0, 24),
-					width: 200,
-				}),
-				new Button({
-					align: Component.alignCenterTop,
-					margin: new Vector2(0, 48),
-					width: 200,
-				}),
-				new ImageButton({
-					align: Component.alignLeftBottom,
-					margin: new Vector2(),
-					size: new Vector2(20, 20),
-					image: context.getTexture("gui/widgets.png"),
-					uv: new Vector2(0, 106),
-					onMouseEnter: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 126));
+							this.setSubcomponents(subcomponents);
 
-						this.setSubcomponents(subcomponents);
+							context.pushToRenderQueue(this).render();
+						},
+						onMouseLeave: function() {
+							const subcomponents = this.getSubcomponents();
+							subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 106));
 
-						context.pushToRenderQueue(this).render();
-					},
-					onMouseLeave: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 106));
+							this.setSubcomponents(subcomponents);
 
-						this.setSubcomponents(subcomponents);
+							context.pushToRenderQueue(this).render();
+						},
+					}),
+					new Button({
+						alignment: Alignment.alignLeftBottom,
+						margin: new Vector2(24, 0),
+						width: 98,
+						onMouseDown: () => context.push(new OptionsLayer()),
+					}),
+					new Button({
+						alignment: Alignment.alignRightBottom,
+						margin: new Vector2(24, 0),
+						width: 98,
+						disabled: true,
+					}),
+					new ImageButton({
+						alignment: Alignment.alignRightBottom,
+						margin: new Vector2(),
+						size: new Vector2(20, 20),
+						image: context.getTexture("gui/accessibility.png"),
+						uv: new Vector2(),
+						onMouseEnter: function() {
+							const subcomponents = this.getSubcomponents();
+							subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 20));
 
-						context.pushToRenderQueue(this).render();
-					},
-				}),
-				new Button({
-					align: Component.alignLeftBottom,
-					margin: new Vector2(24, 0),
-					width: 98,
-					onMouseDown: () => context.push(new OptionsLayer()),
-				}),
-				new Button({
-					align: Component.alignRightBottom,
-					margin: new Vector2(24, 0),
-					width: 98,
-					disabled: true,
-				}),
-				new ImageButton({
-					align: Component.alignRightBottom,
-					margin: new Vector2(),
-					size: new Vector2(20, 20),
-					image: context.getTexture("gui/accessibility.png"),
-					uv: new Vector2(),
-					onMouseEnter: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 20));
+							this.setSubcomponents(subcomponents);
 
-						this.setSubcomponents(subcomponents);
+							context.pushToRenderQueue(this).render();
+						},
+						onMouseLeave: function() {
+							const subcomponents = this.getSubcomponents();
+							subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 0));
 
-						context.pushToRenderQueue(this).render();
-					},
-					onMouseLeave: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 0));
+							this.setSubcomponents(subcomponents);
 
-						this.setSubcomponents(subcomponents);
-
-						context.pushToRenderQueue(this).render();
-					},
-				}),
-			],
-		}),
-	];
+							context.pushToRenderQueue(this).render();
+						},
+					}),
+				],
+			}), */
+		];
+	}
 }
-
-extend(MainMenuLayer, Layer);

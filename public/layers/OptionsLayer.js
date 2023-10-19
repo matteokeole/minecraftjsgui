@@ -1,36 +1,36 @@
-import {Component, Layer} from "src/gui";
+import {Alignment, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import {extend} from "src/utils";
 import {Image, ImageButton} from "../components/index.js";
 
-/** @extends Layer */
-export function OptionsLayer() {
-	Layer.call(this);
-
-	/** @override */
-	this.build = function(context) {
-		/** @type {Number} */
+export class OptionsLayer extends Layer {
+	/**
+	 * @inheritdoc
+	 */
+	build(context) {
+		/**
+		 * @type {Number}
+		 */
 		let counter = 0;
 
 		console.debug(`Rebuilt OptionsLayer, counter = ${counter}`);
 
 		return [
 			new Image({
-				align: Component.alignCenter,
+				alignment: Alignment.alignCenter,
 				margin: new Vector2(),
 				image: context.getTexture("overlay"),
 				size: new Vector2(2000, 2000),
 				uv: new Vector2(),
 			}),
 			new Image({
-				align: Component.alignCenter,
+				alignment: Alignment.alignCenter,
 				margin: new Vector2(),
 				image: context.getTexture("grey"),
 				size: new Vector2(300, 180),
 				uv: new Vector2(),
 			}),
 			new ImageButton({
-				align: Component.alignCenter,
+				alignment: Alignment.alignCenter,
 				margin: new Vector2(110, -75),
 				size: new Vector2(20, 20),
 				image: context.getTexture("gui/widgets.png"),
@@ -54,7 +54,7 @@ export function OptionsLayer() {
 				},
 			}),
 			new ImageButton({
-				align: Component.alignCenter,
+				alignment: Alignment.alignCenter,
 				margin: new Vector2(134, -75),
 				size: new Vector2(20, 20),
 				image: context.getTexture("gui/widgets.png"),
@@ -78,7 +78,5 @@ export function OptionsLayer() {
 				},
 			}),
 		];
-	};
+	}
 }
-
-extend(OptionsLayer, Layer);

@@ -1,4 +1,5 @@
-import {DynamicComponent, Subcomponent} from "src/gui";
+import {Subcomponent} from "src/gui";
+import {ReactiveComponent} from "src/gui/components";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
 import {guiComposite as context} from "../main.js";
@@ -10,7 +11,7 @@ const DEFAULT_WIDTH = 200;
 const BUTTON_HEIGHT = 20;
 
 /**
- * @extends DynamicComponent
+ * @extends ReactiveComponent
  * @param {Object} options
  * @param {Number} width
  * @param {Boolean} disabled
@@ -19,7 +20,7 @@ const BUTTON_HEIGHT = 20;
  * @param {?Function} onMouseLeave
  */
 export function Button({width, disabled, onMouseDown: onMouseDownClient, onMouseEnter: onMouseEnterClient, onMouseLeave: onMouseLeaveClient}) {
-	DynamicComponent.apply(this, arguments);
+	ReactiveComponent.apply(this, arguments);
 
 	const halfWidth = width * .5;
 	const subcomponents = [
@@ -65,4 +66,4 @@ export function Button({width, disabled, onMouseDown: onMouseDownClient, onMouse
 	});
 }
 
-extend(Button, DynamicComponent);
+extend(Button, ReactiveComponent);

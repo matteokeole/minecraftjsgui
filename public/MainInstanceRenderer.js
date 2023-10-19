@@ -3,7 +3,7 @@ import {extend} from "src/utils";
 import {Program} from "src/wrappers";
 
 /** @extends WebGLRenderer */
-export function InstanceRenderer() {
+export function MainInstanceRenderer() {
 	WebGLRenderer.call(this, {offscreen: false});
 
 	const _build = this.build;
@@ -73,4 +73,4 @@ export function InstanceRenderer() {
 	};
 }
 
-extend(InstanceRenderer, WebGLRenderer);
+extend(MainInstanceRenderer, WebGLRenderer);

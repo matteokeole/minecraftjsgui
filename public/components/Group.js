@@ -1,4 +1,4 @@
-import {StructuralComponent} from "src/gui";
+import {StructuralComponent} from "src/gui/components";
 import {extend} from "src/utils";
 
 /** @extends StructuralComponent */

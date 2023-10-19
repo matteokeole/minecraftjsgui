@@ -1,4 +1,5 @@
-import {Subcomponent, VisualComponent} from "src/gui";
+import {Subcomponent} from "src/gui";
+import {VisualComponent} from "src/gui/components";
 import {Vector2} from "src/math";
 import {extend} from "src/utils";
 
