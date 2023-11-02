@@ -68,7 +68,7 @@ try {
 
 	const loader = new TextureLoader(instance.getParameter("texture_path"));
 	const textures = await loader.load("textures.json");
-	const colors = loader.loadHexadecimalColors([
+	const colors = loader.loadColors([
 		{
 			name: "darkgrey",
 			value: Uint8Array.of(43, 43, 43, 255),
@@ -80,11 +80,6 @@ try {
 			value: Uint8Array.of(0, 0, 0, 170),
 		},
 	], WebGLRenderer.MAX_TEXTURE_SIZE);
-	/* const colors = {
-		darkgrey: "#2b2b2bff",
-		grey: "#6f6f6fff",
-		overlay: "#000000aa",
-	}; */
 
 	guiComposite.getRenderer().createTextureArray(textures.concat(colors), false);
 
