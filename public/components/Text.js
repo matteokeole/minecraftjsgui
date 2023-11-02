@@ -87,11 +87,17 @@ export class Text extends VisualComponent {
 	/**
 	 * @param {String} text
 	 * @param {Object} options
+	 * @param {Number} options.alignment
+	 * @param {Vector2} [options.margin]
 	 * @param {Font} options.font
 	 * @param {Vector3} options.color
 	 */
-	constructor(text, {font, color, ...defaults}) {
-		super(defaults);
+	constructor(text, {alignment, margin, font, color}) {
+		super({
+			alignment,
+			margin,
+			size: new Vector2(),
+		});
 
 		const colorMask = color ?
 			new Vector4(...color, 255) :

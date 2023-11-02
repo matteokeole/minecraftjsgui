@@ -7,13 +7,11 @@ export class TestLayer extends Layer {
 	 * @inheritdoc
 	 */
 	build(context) {
-		return [
-			new Text("Test with 'ascii' font", {
-				alignment: Alignment.alignLeftTop,
-				margin: new Vector2(10, 10),
-				font: context.getFont("ascii"),
-				color: Text.RED,
-			}),
-		];
+		return new Text("Test with \"ascii\" font", {
+			alignment: Alignment.topLeft,
+			margin: new Vector2(10, 10),
+			font: context.getFont("ascii"),
+			color: Text.DARK_GRAY,
+		});
 	}
 }

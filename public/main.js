@@ -1,8 +1,10 @@
+import {WebGLRenderer} from "src";
 import {BitmapFont} from "src/fonts";
 import {GUIComposite, GUIRenderer} from "src/gui";
+import {TextureLoader} from "src/loader";
 import {MainInstance} from "./MainInstance.js";
 import {MainInstanceRenderer} from "./MainInstanceRenderer.js";
-import {MainMenuLayer} from "./layers/MainMenuLayer.js";
+import {MainMenuLayer} from "./layers/index.js";
 
 const instance = new MainInstance(new MainInstanceRenderer());
 
@@ -64,22 +66,27 @@ try {
 
 	await instance.build();
 
-	const renderer = guiComposite.getRenderer();
+	const loader = new TextureLoader(instance.getParameter("texture_path"));
+	const textures = await loader.load("textures.json");
+	const colors = loader.loadHexadecimalColors([
+		{
+			name: "darkgrey",
+			value: Uint8Array.of(43, 43, 43, 255),
+		}, {
+			name: "grey",
+			value: Uint8Array.of(111, 111, 111, 255),
+		}, {
+			name: "overlay",
+			value: Uint8Array.of(0, 0, 0, 170),
+		},
+	], WebGLRenderer.MAX_TEXTURE_SIZE);
+	/* const colors = {
+		darkgrey: "#2b2b2bff",
+		grey: "#6f6f6fff",
+		overlay: "#000000aa",
+	}; */
 
-	// Load colors and textures
-	{
-		const colors = {
-			darkgrey: "#2b2b2b",
-			grey: "#6f6f6f",
-			overlay: "#000a",
-		};
-		const textures = await (await fetch("assets/textures/textures.json")).json();
-
-		renderer.createTextureArray(Object.keys(colors).length + textures.length);
-
-		renderer.loadColors(colors);
-		await renderer.loadTextures(textures, instance.getParameter("texture_path"));
-	}
+	guiComposite.getRenderer().createTextureArray(textures.concat(colors), false);
 
 	document.body.appendChild(instance.getRenderer().getCanvas());
 

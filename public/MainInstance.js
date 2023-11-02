@@ -1,5 +1,5 @@
 import {Instance} from "src";
-import {min, max, Vector2} from "src/math";
+import {min, max, Vector4} from "src/math";
 import {MainInstanceRenderer} from "./MainInstanceRenderer.js";
 
 export class MainInstance extends Instance {
@@ -49,8 +49,7 @@ export class MainInstance extends Instance {
 	 * @param {Number} dpr
 	 */
 	resize(width, height, dpr) {
-		/** @type {Vector2} */
-		const viewport = new Vector2(width, height)
+		const viewport = new Vector4(0, 0, width, height)
 			.multiplyScalar(dpr)
 			.floor();
 
@@ -59,8 +58,8 @@ export class MainInstance extends Instance {
 		// Calculate scale multiplier
 		let i = 1;
 		while (
-			viewport[0] > this.getParameter("default_width") * dpr * i &&
-			viewport[1] > this.getParameter("default_height") * dpr * i
+			viewport[2] > this.getParameter("default_width") * dpr * i &&
+			viewport[3] > this.getParameter("default_height") * dpr * i
 		) i++;
 
 		this.setParameter("max_scale", min(i - 1, 1));
@@ -73,7 +72,7 @@ export class MainInstance extends Instance {
 		}
 
 		const composites = this.getComposites();
-		const compositeCount = this.getRenderer().getCompositeCount();
+		const compositeCount = this.getComposites().length;
 
 		for (i = 0; i < compositeCount; i++) {
 			composites[i].resize(viewport);

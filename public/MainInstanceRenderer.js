@@ -1,76 +1,72 @@
-import {WebGLRenderer} from "src";
-import {extend} from "src/utils";
-import {Program} from "src/wrappers";
+import {InstanceRenderer} from "src";
+import {ShaderSourceLoader} from "src/loader";
 
-/** @extends WebGLRenderer */
-export function MainInstanceRenderer() {
-	WebGLRenderer.call(this, {offscreen: false});
+export class MainInstanceRenderer extends InstanceRenderer {
+	/**
+	 * @inheritdoc
+	 */
+	async build() {
+		super.build();
 
-	const _build = this.build;
-	let gl, compositeCount;
+		this._context.pixelStorei(this._context.UNPACK_FLIP_Y_WEBGL, true);
+		this._context.enable(this._context.BLEND);
+		this._context.blendFunc(this._context.SRC_ALPHA, this._context.ONE_MINUS_SRC_ALPHA);
 
-	/** @param {Number} value */
-	this.setCompositeCount = value => void (compositeCount = value);
+		const loader = new ShaderSourceLoader(this._shaderPath);
+		const vertexShaderSource = await loader.load("composite.vert");
+		const fragmentShaderSource = await loader.load("composite.frag");
 
-	/** @returns {Number} */
-	this.getCompositeCount = () => compositeCount;
+		const program = await this._createProgram(vertexShaderSource, fragmentShaderSource);
+
+		this._context.useProgram(program);
+
+		this._programs.push(program);
+		this._attributes.vertex = 0;
+		this._buffers.vertex = this._context.createBuffer();
+
+		this._context.enableVertexAttribArray(this._attributes.vertex);
+		this._context.bindBuffer(this._context.ARRAY_BUFFER, this._buffers.vertex);
+		this._context.vertexAttribPointer(this._attributes.vertex, 2, this._context.FLOAT, false, 0, 0);
+		this._context.bufferData(this._context.ARRAY_BUFFER, new Float32Array([
+			 1,  1,
+			-1,  1,
+			-1, -1,
+			 1, -1,
+		]), this._context.STATIC_DRAW);
+
+		for (let i = 0; i < this._compositeCount; i++) {
+			this._context.bindTexture(this._context.TEXTURE_2D, this._textures[i] = this._context.createTexture());
+			this._context.texParameteri(this._context.TEXTURE_2D, this._context.TEXTURE_MIN_FILTER, this._context.LINEAR);
+		}
+	}
 
 	/**
-	 * @override
-	 * @param {String} shaderPath
+	 * @inheritdoc
 	 */
-	this.build = async function(shaderPath) {
-		_build();
-
-		gl = this.getContext();
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-		{
-			/** @type {Program} */
-			const program = await this.loadProgram(shaderPath, "composite.vert", "composite.frag");
-
-			this.linkProgram(program);
-			gl.useProgram(program.getProgram());
+	render() {
+		for (let i = 0; i < this._compositeCount; i++) {
+			this._context.bindTexture(this._context.TEXTURE_2D, this._textures[i]);
+			this._context.drawArrays(this._context.TRIANGLE_FAN, 0, 4);
 		}
-
-		const attributes = this.getAttributes();
-		const buffers = this.getBuffers();
-		const textures = this.getTextures();
-
-		attributes.vertex = 0;
-
-		buffers.vertex = gl.createBuffer();
-
-		gl.enableVertexAttribArray(attributes.vertex);
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
-		gl.vertexAttribPointer(attributes.vertex, 2, gl.FLOAT, false, 0, 0);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1, 1, -1, 1, -1, -1, 1, -1]), gl.STATIC_DRAW);
-
-		for (let i = 0; i < compositeCount; i++) {
-			gl.bindTexture(gl.TEXTURE_2D, textures[i] = gl.createTexture());
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		}
-	};
+	}
 
 	/**
 	 * @param {Number} index
 	 * @param {OffscreenCanvas} texture
 	 */
-	this.updateCompositeTexture = function(index, texture) {
-		gl.bindTexture(gl.TEXTURE_2D, this.getTextures()[index]);
-		/** @todo Replace by `texStorage2D` (lower memory costs in some implementations, according to {@link https://registry.khronos.org/webgl/specs/latest/2.0/#3.7.6}) */
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
-	};
-
-	/** @override */
-	this.render = function() {
-		for (let i = 0; i < compositeCount; i++) {
-			gl.bindTexture(gl.TEXTURE_2D, this.getTextures()[i]);
-			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-		}
-	};
+	updateCompositeTexture(index, texture) {
+		this._context.bindTexture(this._context.TEXTURE_2D, this._textures[index]);
+		/**
+		 * @todo Replace by `texStorage2D` (lower memory costs in some implementations,
+		 *       according to {@link https://registry.khronos.org/webgl/specs/latest/2.0/#3.7.6})
+		 */
+		this._context.texImage2D(
+			this._context.TEXTURE_2D,
+			0,
+			this._context.RGBA,
+			this._context.RGBA,
+			this._context.UNSIGNED_BYTE,
+			texture,
+		);
+	}
 }
-
-extend(MainInstanceRenderer, WebGLRenderer);
