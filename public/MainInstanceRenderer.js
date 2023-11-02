@@ -16,7 +16,7 @@ export class MainInstanceRenderer extends InstanceRenderer {
 		const vertexShaderSource = await loader.load("composite.vert");
 		const fragmentShaderSource = await loader.load("composite.frag");
 
-		const program = await this._createProgram(vertexShaderSource, fragmentShaderSource);
+		const program = this._createProgram(vertexShaderSource, fragmentShaderSource);
 
 		this._context.useProgram(program);
 
