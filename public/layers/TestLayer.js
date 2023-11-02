@@ -1,21 +1,17 @@
-import {Component, Layer} from "src/gui";
+import {Alignment, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import {extend} from "src/utils";
 import {Text} from "../components/index.js";
 
-/** @extends Layer */
-export function TestLayer() {
-	Layer.call(this);
-
-	/** @override */
-	this.build = context => [
-		new Text("Test with 'ascii' font", {
-			align: Component.alignLeftTop,
+export class TestLayer extends Layer {
+	/**
+	 * @inheritdoc
+	 */
+	build(context) {
+		return new Text("Test with \"ascii\" font", {
+			alignment: Alignment.topLeft,
 			margin: new Vector2(10, 10),
 			font: context.getFont("ascii"),
-			color: Text.RED,
-		}),
-	];
+			color: Text.DARK_GRAY,
+		});
+	}
 }
-
-extend(TestLayer, Layer);

@@ -1,64 +1,111 @@
-import {Font} from "src";
-import {VisualComponent} from "src/gui";
+import {Font} from "src/fonts";
+import {VisualComponent} from "src/gui/components";
 import {Vector2, Vector3, Vector4} from "src/math";
-import {extend} from "src/utils";
 import {guiComposite as context} from "../main.js";
 
-/**
- * @extends VisualComponent
- * @param {String} text
- * @param {Object} options
- * @param {?Font} [options.font]
- * @param {Vector3} options.color
- */
-export function Text(text, {font, color}) {
-	VisualComponent.call(this, arguments[1]);
+export class Text extends VisualComponent {
+	/**
+	 * @type {Vector3}
+	 */
+	static BLACK = new Vector3(0, 0, 0);
 
-	font ??= context.getMainFont();
+	/**
+	 * @type {Vector3}
+	 */
+	static DARK_BLUE = new Vector3(0, 0, 170);
 
-	/** @type {?Object.<String, Subcomponent>} */
-	const fontCharacters = font.getCharacters();
+	/**
+	 * @type {Vector3}
+	 */
+	static DARK_GREEN = new Vector3(0, 170, 0);
 
-	/** @type {Number} */
-	const letterSpacing = font.getLetterSpacing();
+	/**
+	 * @type {Vector3}
+	 */
+	static DARK_AQUA = new Vector3(0, 170, 170);
 
-	/** @type {String[]} */
-	const characters = text.split('');
-	const subcomponents = [];
-	let width = 0;
+	/**
+	 * @type {Vector3}
+	 */
+	static DARK_RED = new Vector3(170, 0, 0);
 
-	for (let i = 0, l = characters.length, symbol, subcomponent; i < l; i++) {
-		symbol = characters[i];
-		subcomponent = (fontCharacters[symbol] ?? fontCharacters[""]).clone();
-		subcomponent.setOffset(new Vector2(width, 0));
+	/**
+	 * @type {Vector3}
+	 */
+	static DARK_PURPLE = new Vector3(170, 0, 170);
 
-		if (color) subcomponent.setColorMask(new Vector4(color[0], color[1], color[2], 255));
+	/**
+	 * @type {Vector3}
+	 */
+	static GOLD = new Vector3(255, 170, 0);
 
-		subcomponents.push(subcomponent);
+	/**
+	 * @type {Vector3}
+	 */
+	static GRAY = new Vector3(170, 170, 170);
 
-		width += subcomponent.getSize()[0] + letterSpacing;
+	/**
+	 * @type {Vector3}
+	 */
+	static DARK_GRAY = new Vector3(85, 85, 85);
+
+	/**
+	 * @type {Vector3}
+	 */
+	static BLUE = new Vector3(85, 85, 255);
+
+	/**
+	 * @type {Vector3}
+	 */
+	static GREEN = new Vector3(85, 255, 85);
+
+	/**
+	 * @type {Vector3}
+	 */
+	static AQUA = new Vector3(85, 255, 255);
+
+	/**
+	 * @type {Vector3}
+	 */
+	static RED = new Vector3(255, 85, 85);
+
+	/**
+	 * @type {Vector3}
+	 */
+	static LIGHT_PURPLE = new Vector3(255, 85, 255);
+
+	/**
+	 * @type {Vector3}
+	 */
+	static YELLOW = new Vector3(255, 255, 85);
+
+	/**
+	 * @type {Vector3}
+	 */
+	static WHITE = new Vector3(255, 255, 255);
+
+	/**
+	 * @param {String} text
+	 * @param {Object} options
+	 * @param {Number} options.alignment
+	 * @param {Vector2} [options.margin]
+	 * @param {Font} options.font
+	 * @param {Vector3} options.color
+	 */
+	constructor(text, {alignment, margin, font, color}) {
+		super({
+			alignment,
+			margin,
+			size: new Vector2(),
+		});
+
+		const colorMask = color ?
+			new Vector4(...color, 255) :
+			new Vector4(255, 255, 255, 255);
+		const {glyphs, size} = font.generateGlyphsFromString(text, colorMask);
+
+		this.setSize(size);
+		this.setTexture(context.getTexture(font.getTexturePath()));
+		this.setSubcomponents(glyphs);
 	}
-
-	this.setSize(new Vector2(width, 8));
-	this.setTexture(context.getTexture(font.getTexturePath()));
-	this.setSubcomponents(subcomponents);
 }
-
-extend(Text, VisualComponent);
-
-Text.BLACK = new Vector3(0, 0, 0);
-Text.DARK_BLUE = new Vector3(0, 0, 170);
-Text.DARK_GREEN = new Vector3(0, 170, 0);
-Text.DARK_AQUA = new Vector3(0, 170, 170);
-Text.DARK_RED = new Vector3(170, 0, 0);
-Text.DARK_PURPLE = new Vector3(170, 0, 170);
-Text.GOLD = new Vector3(255, 170, 0);
-Text.GRAY = new Vector3(170, 170, 170);
-Text.DARK_GRAY = new Vector3(85, 85, 85);
-Text.BLUE = new Vector3(85, 85, 255);
-Text.GREEN = new Vector3(85, 255, 85);
-Text.AQUA = new Vector3(85, 255, 255);
-Text.RED = new Vector3(255, 85, 85);
-Text.LIGHT_PURPLE = new Vector3(255, 85, 255);
-Text.YELLOW = new Vector3(255, 255, 85);
-Text.WHITE = new Vector3(255, 255, 255);

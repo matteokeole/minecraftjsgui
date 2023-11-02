@@ -1,42 +1,35 @@
-import {Component, Layer} from "src/gui";
+import {Alignment, Layer} from "src/gui";
 import {Vector2} from "src/math";
-import {extend} from "src/utils";
-import {OptionsLayer} from "./OptionsLayer.js";
-import {Button, Group, ImageButton, Text} from "../components/index.js";
+import {OptionsLayer} from "./index.js";
+import {Button, Group, ImageButton} from "../components/index.js";
 
-/** @extends Layer */
-export function MainMenuLayer() {
-	Layer.call(this);
-
-	/** @override */
-	this.build = context => [
-		new Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", {
-			align: Component.alignCenterTop,
-			margin: new Vector2(0, 10),
-			color: Text.YELLOW,
-		}),
-		new Group({
-			align: Component.alignCenter,
+export class MainMenuLayer extends Layer {
+	/**
+	 * @inheritdoc
+	 */
+	build(context) {
+		return new Group({
+			alignment: Alignment.center,
 			margin: new Vector2(),
 			size: new Vector2(248, 104),
 			children: [
 				new Button({
-					align: Component.alignCenterTop,
+					alignment: Alignment.topCenter,
 					margin: new Vector2(),
 					width: 200,
 				}),
 				new Button({
-					align: Component.alignCenterTop,
+					alignment: Alignment.topCenter,
 					margin: new Vector2(0, 24),
 					width: 200,
 				}),
 				new Button({
-					align: Component.alignCenterTop,
+					alignment: Alignment.topCenter,
 					margin: new Vector2(0, 48),
 					width: 200,
 				}),
 				new ImageButton({
-					align: Component.alignLeftBottom,
+					alignment: Alignment.bottomLeft,
 					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/widgets.png"),
@@ -59,19 +52,19 @@ export function MainMenuLayer() {
 					},
 				}),
 				new Button({
-					align: Component.alignLeftBottom,
+					alignment: Alignment.bottomLeft,
 					margin: new Vector2(24, 0),
 					width: 98,
 					onMouseDown: () => context.push(new OptionsLayer()),
 				}),
 				new Button({
-					align: Component.alignRightBottom,
+					alignment: Alignment.bottomRight,
 					margin: new Vector2(24, 0),
 					width: 98,
 					disabled: true,
 				}),
 				new ImageButton({
-					align: Component.alignRightBottom,
+					alignment: Alignment.bottomRight,
 					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/accessibility.png"),
@@ -94,8 +87,6 @@ export function MainMenuLayer() {
 					},
 				}),
 			],
-		}),
-	];
+		});
+	}
 }
-
-extend(MainMenuLayer, Layer);
