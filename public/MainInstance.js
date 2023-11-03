@@ -62,13 +62,13 @@ export class MainInstance extends Instance {
 			viewport[3] > this.getParameter("default_height") * dpr * i
 		) i++;
 
-		this.setParameter("max_scale", min(i - 1, 1));
+		this.setParameter("max_scale", max(i - 1, 1));
 
 		{
 			const desiredScale = this.getParameter("desired_scale");
 			const maxScale = this.getParameter("max_scale");
 
-			this.setParameter("current_scale", max(desiredScale, maxScale));
+			this.setParameter("current_scale", min(desiredScale, maxScale));
 		}
 
 		const composites = this.getComposites();
