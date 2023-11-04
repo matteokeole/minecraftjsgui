@@ -11,15 +11,10 @@ export class MainInstance extends Instance {
 
 		this._parameters = {
 			...this._parameters,
-			font_path: "",
-			shader_path: "",
-			texture_path: "",
-			current_scale: 0,
 			desired_scale: 0,
 			max_scale: 0,
 			default_width: 320,
 			default_height: 240,
-			resize_delay: 50,
 		};
 	}
 
