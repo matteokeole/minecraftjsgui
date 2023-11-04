@@ -1,6 +1,6 @@
-import {Font} from "src/fonts";
-import {VisualComponent} from "src/gui/components";
-import {Vector2, Vector3, Vector4} from "src/math";
+import {BitmapFont} from "../../src/fonts/index.js";
+import {VisualComponent} from "../../src/gui/components/index.js";
+import {Vector2, Vector3, Vector4} from "../../src/math/index.js";
 import {guiComposite as context} from "../main.js";
 
 export class Text extends VisualComponent {
@@ -89,7 +89,7 @@ export class Text extends VisualComponent {
 	 * @param {Object} options
 	 * @param {Number} options.alignment
 	 * @param {Vector2} [options.margin]
-	 * @param {Font} options.font
+	 * @param {BitmapFont} options.font
 	 * @param {Vector3} options.color
 	 */
 	constructor(text, {alignment, margin, font, color}) {

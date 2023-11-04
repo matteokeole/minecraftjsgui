@@ -1,7 +1,7 @@
-import {WebGLRenderer} from "src";
-import {BitmapFont} from "src/fonts";
-import {GUIComposite, GUIRenderer} from "src/gui";
-import {TextureLoader} from "src/loader";
+import {WebGLRenderer} from "../src/index.js";
+import {BitmapFont} from "../src/fonts/index.js";
+import {GUIComposite, GUIRenderer} from "../src/gui/index.js";
+import {TextureLoader} from "../src/Loader/index.js";
 import {MainInstance} from "./MainInstance.js";
 import {MainInstanceRenderer} from "./MainInstanceRenderer.js";
 import {MainMenuLayer} from "./layers/index.js";
@@ -22,6 +22,7 @@ export const guiComposite = new GUIComposite({
 });
 
 try {
+	instance.setFramesPerSecond(30);
 	instance.setParameter("font_path", "assets/fonts/");
 	instance.setParameter("shader_path", "assets/shaders/");
 	instance.setParameter("texture_path", "assets/textures/");
@@ -32,37 +33,6 @@ try {
 	instance.setParameter("default_height", 240);
 	instance.setParameter("resize_delay", 50);
 	instance.setComposites([guiComposite]);
-	instance.setResizeObserver(new ResizeObserver(function([entry]) {
-		/**
-		 * @todo Use the first resize to calculate the initial GUI scale multiplier?
-		 */
-
-		// Avoid the first resize
-		if (this.isFirstResize()) {
-			this.setFirstResize(false);
-
-			return;
-		}
-
-		clearTimeout(this.getResizeTimeoutId());
-		this.setResizeTimeoutId(setTimeout(() => {
-			let width, height, dpr = 1;
-
-			if (entry.devicePixelContentBoxSize) {
-				({inlineSize: width, blockSize: height} = entry.devicePixelContentBoxSize[0]);
-			} else {
-				dpr = devicePixelRatio;
-
-				if (entry.contentBoxSize) {
-					entry.contentBoxSize[0] ?
-						({inlineSize: width, blockSize: height} = entry.contentBoxSize[0]) :
-						({inlineSize: width, blockSize: height} = entry.contentBoxSize);
-				} else ({width, height} = entry.contentRect);
-			}
-
-			this.resize(width, height, dpr);
-		}, this.getParameter("resize_delay")));
-	}.bind(instance)));
 
 	await instance.build();
 
@@ -85,25 +55,17 @@ try {
 
 	document.body.appendChild(instance.getRenderer().getCanvas());
 
-	try {
-		instance.getResizeObserver().observe(
-			instance.getRenderer().getCanvas(),
-			{
-				box: "device-pixel-content-box",
-			},
-		);
-	} catch (error) {
-		// If "device-pixel-content-box" isn't defined, try with "content-box"
-		instance.getResizeObserver().observe(
-			instance.getRenderer().getCanvas(),
-			{
-				box: "content-box",
-			},
-		);
-	}
+	instance.loop();
+
+	/**
+	 * @todo Make the instance call the composites itself to update their render texture,
+	 * and do the render when all textures have been updated
+	 * 
+	 * This is a dirty hack to make sure the GUI scale is correct on the first frame
+	 */
+	await new Promise(resolve => setTimeout(resolve, instance.getParameter("resize_delay") + 1));
 
 	guiComposite.push(new MainMenuLayer());
-	instance.loop();
 } catch (error) {
 	console.error(error);
 

@@ -1,5 +1,5 @@
-import {Alignment, Layer} from "src/gui";
-import {Vector2} from "src/math";
+import {Alignment, Layer} from "../../src/gui/index.js";
+import {Vector2} from "../../src/math/index.js";
 import {OptionsLayer} from "./index.js";
 import {Button, Group, ImageButton} from "../components/index.js";
 
@@ -9,27 +9,27 @@ export class MainMenuLayer extends Layer {
 	 */
 	build(context) {
 		return new Group({
-			alignment: Alignment.center,
+			alignment: Alignment.CENTER,
 			margin: new Vector2(),
 			size: new Vector2(248, 104),
 			children: [
 				new Button({
-					alignment: Alignment.topCenter,
+					alignment: Alignment.TOP_CENTER,
 					margin: new Vector2(),
 					width: 200,
 				}),
 				new Button({
-					alignment: Alignment.topCenter,
+					alignment: Alignment.TOP_CENTER,
 					margin: new Vector2(0, 24),
 					width: 200,
 				}),
 				new Button({
-					alignment: Alignment.topCenter,
+					alignment: Alignment.TOP_CENTER,
 					margin: new Vector2(0, 48),
 					width: 200,
 				}),
 				new ImageButton({
-					alignment: Alignment.bottomLeft,
+					alignment: Alignment.BOTTOM_LEFT,
 					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/widgets.png"),
@@ -52,19 +52,19 @@ export class MainMenuLayer extends Layer {
 					},
 				}),
 				new Button({
-					alignment: Alignment.bottomLeft,
+					alignment: Alignment.BOTTOM_LEFT,
 					margin: new Vector2(24, 0),
 					width: 98,
 					onMouseDown: () => context.push(new OptionsLayer()),
 				}),
 				new Button({
-					alignment: Alignment.bottomRight,
+					alignment: Alignment.BOTTOM_RIGHT,
 					margin: new Vector2(24, 0),
 					width: 98,
 					disabled: true,
 				}),
 				new ImageButton({
-					alignment: Alignment.bottomRight,
+					alignment: Alignment.BOTTOM_RIGHT,
 					margin: new Vector2(),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/accessibility.png"),

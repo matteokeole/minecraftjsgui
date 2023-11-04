@@ -1,13 +1,8 @@
-import {Instance} from "src";
-import {min, max, Vector4} from "src/math";
+import {Instance} from "../src/index.js";
+import {min, max} from "../src/math/index.js";
 import {MainInstanceRenderer} from "./MainInstanceRenderer.js";
 
 export class MainInstance extends Instance {
-	/**
-	 * @type {Number}
-	 */
-	#resizeTimeoutId;
-
 	/**
 	 * @param {MainInstanceRenderer} renderer
 	 */
@@ -26,56 +21,37 @@ export class MainInstance extends Instance {
 			default_height: 240,
 			resize_delay: 50,
 		};
-		this.#resizeTimeoutId = 0;
 	}
 
 	/**
-	 * @returns {Number}
+	 * @inheritdoc
 	 */
-	getResizeTimeoutId() {
-		return this.#resizeTimeoutId;
-	}
-
-	/**
-	 * @param {Number} resizeTimeoutId
-	 */
-	setResizeTimeoutId(resizeTimeoutId) {
-		this.#resizeTimeoutId = resizeTimeoutId;
-	}
-
-	/**
-	 * @param {Number} width
-	 * @param {Number} height
-	 * @param {Number} dpr
-	 */
-	resize(width, height, dpr) {
-		const viewport = new Vector4(0, 0, width, height)
-			.multiplyScalar(dpr)
-			.floor();
-
+	resize(viewport, dpr) {
 		this.getRenderer().setViewport(viewport);
 
-		// Calculate scale multiplier
-		let i = 1;
-		while (
-			viewport[2] > this.getParameter("default_width") * dpr * i &&
-			viewport[3] > this.getParameter("default_height") * dpr * i
-		) i++;
-
-		this.setParameter("max_scale", max(i - 1, 1));
-
+		// Calculate scale
 		{
-			const desiredScale = this.getParameter("desired_scale");
-			const maxScale = this.getParameter("max_scale");
+			let i = 1;
 
-			this.setParameter("current_scale", min(desiredScale, maxScale));
+			while (viewport[2] > this.getParameter("default_width") * dpr * i && viewport[3] > this.getParameter("default_height") * dpr * i) {
+				i++;
+			}
+
+			const maxScale = max(1, i - 1);
+			const desiredScale = this.getParameter("desired_scale");
+			const currentScale = min(maxScale, desiredScale);
+
+			this.setParameter("max_scale", maxScale);
+			this.setParameter("current_scale", currentScale);
 		}
 
-		const composites = this.getComposites();
-		const compositeCount = this.getComposites().length;
+		// Update composites
+		{
+			const composites = this.getComposites();
 
-		for (i = 0; i < compositeCount; i++) {
-			composites[i].resize(viewport);
+			for (let i = 0, length = composites.length; i < length; i++) {
+				composites[i].resize(viewport);
+			}
 		}
 	}
 }

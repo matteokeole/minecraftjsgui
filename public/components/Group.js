@@ -1,5 +1,5 @@
-import {Component, StructuralComponent} from "src/gui/components";
-import {Vector2} from "src/math";
+import {Component, StructuralComponent} from "../../src/gui/components/index.js";
+import {Vector2} from "../../src/math/index.js";
 
 export class Group extends StructuralComponent {
 	/**

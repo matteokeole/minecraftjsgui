@@ -1,6 +1,6 @@
-import {Subcomponent} from "src/gui";
-import {ReactiveComponent} from "src/gui/components";
-import {Vector2} from "src/math";
+import {Subcomponent} from "../../src/gui/index.js";
+import {ReactiveComponent} from "../../src/gui/components/index.js";
+import {Vector2} from "../../src/math/index.js";
 import {guiComposite as context} from "../main.js";
 
 export class Button extends ReactiveComponent {

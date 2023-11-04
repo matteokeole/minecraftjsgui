@@ -1,7 +1,7 @@
-import {Subcomponent} from "src/gui";
-import {VisualComponent} from "src/gui/components";
-import {Vector2} from "src/math";
-import {TextureContainer} from "src/wrappers";
+import {Subcomponent} from "../../src/gui/index.js";
+import {VisualComponent} from "../../src/gui/components/index.js";
+import {Vector2} from "../../src/math/index.js";
+import {TextureContainer} from "../../src/wrappers/index.js";
 
 export class Image extends VisualComponent {
 	/**

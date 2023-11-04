@@ -1,5 +1,5 @@
-import {Alignment, Layer} from "src/gui";
-import {Vector2} from "src/math";
+import {Alignment, Layer} from "../../src/gui/index.js";
+import {Vector2} from "../../src/math/index.js";
 import {Group, Image, ImageButton} from "../components/index.js";
 
 export class OptionsLayer extends Layer {
@@ -15,28 +15,28 @@ export class OptionsLayer extends Layer {
 		console.debug(`Rebuilt OptionsLayer, counter = ${counter}`);
 
 		return new Group({
-			alignment: Alignment.center,
+			alignment: Alignment.CENTER,
 			/**
 			 * @todo Find a way to position the layer root element
 			 */
 			size: new Vector2(innerWidth * .5, innerHeight * .5),
 			children: [
 				new Image({
-					alignment: Alignment.center,
+					alignment: Alignment.CENTER,
 					margin: new Vector2(),
 					image: context.getTexture("overlay"),
 					size: new Vector2(2000, 2000),
 					uv: new Vector2(),
 				}),
 				new Image({
-					alignment: Alignment.center,
+					alignment: Alignment.CENTER,
 					margin: new Vector2(),
 					image: context.getTexture("grey"),
 					size: new Vector2(300, 180),
 					uv: new Vector2(),
 				}),
 				new ImageButton({
-					alignment: Alignment.center,
+					alignment: Alignment.CENTER,
 					margin: new Vector2(110, -75),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/widgets.png"),
@@ -60,7 +60,7 @@ export class OptionsLayer extends Layer {
 					},
 				}),
 				new ImageButton({
-					alignment: Alignment.center,
+					alignment: Alignment.CENTER,
 					margin: new Vector2(134, -75),
 					size: new Vector2(20, 20),
 					image: context.getTexture("gui/widgets.png"),
