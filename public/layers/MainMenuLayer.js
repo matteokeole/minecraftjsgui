@@ -1,7 +1,10 @@
-import {Alignment, Layer} from "../../src/gui/index.js";
+import {Layer} from "../../src/GUI/index.js";
+import * as Alignment from "../../src/GUI/Alignment/index.js";
+import {Group} from "../../src/GUI/Component/index.js";
+import {MouseDownEvent, MouseMoveEvent} from "../../src/GUI/Event/index.js";
 import {Vector2} from "../../src/math/index.js";
 import {OptionsLayer} from "./index.js";
-import {Button, Group, ImageButton} from "../components/index.js";
+import {Button, ImageButton} from "../components/index.js";
 
 export class MainMenuLayer extends Layer {
 	/**
@@ -9,81 +12,89 @@ export class MainMenuLayer extends Layer {
 	 */
 	build(context) {
 		return new Group({
-			alignment: Alignment.CENTER,
+			alignment: Alignment.middle | Alignment.center,
 			margin: new Vector2(),
 			size: new Vector2(248, 104),
 			children: [
 				new Button({
-					alignment: Alignment.TOP_CENTER,
+					alignment: Alignment.middle | Alignment.top,
 					margin: new Vector2(),
 					width: 200,
+					context,
 				}),
 				new Button({
-					alignment: Alignment.TOP_CENTER,
+					alignment: Alignment.middle | Alignment.top,
 					margin: new Vector2(0, 24),
 					width: 200,
+					context,
 				}),
 				new Button({
-					alignment: Alignment.TOP_CENTER,
+					alignment: Alignment.middle | Alignment.top,
 					margin: new Vector2(0, 48),
 					width: 200,
+					context,
 				}),
 				new ImageButton({
-					alignment: Alignment.BOTTOM_LEFT,
+					alignment: Alignment.left | Alignment.bottom,
 					margin: new Vector2(),
 					size: new Vector2(20, 20),
-					image: context.getTexture("gui/widgets.png"),
+					events: [
+						MouseMoveEvent.NAME,
+					],
+					texture: context.getTexture("gui/widgets.png"),
 					uv: new Vector2(0, 106),
-					onMouseEnter: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 126));
+					onMouseEnter(context) {
+						this.getSubcomponents()[0].getUV()[1] = 126;
 
-						this.setSubcomponents(subcomponents);
-
-						context.pushToRenderQueue(this).render();
+						context.pushToRenderQueue(this);
+						context.render();
 					},
-					onMouseLeave: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 106));
+					onMouseLeave(context) {
+						this.getSubcomponents()[0].getUV()[1] = 106;
 
-						this.setSubcomponents(subcomponents);
-
-						context.pushToRenderQueue(this).render();
+						context.pushToRenderQueue(this);
+						context.render();
 					},
 				}),
 				new Button({
-					alignment: Alignment.BOTTOM_LEFT,
+					alignment: Alignment.left | Alignment.bottom,
 					margin: new Vector2(24, 0),
 					width: 98,
-					onMouseDown: () => context.push(new OptionsLayer()),
+					events: [
+						MouseDownEvent.NAME,
+					],
+					onMouseDown(context) {
+						context.push(new OptionsLayer());
+					},
+					context,
 				}),
 				new Button({
-					alignment: Alignment.BOTTOM_RIGHT,
+					alignment: Alignment.right | Alignment.bottom,
 					margin: new Vector2(24, 0),
 					width: 98,
 					disabled: true,
+					context,
 				}),
 				new ImageButton({
-					alignment: Alignment.BOTTOM_RIGHT,
+					alignment: Alignment.right | Alignment.bottom,
 					margin: new Vector2(),
 					size: new Vector2(20, 20),
-					image: context.getTexture("gui/accessibility.png"),
+					events: [
+						MouseMoveEvent.NAME,
+					],
+					texture: context.getTexture("gui/accessibility.png"),
 					uv: new Vector2(),
-					onMouseEnter: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 20));
+					onMouseEnter(context) {
+						this.getSubcomponents()[0].getUV()[1] = 20;
 
-						this.setSubcomponents(subcomponents);
-
-						context.pushToRenderQueue(this).render();
+						context.pushToRenderQueue(this);
+						context.render();
 					},
-					onMouseLeave: function() {
-						const subcomponents = this.getSubcomponents();
-						subcomponents[0].setUV(new Vector2(subcomponents[0].getUV()[0], 0));
+					onMouseLeave(context) {
+						this.getSubcomponents()[0].getUV()[1] = 0;
 
-						this.setSubcomponents(subcomponents);
-
-						context.pushToRenderQueue(this).render();
+						context.pushToRenderQueue(this);
+						context.render();
 					},
 				}),
 			],

@@ -1,15 +1,16 @@
-import {WebGLRenderer} from "../src/index.js";
-import {BitmapFont} from "../src/fonts/index.js";
-import {GUIComposite, GUIRenderer} from "../src/gui/index.js";
+import {GUIComposite} from "../src/Composite/index.js";
+import {BitmapFont} from "../src/Font/index.js";
 import {TextureLoader} from "../src/Loader/index.js";
-import {MainInstance} from "./MainInstance.js";
-import {MainInstanceRenderer} from "./MainInstanceRenderer.js";
+import {WebGLGUIRenderer, WebGLInstanceRenderer, WebGLRenderer} from "../src/Renderer/WebGL/index.js";
+import {Instance} from "./Instance.js";
 import {MainMenuLayer} from "./layers/index.js";
 
-const instance = new MainInstance(new MainInstanceRenderer());
+const instanceRenderer = new WebGLInstanceRenderer();
+const instance = new Instance(instanceRenderer);
 
-export const guiComposite = new GUIComposite({
-	renderer: new GUIRenderer(),
+const guiRenderer = new WebGLGUIRenderer();
+const guiComposite = new GUIComposite({
+	renderer: guiRenderer,
 	instance,
 	fonts: {
 		ascii: new BitmapFont({
@@ -23,8 +24,8 @@ export const guiComposite = new GUIComposite({
 
 try {
 	instance.setFramesPerSecond(30);
+	instance.setParameter("root_path", "src/");
 	instance.setParameter("font_path", "assets/fonts/");
-	instance.setParameter("shader_path", "assets/shaders/");
 	instance.setParameter("texture_path", "assets/textures/");
 	instance.setParameter("current_scale", 2);
 	instance.setParameter("desired_scale", 2);

@@ -1,10 +1,10 @@
-import {Instance} from "../src/index.js";
+import {Instance as AbstractInstance} from "../src/Instance/index.js";
 import {min, max} from "../src/math/index.js";
-import {MainInstanceRenderer} from "./MainInstanceRenderer.js";
+import {WebGLInstanceRenderer} from "../src/Renderer/WebGL/index.js";
 
-export class MainInstance extends Instance {
+export class Instance extends AbstractInstance {
 	/**
-	 * @param {MainInstanceRenderer} renderer
+	 * @param {WebGLInstanceRenderer} renderer
 	 */
 	constructor(renderer) {
 		super(renderer);

@@ -1,30 +1,98 @@
-import {Subcomponent} from "../../src/gui/index.js";
-import {ReactiveComponent} from "../../src/gui/components/index.js";
-import {Vector2} from "../../src/math/index.js";
-import {TextureContainer} from "../../src/wrappers/index.js";
+import {GUIComposite} from "../../src/Composite/index.js";
+import {Subcomponent} from "../../src/GUI/index.js";
+import {VisualComponent} from "../../src/GUI/Component/index.js";
+import {MouseDownEvent, MouseMoveEvent} from "../../src/GUI/Event/index.js";
+import {Vector2, intersects} from "../../src/math/index.js";
+import {TextureWrapper} from "../../src/Wrapper/index.js";
 
-export class ImageButton extends ReactiveComponent {
+/**
+ * @typedef {(context: GUIComposite) => void} EventListener
+ */
+
+/**
+ * @typedef {Object} ImageButtonDescriptor
+ * @property {Number} alignment
+ * @property {Vector2} [margin]
+ * @property {Vector2} size
+ * @property {String[]} events
+ * @property {TextureWrapper} texture
+ * @property {Vector2} uv
+ * @property {EventListener} [onMouseDown]
+ * @property {EventListener} [onMouseEnter]
+ * @property {EventListener} [onMouseLeave]
+ */
+
+export class ImageButton extends VisualComponent {
 	/**
-	 * @param {Object} options
-	 * @param {Number} options.alignment
-	 * @param {Vector2} [options.margin]
-	 * @param {Vector2} options.size
-	 * @param {TextureContainer} options.image
-	 * @param {Vector2} options.uv
-	 * @param {?import("../../src/gui/components/ReactiveComponent.js").EventListener} [options.onMouseDown]
-	 * @param {?import("../../src/gui/components/ReactiveComponent.js").EventListener} [options.onMouseEnter]
-	 * @param {?import("../../src/gui/components/ReactiveComponent.js").EventListener} [options.onMouseLeave]
+	 * @type {Boolean}
 	 */
-	constructor({alignment, margin, size, image, uv, onMouseDown = null, onMouseEnter = null, onMouseLeave = null}) {
-		super({alignment, margin, size, onMouseDown, onMouseEnter, onMouseLeave});
+	#isHovered;
 
-		this.setTexture(image);
+	/**
+	 * @type {?EventListener}
+	 */
+	#onMouseDown;
+
+	/**
+	 * @type {?EventListener}
+	 */
+	#onMouseEnter;
+
+	/**
+	 * @type {?EventListener}
+	 */
+	#onMouseLeave;
+
+	/**
+	 * @param {ImageButtonDescriptor} descriptor
+	 */
+	constructor(descriptor) {
+		super(descriptor);
+
+		this.#isHovered = false;
+		this.#onMouseDown = descriptor.onMouseDown;
+		this.#onMouseEnter = descriptor.onMouseEnter;
+		this.#onMouseLeave = descriptor.onMouseLeave;
+
 		this.setSubcomponents([
 			new Subcomponent({
-				offset: new Vector2(),
-				size,
-				uv,
+				size: descriptor.size,
+				uv: descriptor.uv,
 			}),
 		]);
+	}
+
+	/**
+	 * @param {Vector2} carry
+	 * @param {GUIComposite} context
+	 */
+	[MouseDownEvent.NAME](carry, context) {
+		if (!intersects(new Vector2(carry).divideScalar(2), this.getPosition(), this.getSize())) {
+			return;
+		}
+
+		this.#onMouseDown(context);
+	}
+
+	/**
+	 * @param {Vector2} carry
+	 * @param {GUIComposite} context
+	 */
+	[MouseMoveEvent.NAME](carry, context) {
+		const isIntersecting = intersects(new Vector2(carry).divideScalar(2), this.getPosition(), this.getSize());
+
+		if (!this.#isHovered && isIntersecting) {
+			this.#isHovered = true;
+
+			this.#onMouseEnter(context);
+
+			return;
+		}
+
+		if (this.#isHovered && !isIntersecting) {
+			this.#isHovered = false;
+
+			this.#onMouseLeave(context);
+		}
 	}
 }

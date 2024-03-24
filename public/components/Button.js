@@ -1,38 +1,109 @@
-import {Subcomponent} from "../../src/gui/index.js";
-import {ReactiveComponent} from "../../src/gui/components/index.js";
-import {Vector2} from "../../src/math/index.js";
-import {guiComposite as context} from "../main.js";
+import {GUIComposite} from "../../src/Composite/index.js";
+import {Subcomponent} from "../../src/GUI/index.js";
+import {VisualComponent} from "../../src/GUI/Component/index.js";
+import {MouseDownEvent, MouseMoveEvent} from "../../src/GUI/Event/index.js";
+import {Vector2, intersects} from "../../src/math/index.js";
 
-export class Button extends ReactiveComponent {
+/**
+ * @typedef {(context: GUIComposite) => void} EventListener
+ */
+
+/**
+ * @typedef {Object} ButtonDescriptor
+ * @property {Number} alignment
+ * @property {Vector2} [margin]
+ * @property {Number} width
+ * @property {String[]} [events]
+ * @property {Boolean} [disabled]
+ * @property {EventListener} [onMouseDown]
+ * @property {EventListener} [onMouseEnter]
+ * @property {EventListener} [onMouseLeave]
+ * @property {GUIComposite} context
+ */
+
+export class Button extends VisualComponent {
 	/**
 	 * @type {Number}
 	 */
-	static DEFAULT_WIDTH = 200;
+	static #DEFAULT_WIDTH = 200;
 
 	/**
 	 * @type {Number}
 	 */
-	static HEIGHT = 20;
+	static #HEIGHT = 20;
 
 	/**
-	 * @param {Object} options
-	 * @param {Number} options.alignment
-	 * @param {Vector2} [options.margin]
-	 * @param {Number} options.width
-	 * @param {Boolean} [options.disabled]
-	 * @param {?Function} [options.onMouseDown]
-	 * @param {?Function} [options.onMouseEnter]
-	 * @param {?Function} [options.onMouseLeave]
+	 * @type {Boolean}
 	 */
-	constructor({alignment, margin, width, disabled = false, onMouseDown = null, onMouseEnter = null, onMouseLeave = null}) {
+	#isHovered;
+
+	/**
+	 * @type {?EventListener}
+	 */
+	#onMouseDown;
+
+	/**
+	 * @type {?EventListener}
+	 */
+	#onMouseEnter;
+
+	/**
+	 * @type {?EventListener}
+	 */
+	#onMouseLeave;
+
+	/**
+	 * @param {ButtonDescriptor} descriptor
+	 */
+	constructor(descriptor) {
 		super({
-			alignment,
-			margin,
-			size: new Vector2(),
+			alignment: descriptor.alignment,
+			margin: descriptor.margin,
+			size: new Vector2(descriptor.width, Button.#HEIGHT),
+			events: (descriptor.events ?? []).concat([MouseMoveEvent.NAME]),
 		});
 
-		const halfWidth = width * .5;
-		const subcomponents = [
+		const halfWidth = descriptor.width * .5;
+		const disabled = descriptor.disabled ?? false;
+		const context = descriptor.context;
+
+		this.#isHovered = false;
+		this.#onMouseDown = function(context) {
+			if (disabled) {
+				return;
+			}
+
+			descriptor.onMouseDown?.(context);
+		};
+		this.#onMouseEnter = function(context) {
+			if (disabled) {
+				return;
+			}
+
+			descriptor.onMouseEnter?.(context);
+
+			this.getSubcomponents()[0].setUV(new Vector2(0, 86));
+			this.getSubcomponents()[1].setUV(new Vector2(Button.#DEFAULT_WIDTH - halfWidth, 86));
+
+			context.pushToRenderQueue(this);
+			context.render();
+		};
+		this.#onMouseLeave = function(context) {
+			if (disabled) {
+				return;
+			}
+
+			descriptor.onMouseLeave?.(context);
+
+			this.getSubcomponents()[0].setUV(new Vector2(0, 66));
+			this.getSubcomponents()[1].setUV(new Vector2(Button.#DEFAULT_WIDTH - halfWidth, 66));
+
+			context.pushToRenderQueue(this);
+			context.render();
+		};
+
+		this.setTexture(context.getTexture("gui/widgets.png"));
+		this.setSubcomponents([
 			new Subcomponent({
 				offset: new Vector2(),
 				size: new Vector2(halfWidth, 20),
@@ -41,37 +112,42 @@ export class Button extends ReactiveComponent {
 			new Subcomponent({
 				offset: new Vector2(halfWidth, 0),
 				size: new Vector2(halfWidth, 20),
-				uv: new Vector2(Button.DEFAULT_WIDTH - halfWidth, disabled ? 46 : 66),
+				uv: new Vector2(Button.#DEFAULT_WIDTH - halfWidth, disabled ? 46 : 66),
 			}),
-		];
+		]);
+	}
 
-		this.setSize(new Vector2(width, Button.HEIGHT));
-		this.setTexture(context.getTexture("gui/widgets.png"));
-		this.setSubcomponents(subcomponents);
-		this.setOnMouseDown(function(p) {
-			if (disabled) return;
+	/**
+	 * @param {Vector2} carry
+	 * @param {GUIComposite} context
+	 */
+	[MouseDownEvent.NAME](carry, context) {
+		if (!intersects(new Vector2(carry).divideScalar(2), this.getPosition(), this.getSize())) {
+			return;
+		}
 
-			onMouseDown?.(p);
-		});
-		this.setOnMouseEnter(function(p) {
-			if (disabled) return;
+		this.#onMouseDown(context);
+	}
 
-			onMouseEnter?.(p);
+	/**
+	 * @param {Vector2} carry
+	 * @param {GUIComposite} context
+	 */
+	[MouseMoveEvent.NAME](carry, context) {
+		const isIntersecting = intersects(new Vector2(carry).divideScalar(2), this.getPosition(), this.getSize());
 
-			subcomponents[0].setUV(new Vector2(0, 86));
-			subcomponents[1].setUV(new Vector2(Button.DEFAULT_WIDTH - halfWidth, 86));
+		if (!this.#isHovered && isIntersecting) {
+			this.#isHovered = true;
 
-			context.pushToRenderQueue(this).render();
-		});
-		this.setOnMouseLeave(function(p) {
-			if (disabled) return;
+			this.#onMouseEnter(context);
 
-			onMouseLeave?.(p);
+			return;
+		}
 
-			subcomponents[0].setUV(new Vector2(0, 66));
-			subcomponents[1].setUV(new Vector2(Button.DEFAULT_WIDTH - halfWidth, 66));
+		if (this.#isHovered && !isIntersecting) {
+			this.#isHovered = false;
 
-			context.pushToRenderQueue(this).render();
-		});
+			this.#onMouseLeave(context);
+		}
 	}
 }

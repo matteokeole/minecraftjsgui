@@ -1,26 +1,29 @@
-import {Subcomponent} from "../../src/gui/index.js";
-import {VisualComponent} from "../../src/gui/components/index.js";
+import {Subcomponent} from "../../src/GUI/index.js";
+import {VisualComponent} from "../../src/GUI/Component/index.js";
 import {Vector2} from "../../src/math/index.js";
-import {TextureContainer} from "../../src/wrappers/index.js";
+import {TextureWrapper} from "../../src/Wrapper/index.js";
+
+/**
+ * @typedef {Object} ImageDescriptor
+ * @property {Number} alignment
+ * @property {Vector2} [margin]
+ * @property {Vector2} size
+ * @property {TextureWrapper} image
+ * @property {Vector2} uv
+ */
 
 export class Image extends VisualComponent {
 	/**
-	 * @param {Object} options
-	 * @param {Number} options.alignment
-	 * @param {Vector2} [options.margin]
-	 * @param {Vector2} options.size
-	 * @param {TextureContainer} options.image
-	 * @param {Vector2} options.uv
+	 * @param {ImageDescriptor} descriptor
 	 */
-	constructor({alignment, margin, size, image, uv}) {
-		super({alignment, margin, size});
+	constructor(descriptor) {
+		super(descriptor);
 
-		this.setTexture(image);
+		this.setTexture(descriptor.image);
 		this.setSubcomponents([
 			new Subcomponent({
-				offset: new Vector2(),
-				size,
-				uv,
+				size: descriptor.size,
+				uv: descriptor.uv,
 			}),
 		]);
 	}
